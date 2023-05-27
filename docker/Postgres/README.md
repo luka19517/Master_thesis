@@ -1,4 +1,6 @@
 #Uputstvo za pokretanje postgres servera
+
+
 Create image:
 
 	docker image build -t postgresdb:latest .
