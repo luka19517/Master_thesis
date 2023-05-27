@@ -1,22 +1,21 @@
-#Uputstvo za pokretanje postgres servera
+# Uputstvo za pripremu postgres okruženja
 
-
-Create image:
+Kreiranje slike:
 
 	docker image build -t postgresdb:latest .
 
-Run container:
+Pokretanje kontejnera:
 
 	docker container run --name postgresdb -d postgresdb
 
-Run psql inside container:
+Pokretanje psql programa unutar kontejnera:
 
 	docker exec -it postgresdb psql -U postgres -W postgresdb
 
-Set search path:
+Podešavanje psql putanje:
 
 	SET search_path TO postgresdb;
 
-Turn on timing:
+Uključivanje timing opcije za merenje vremena izvršavanja:
 	
 	\timing
