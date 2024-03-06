@@ -1,0 +1,33 @@
+Primena u onlajn analitickom procesiranju(OLAP)
+
+*****UVOD U OLAP
+	Sta je? 
+	Koja vrsta manipulacije sa podacima se podrazumeva?
+
+*****KONTEKST
+	- 	prica o kontekstu
+	-	konkretan osnovni tok
+	-	konkretan alternativni tok
+	- 	konkretne dodatne informacije
+	
+*****PRIPREMA
+	- 	konfiguracija Postgresa
+	-	konfiguracija HBase
+	
+*****REALIZACIJA
+	-	izvrsavanje skripti Postgres
+	-	izvrsavanje skripti HBase
+
+*****ANALIZA REZULTATA
+	-	Memorijsko zauzece realizacije slucaja upotrebe
+		- brojke i eventualna diskusija o razlozima
+	
+	-	Vreme izvrsavanja realziacjie slucaja upotrebe`
+		- brojke i eventualna diskusija o razlozima
+	
+	-	Jednostavnost realizacije slucaja upotrebe
+		- diskusija o razlozima
+	
+	-	Pouzdanost 
+		- trazenje rupa u realizaciji koje mogu dovesti do 
+			narusavanja konzistentosti

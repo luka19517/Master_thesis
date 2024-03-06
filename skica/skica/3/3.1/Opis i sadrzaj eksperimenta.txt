@@ -1,0 +1,36 @@
+
+*****FENSI RECENICE
+Analiza i uporedjivanje slucajeva upotrebe bice realizovani na osnovu teorijskih i prakticnih 
+izvora i istrazivanja. Svaki primer ce biti pracen eksperimentom koji ce se sastojati 
+od izvrsavanja razlicitih vrsta postupaka.
+
+***** FIZICKA PLATFORMA ZA REALIZACIJU
+Kao platforma za realizaciju eksperimenata koriscen je host sa docker engine-om.
+Specifikacije Host-a data je na slici 1.Priprema platforme podrazumeva dovlacenje docker image-a 
+postgres-a i Apache HBase-a, kao i izvrsavanje skripti na instancama pokrenutih
+kontejnera. Specifikacije docker image-a su prikazani na slici 2.
+
+
+***** KONTEKST 
+Svakom eksperimentu dodeljen je precizno definisan kontekst radi uspostavljanja 
+potpune kontrole okruzenja u kojem se eksperiment realizuje. Definicija konteksta eksperimenta
+podrazumeva osnovni tok, alternativni tok, kao i dodatne informacije slucaja upotrebe.
+Kontekst pored uvoda, osnovnog toka, alternativnog toka i dodatnih informacija definise 
+i skup unapred pripremljenih skripti koje se izvrsavaju na instancama servera baza podataka, nad
+cijim izvrsavanjima se analiza rezlultata eksperimenta i zasniva.
+
+
+***** ANALIZA REZULTATA
+Analiza rezultata eksperimenta sprovodi se kroz vise faza. Prva faza je uporedjivanje efikasnosti, koja 
+podrazumeva uporedjivanje vremena izvrsavanja programa, kao i memorijsko zauzece. Druga faza je 
+uporedjivanje pouzdanosti odnosno mogucnost realizacije odrzavanja konzistentosti podataka, dok 
+se u okviru trece faze analizira slozenost realizacije slucaja upotrebe.
+Svaka od faza ce ukljucivati tekstualnu diskusiju, slike kao i druge graficke prikaze ukoliko su pogodni.
+
+
+***** KATEGORIJE SLUCAJEVA UPOTREBE
+Kako bi se postigao dovoljan dokaz koncepta (eng. proof of concept), ali i doslednost modernom
+vremenu, kategorije slucajeva upotrebe koji ce biti obuhvacceni su:
+	Onlajn transakciono procesiranje (OLTP),
+	Onlajn analiticko procesiranje (OLAP),
+	Primena u distribuiranom okruzenju.

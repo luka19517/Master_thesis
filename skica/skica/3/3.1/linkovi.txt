@@ -1,0 +1,10 @@
+Postgres istorija:
+	https://www.postgresql.org/docs/current/history.html
+	
+	https://www.postgresql.org/files/documentation/pdf/15/postgresql-15-A4.pdf
+
+Apache Cassandra:
+	istorija
+	https://www.cs.cornell.edu/projects/ladis2009/papers/lakshman-ladis2009.pdf
+	
+	https://thelastpickle.com/blog/2016/03/04/introductiont-to-the-apache-cassandra-3-storage-engine.html
