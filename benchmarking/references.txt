@@ -1,1 +1,0 @@
-https://objectbox.io/how-to-benchmark-database-performance-and-objectbox/
