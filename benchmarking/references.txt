@@ -1,2 +1,3 @@
 https://objectbox.io/how-to-benchmark-database-performance-and-objectbox/
 https://shopify.github.io/mybench/writing-a-benchmark.html
+https://citywire.com/wealth-manager/news/how-to-build-your-own-benchmark-in-four-easy-steps/a1353591
