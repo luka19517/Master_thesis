@@ -1,0 +1,13 @@
+Benchmark ima dve glavne komponente:
+	Workload specification
+	Measurment specification
+	
+	
+Online transakcije imaju sledece komponente:
+	Prenos podataka
+	Teleprocesiranje
+	biznis logika
+	pristup bazi
+	overhead operativnog sistema
+	
+	
