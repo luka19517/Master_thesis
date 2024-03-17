@@ -6,3 +6,10 @@ https://jimgray.azurewebsites.net/BenchmarkHandbook/TOC.htm
 
 TPC-C nosql benchmark
 https://www.mongodb.com/collateral/tpcc-benchmarking
+
+
+TPC-C hbase driver example
+https://github.com/apavlo/py-tpcc/blob/master/pytpcc/drivers/hbasedriver.py
+
+TPC-C sqllite driver example
+https://github.com/apavlo/py-tpcc/blob/master/pytpcc/drivers/sqlitedriver.py
