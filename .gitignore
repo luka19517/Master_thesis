@@ -5,3 +5,4 @@ docker/HBase/hbase-client/.idea/jarRepositories.xml
 docker/HBase/hbase-client/.idea/encodings.xml
 docker/HBase/hbase-client/.idea/misc.xml
 docker/HBase/hbase-client/.idea/compiler.xml
+/benchmarking/Benchmark/.idea

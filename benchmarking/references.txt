@@ -7,6 +7,8 @@ https://jimgray.azurewebsites.net/BenchmarkHandbook/TOC.htm
 TPC-C nosql benchmark
 https://www.mongodb.com/collateral/tpcc-benchmarking
 
+Example of HBASE benchmark
+https://maurocomi.com/hbase1.html
 
 TPC-C hbase driver example
 https://github.com/apavlo/py-tpcc/blob/master/pytpcc/drivers/hbasedriver.py
