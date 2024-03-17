@@ -13,3 +13,10 @@ https://github.com/apavlo/py-tpcc/blob/master/pytpcc/drivers/hbasedriver.py
 
 TPC-C sqllite driver example
 https://github.com/apavlo/py-tpcc/blob/master/pytpcc/drivers/sqlitedriver.py
+
+https://www.tpc.org/tpc_documents_current_versions/pdf/tpc-c_v5.11.0.pdf
+
+TPC-C for big data
+http://yanpeichen.com/professional/LNCSFunctionalWorkload.pdf
+
+Java client api za benchmark
