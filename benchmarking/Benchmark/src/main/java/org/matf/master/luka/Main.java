@@ -1,8 +1,11 @@
 package org.matf.master.luka;
 
-import org.matf.master.luka.common.BenchmarkExecutor;
-import org.matf.master.luka.hbase.HBaseBenchmarkExecutor;
-import org.matf.master.luka.postgres.PostgresBenchmarkExecutor;
+import org.matf.master.luka.common.BenchmarkUtility;
+import org.matf.master.luka.common.OLTPWorkload;
+import org.matf.master.luka.hbase.HBaseOLTPService;
+import org.matf.master.luka.hbase.HBaseUtility;
+import org.matf.master.luka.postgres.PostgresOLTPService;
+import org.matf.master.luka.postgres.PostgresUtility;
 
 import java.util.Scanner;
 
@@ -12,13 +15,34 @@ public class Main {
         System.out.println("Choose benchmark option [Postgres-1, HBase-2]:");
         int option =  sc.nextInt();
 
-        BenchmarkExecutor benchmarkExecutor;
+        BenchmarkUtility benchmarkUtility;
+        OLTPWorkload oltpWorkload;
         if(option==1){
-            benchmarkExecutor = new PostgresBenchmarkExecutor();
+            benchmarkUtility = new PostgresUtility();
+            oltpWorkload = new OLTPWorkload(new PostgresOLTPService());
+            System.out.println("Benchmark for POSTGRES...");
         }
         else{
-            benchmarkExecutor = new HBaseBenchmarkExecutor();
+            benchmarkUtility = new HBaseUtility();
+            oltpWorkload = new OLTPWorkload(new HBaseOLTPService());
+            System.out.println("Benchmark for HBASE...");
         }
-        benchmarkExecutor.execute();
+
+        System.out.println("Configuration start");
+        benchmarkUtility.makeConfig();
+        System.out.println("Configuration end");
+
+        System.out.println("Connect start");
+        benchmarkUtility.connect();
+        System.out.println("Connect end");
+
+        System.out.println("Workload start");
+        oltpWorkload.executeWorkload();
+        System.out.println("Workload end");
+
+        System.out.println("Close start");
+        benchmarkUtility.close();
+        System.out.println("Close end");
+
     }
 }
