@@ -2,6 +2,8 @@ package org.matf.master.luka.common;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class OLTPWorkload {
 
@@ -12,9 +14,16 @@ public class OLTPWorkload {
     }
 
     public void executeWorkload(){
-        this.oltpService.authenticateUser("username","password");
-        this.oltpService.createOrder(new Order());
-        this.oltpService.createOrder(new Order());
-        this.oltpService.createOrder(new Order());
+        for(int i=0;i<1000;i++){
+            executeWorkflow(i);
+        }
+    }
+
+    private void executeWorkflow(int seed) {
+        String username = "user_"+seed;
+        String password = "password_"+seed;
+        Order order =  Order.builder().amount(new BigDecimal(seed)).sellCurrencyCode("EUR").buyCurrencyCode("USD").build();
+        oltpService.authenticateUser(username,password);
+        oltpService.createOrder(order);
     }
 }

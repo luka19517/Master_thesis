@@ -8,6 +8,12 @@ public class PostgresUtility implements BenchmarkUtility {
     public void makeConfig() {
 
     }
+
+    @Override
+    public void setup() {
+
+    }
+
     @Override
     public void connect() {
 
