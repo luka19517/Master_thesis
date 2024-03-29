@@ -7,10 +7,11 @@ import org.matf.master.luka.hbase.HBaseUtility;
 import org.matf.master.luka.postgres.PostgresOLTPService;
 import org.matf.master.luka.postgres.PostgresUtility;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         Scanner sc = new Scanner(System.in);
         System.out.println("Choose benchmark option [Postgres-1, HBase-2]:");
         int option =  sc.nextInt();
@@ -34,7 +35,7 @@ public class Main {
 
         System.out.println("Connect start");
         benchmarkUtility.connect();
-        System.out.println("Connect end");
+        System.out.println("Connection retrieved successfully");
 
         System.out.println("Workload start");
         oltpWorkload.executeWorkload();

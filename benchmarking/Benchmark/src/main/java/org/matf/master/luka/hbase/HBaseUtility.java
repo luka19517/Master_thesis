@@ -10,11 +10,6 @@ public class HBaseUtility implements BenchmarkUtility {
     }
 
     @Override
-    public void setup() {
-
-    }
-
-    @Override
     public void connect() {
 
     }

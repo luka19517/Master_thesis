@@ -2,7 +2,12 @@ package org.matf.master.luka.postgres;
 
 import org.matf.master.luka.common.BenchmarkUtility;
 
+import java.sql.*;
+import java.util.Properties;
+
 public class PostgresUtility implements BenchmarkUtility {
+
+    public static Connection postgresSQLDriverConnection;
 
     @Override
     public void makeConfig() {
@@ -10,12 +15,13 @@ public class PostgresUtility implements BenchmarkUtility {
     }
 
     @Override
-    public void setup() {
+    public void connect() throws SQLException {
 
-    }
-
-    @Override
-    public void connect() {
+        String url="jdbc:postgresql://localhost:5433/postgresdb";
+        Properties props = new Properties();
+        props.setProperty("user","postgres");
+        props.setProperty("password","postgres");
+        postgresSQLDriverConnection = DriverManager.getConnection(url,props);
 
     }
     @Override

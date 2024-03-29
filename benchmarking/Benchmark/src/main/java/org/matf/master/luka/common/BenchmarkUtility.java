@@ -1,10 +1,11 @@
 package org.matf.master.luka.common;
 
+import java.sql.SQLException;
+
 public interface BenchmarkUtility {
 
     void makeConfig();
-    void setup();
-    void connect();
+    void connect() throws SQLException;
     void close();
 
 }
