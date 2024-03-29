@@ -18,15 +18,16 @@ ALTER SCHEMA postgresdb OWNER TO pg_database_owner;
 
 COMMENT ON SCHEMA postgresdb IS 'standard postgresdb schema';
 
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 
-CREATE TABLE postgresdb.test (
-    id bigint NOT NULL,
-    name text NOT NULL,
-	city text NOT NULL,
-	age bigint NOT NULL
+CREATE TABLE postgresdb.FXUSER (
+	USER_ID SERIAL PRIMARY KEY,
+	USERNAME VARCHAR (50) UNIQUE NOT NULL,
+	PASSWORD VARCHAR (50) NOT NULL,
+	EMAIL VARCHAR (255) UNIQUE NOT NULL,
+	CREATED_ON TIMESTAMP NOT NULL,
+	LAST_LOGIN TIMESTAMP
 );
