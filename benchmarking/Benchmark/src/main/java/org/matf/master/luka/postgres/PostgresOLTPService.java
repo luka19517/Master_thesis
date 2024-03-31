@@ -10,7 +10,7 @@ public class PostgresOLTPService implements OLTPService {
 
 
     @Override
-    public void createUser(String username, String password, String email) throws SQLException {
+    public void createUser(int seed, String username, String password, String email) throws SQLException {
         PreparedStatement createUserStatement = PostgresUtility.postgresSQLDriverConnection.prepareStatement("""
                 INSERT INTO postgresdb.FXUSER(username, password, email, created_on)
                 VALUES(?,?,?, now() at time zone 'utc');
