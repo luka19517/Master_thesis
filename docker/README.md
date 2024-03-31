@@ -1,8 +1,14 @@
 # Uputstvo za pripremu postgres i hbase okruzenja
 
-Kreiranje kontejnera:
+Komande izvrsavati u git bash-u
 
-	docker-compose -f docker-compose.yml up --build -d
+Pokretanje postgres-a i hbase-a
+
+	./start-databases.sh
+
+Zaustavlanje postgres-a i hbase-a
+
+	./stop-databases.sh
 
 Za pokretanje psql wrapper-a sa lokalne masine, neophodno je instalirati git bash. Pokrece se sa:
 
