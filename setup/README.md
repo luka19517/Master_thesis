@@ -10,7 +10,7 @@ Zaustavlanje postgres-a i hbase-a
 
 	./stop-databases.sh
 
-Za pokretanje psql wrapper-a sa lokalne masine, neophodno je instalirati git bash. Pokrece se sa:
+Za pokretanje psql wrapper-a sa lokalne masine:
 
 	sh ./psqlWrapper.sh
 
