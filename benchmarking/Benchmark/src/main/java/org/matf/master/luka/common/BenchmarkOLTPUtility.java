@@ -12,4 +12,8 @@ public interface BenchmarkOLTPUtility {
 
     void checkTransactionStatus(long fxTransaction);
 
+    void testConsistency();
+
+    void testAtomicity();
+
 }
