@@ -5,8 +5,10 @@ import java.sql.SQLException;
 
 public interface BenchmarkUtility {
 
-    void makeConfig();
     void connect() throws SQLException, IOException;
+    void populateDatabase();
+    void executeOLTPBenchmark();
+    void executeOLAPBenchmark();
     void close();
 
 }

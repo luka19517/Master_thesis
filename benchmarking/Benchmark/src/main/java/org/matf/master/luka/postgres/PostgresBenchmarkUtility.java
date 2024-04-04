@@ -5,14 +5,9 @@ import org.matf.master.luka.common.BenchmarkUtility;
 import java.sql.*;
 import java.util.Properties;
 
-public class PostgresUtility implements BenchmarkUtility {
+public class PostgresBenchmarkUtility implements BenchmarkUtility {
 
     public static Connection postgresSQLDriverConnection;
-
-    @Override
-    public void makeConfig() {
-
-    }
 
     @Override
     public void connect() throws SQLException {
@@ -24,6 +19,22 @@ public class PostgresUtility implements BenchmarkUtility {
         postgresSQLDriverConnection = DriverManager.getConnection(url,props);
 
     }
+
+    @Override
+    public void populateDatabase() {
+
+    }
+
+    @Override
+    public void executeOLTPBenchmark() {
+
+    }
+
+    @Override
+    public void executeOLAPBenchmark() {
+
+    }
+
     @Override
     public void close() {
 
