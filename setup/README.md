@@ -19,7 +19,7 @@ Komanda koja se unese ce biti izvrsena na docker kontejneru
 
 # Populacija podataka
 
-Tabela FXRates sadrzi za svaki par valuta (EUR,USD,DIN,CHF), sadrzi dva sloga za kurs.
+Tabela FXRates za svaki par valuta (EUR,USD,DIN,CHF), sadrzi dva sloga za kurs.
 
 Konvencije vezane za populaciju podataka
 
