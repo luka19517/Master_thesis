@@ -39,6 +39,10 @@ public class Main {
         benchmarkUtility.connect();
         System.out.println("Connection retrieved successfully");
 
+        System.out.println("Populate data start");
+        benchmarkUtility.populateDatabase();
+        System.out.println("Populate data finish");
+
         System.out.println("Workload start");
         benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, 1000);
         System.out.println("Workload end");

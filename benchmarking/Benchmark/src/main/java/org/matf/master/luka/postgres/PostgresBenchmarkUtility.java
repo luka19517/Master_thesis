@@ -21,21 +21,6 @@ public class PostgresBenchmarkUtility implements BenchmarkUtility {
     }
 
     @Override
-    public void populateDatabase() {
-
-    }
-
-    @Override
-    public void executeOLTPBenchmark() {
-
-    }
-
-    @Override
-    public void executeOLAPBenchmark() {
-
-    }
-
-    @Override
     public void close() {
 
     }

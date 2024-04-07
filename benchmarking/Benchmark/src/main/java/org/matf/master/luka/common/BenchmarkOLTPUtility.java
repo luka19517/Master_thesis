@@ -10,7 +10,7 @@ public interface BenchmarkOLTPUtility {
 
     void executePayment(FXTransaction fxTransaction);
 
-    void checkTransactionStatus(long fxTransaction);
+    void checkTransactionStatus(FXTransaction fxTransaction);
 
     void testConsistency();
 

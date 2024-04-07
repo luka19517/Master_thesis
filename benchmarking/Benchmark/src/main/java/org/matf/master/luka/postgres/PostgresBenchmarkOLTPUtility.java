@@ -16,7 +16,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void checkTransactionStatus(long fxTransaction) {
+    public void checkTransactionStatus(FXTransaction fxTransaction) {
 
     }
 
