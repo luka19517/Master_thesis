@@ -3,11 +3,12 @@ package org.matf.master.luka.common;
 import org.matf.master.luka.common.model.FXTransaction;
 
 import javax.xml.crypto.Data;
+import java.sql.SQLException;
 
 public interface BenchmarkExecutor {
 
 
-    default void executeOLTPWorkload(BenchmarkOLTPUtility oltpWorkloadUtility, long totalTransactions){
+    default void executeOLTPWorkload(BenchmarkOLTPUtility oltpWorkloadUtility, long totalTransactions) throws SQLException {
 
         long totalCreateFXTransaction = 0;
         long totalExecutePayment = 0;

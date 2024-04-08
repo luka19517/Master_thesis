@@ -17,7 +17,7 @@ public class PostgresBenchmarkUtility implements BenchmarkUtility {
         props.setProperty("user","postgres");
         props.setProperty("password","postgres");
         postgresSQLDriverConnection = DriverManager.getConnection(url,props);
-
+        postgresSQLDriverConnection.setAutoCommit(false);
     }
 
     @Override

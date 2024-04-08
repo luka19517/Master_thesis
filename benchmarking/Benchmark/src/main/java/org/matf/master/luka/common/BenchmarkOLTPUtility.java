@@ -3,6 +3,7 @@ package org.matf.master.luka.common;
 import org.matf.master.luka.common.model.FXTransaction;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 public interface BenchmarkOLTPUtility {
 
@@ -12,7 +13,7 @@ public interface BenchmarkOLTPUtility {
 
     void checkTransactionStatus(FXTransaction fxTransaction);
 
-    void testConsistency();
+    void testConsistency() throws SQLException;
 
     void testAtomicity();
 
