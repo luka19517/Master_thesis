@@ -16,6 +16,84 @@ Za pokretanje psql wrapper-a sa lokalne masine:
 
 Komanda koja se unese ce biti izvrsena na docker kontejneru
 
+# HBase model
+
+## fxuser
+
+Column families 
+
+###	creds
+
+-	username
+-	password
+
+### contact
+
+-	email
+-	mobile
+-	phone
+
+### loc
+
+-	street
+-	city
+-	state
+-	zip
+
+### gen_info
+
+-	firstname
+-	lastname
+
+### balance
+
+-	start_balance
+-	start_balance_cur
+
+## fxaccount
+
+Column families:
+
+###	fxuser
+
+-	fxuser
+
+### balance
+
+-	balance
+-	cur_code
+
+###	timestamps
+
+-	created
+
+## fxtransaction
+
+Column families:
+
+### info
+
+-	account_from
+-	account_to
+-	balance
+
+### status
+
+-	status
+
+### date
+
+-	entry_date
+
+## fxrates
+
+Column families:
+
+### info
+
+-	cur_from
+-	cur_to
+-	rate
 
 # Populacija podataka
 

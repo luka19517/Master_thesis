@@ -5,4 +5,8 @@ docker/HBase/hbase-client/.idea/jarRepositories.xml
 docker/HBase/hbase-client/.idea/encodings.xml
 docker/HBase/hbase-client/.idea/misc.xml
 docker/HBase/hbase-client/.idea/compiler.xml
+/setup/hbase_model_utilities/hbase_clean_model/.idea
+/setup/hbase_model_utilities/hbase_clean_model/target
+/setup/hbase_model_utilities/hbase_setup_model/.idea
+/setup/hbase_model_utilities/hbase_setup_model/target
 /benchmarking/Benchmark/.idea
