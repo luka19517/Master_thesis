@@ -1,23 +1,140 @@
 package org.matf.master.luka.postgres;
 
 import org.matf.master.luka.common.BenchmarkOLTPUtility;
+import org.matf.master.luka.common.model.ExecutePaymentInfo;
 import org.matf.master.luka.common.model.FXTransaction;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.Objects;
 
 public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
     @Override
-    public void createFXTransaction(FXTransaction fxTransaction) {
+    public ExecutePaymentInfo createFXTransaction(FXTransaction fxTransaction) throws SQLException {
+        //dohvati stanja sa ciljanih FXACCOUNT_FROM, FXACCOUNT_TO
+        String availableBalanceString = """
+                SELECT FA.BALANCE
+                FROM postgresdb.FXACCOUNT FA
+                WHERE FA.ID = ?
+                """;
+        PreparedStatement availableBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(availableBalanceString);
+        availableBalanceSt.setLong(1, fxTransaction.getId());
+        ResultSet availableBalanceRS = availableBalanceSt.executeQuery();
+        BigDecimal availableBalance = null;
+        while (availableBalanceRS.next()) {
+            availableBalance = availableBalanceRS.getBigDecimal(1);
+        }
+        availableBalanceRS.close();
+        availableBalanceSt.close();
 
+        String neededResourcesString = """
+                SELECT FR.RATE
+                FROM postgresdb.FXRATES FR
+                WHERE FR.CURRENCY_TO = ? AND FR.CURRENCY_FROM = ?
+                """;
+        PreparedStatement neededResourcesSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(neededResourcesString);
+        neededResourcesSt.setString(1, fxTransaction.getFxAccount_from().getCurrency_code());
+        neededResourcesSt.setString(2, fxTransaction.getFxAccount_to().getCurrency_code());
+        ResultSet neededResourcesRS = neededResourcesSt.executeQuery();
+        BigDecimal neededResources = null;
+        while (neededResourcesRS.next()) {
+            neededResources = neededResourcesRS.getBigDecimal(1).multiply(fxTransaction.getAmount());
+        }
+        neededResourcesRS.close();
+        neededResourcesSt.close();
+
+        String transactionStatus = "NEW";
+
+        assert neededResources != null;
+        if (neededResources.compareTo(availableBalance) > 0) {
+            transactionStatus = "BLOCKED";
+        }
+        String insertTransactionString = """
+                INSERT INTO postgresdb.FXTRANSACTION(ID,FXACCOUNT_FROM, FXACCOUNT_TO, AMOUNT, STATUS, ENTRY_DATE)
+                VALUES(?,?,?,?,?,?)
+                """;
+        PreparedStatement insertTransactionSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(insertTransactionString);
+        insertTransactionSt.setLong(1, fxTransaction.getId());
+        insertTransactionSt.setLong(2, fxTransaction.getFxAccount_from().getId());
+        insertTransactionSt.setLong(3, fxTransaction.getFxAccount_to().getId());
+        insertTransactionSt.setBigDecimal(4, neededResources);
+        insertTransactionSt.setString(5, transactionStatus);
+        insertTransactionSt.setDate(6, new Date(System.currentTimeMillis()));
+        insertTransactionSt.executeUpdate();
+        insertTransactionSt.close();
+
+        PostgresBenchmarkUtility.postgresSQLDriverConnection.commit();
+
+        return ExecutePaymentInfo.builder()
+                .amountToGive(neededResources)
+                .amountToReceive(fxTransaction.getAmount())
+                .accountFrom(fxTransaction.getFxAccount_from().getId())
+                .accountTo(fxTransaction.getFxAccount_to().getId())
+                .build();
     }
 
     @Override
-    public void executePayment(FXTransaction fxTransaction) {
+    public void executePayment(ExecutePaymentInfo executePaymentInfo) throws SQLException {
 
+        String fromAccountOldBalanceString = """
+            SELECT BALANCE
+            FROM postgresdb.FXACCOUNT
+            WHERE ID = ?
+            """;
+        PreparedStatement fromAccountBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(fromAccountOldBalanceString);
+        fromAccountBalanceSt.setLong(1,executePaymentInfo.getAccountFrom());
+        ResultSet fromAccountOldBalanceRS = fromAccountBalanceSt.executeQuery();
+        BigDecimal oldBalance = null;
+        while (fromAccountOldBalanceRS.next()) {
+            oldBalance = fromAccountOldBalanceRS.getBigDecimal(1);
+        }
+
+
+        //	-	azuriranje balansa accounta	(write)
+        String updateFromAccountString = """
+                UPDATE postgresdb.FXACCOUNT
+                SET BALANCE = ?
+                WHERE id = ?
+                """;
+        PreparedStatement updateFromAccountSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(updateFromAccountString);
+        assert oldBalance != null;
+        updateFromAccountSt.setBigDecimal(1,oldBalance.subtract(executePaymentInfo.getAmountToGive()));
+        updateFromAccountSt.setLong(2,executePaymentInfo.getAccountFrom());
+        updateFromAccountSt.executeUpdate();
+        //	-	azuriranje statusa transakcije (write)
+
+        String toAccountOldBalanceString = """
+            SELECT BALANCE
+            FROM postgresdb.FXACCOUNT
+            WHERE ID = ?
+            """;
+        PreparedStatement toAccountBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(toAccountOldBalanceString);
+        toAccountBalanceSt.setLong(1,executePaymentInfo.getAccountTo());
+        ResultSet toAccountOldBalanceRS = toAccountBalanceSt.executeQuery();
+        BigDecimal toAccountOldBalance = null;
+        while (toAccountOldBalanceRS.next()) {
+            toAccountOldBalance = toAccountOldBalanceRS.getBigDecimal(1);
+        }
+
+        String updateToAccountString = """
+                UPDATE postgresdb.FXACCOUNT
+                SET BALANCE = ?
+                WHERE id = ?
+                """;
+        PreparedStatement updateToAccountSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(updateToAccountString);
+        assert toAccountOldBalance != null;
+        updateToAccountSt.setBigDecimal(1,toAccountOldBalance.add(executePaymentInfo.getAmountToReceive()));
+        updateToAccountSt.setLong(2,executePaymentInfo.getAccountTo());
+        updateToAccountSt.executeUpdate();
+
+        fromAccountOldBalanceRS.close();
+        fromAccountBalanceSt.close();
+        updateFromAccountSt.close();
+        toAccountOldBalanceRS.close();
+        toAccountBalanceSt.close();
+        updateToAccountSt.close();
+        PostgresBenchmarkUtility.postgresSQLDriverConnection.commit();
     }
 
     @Override
@@ -41,9 +158,9 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 """;
         Statement statement = PostgresBenchmarkUtility.postgresSQLDriverConnection.createStatement();
         ResultSet rs = statement.executeQuery(selectUsersSQL);
-        while(rs.next()){
+        while (rs.next()) {
             long userID = rs.getLong("USERID");
-            double startBalance=rs.getDouble("START_BALANCE");
+            BigDecimal startBalance = rs.getBigDecimal("START_BALANCE");
             String startBalanceCurrency = rs.getString("START_BALANCECURRENCY");
 
             String totalFromAccountsSQL = """
@@ -52,30 +169,18 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                     WHERE FA.FXUSER = ? AND FR.CURRENCY_TO=? AND FR.CURRENCY_FROM=FA.CURRENCY_CODE
                     """;
             PreparedStatement selectTotalFromAccounts = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(totalFromAccountsSQL);
-            selectTotalFromAccounts.setLong(1,userID);
+            selectTotalFromAccounts.setLong(1, userID);
             selectTotalFromAccounts.setString(2, startBalanceCurrency);
 
             ResultSet totalFromAccountsRS = selectTotalFromAccounts.executeQuery();
-            double totalBalance;
-            while(totalFromAccountsRS.next()){
-                totalBalance = totalFromAccountsRS.getDouble("TOTAL_BALANCE");
-                if(totalBalance!=startBalance)
-                    throw new AssertionError("Total balance and start balance do not match for user: "+userID);
+            BigDecimal totalBalance;
+            while (totalFromAccountsRS.next()) {
+                totalBalance = totalFromAccountsRS.getBigDecimal("TOTAL_BALANCE");
+                if (!Objects.equals(totalBalance, startBalance))
+                    throw new AssertionError("Total balance and start balance do not match for user: " + userID);
             }
 
         }
-
-    }
-
-    @Override
-    public void testAtomicity() {
-
-/*
-        Test atomicnosti
-
-        1. Kreiramo transakciju i proverimo da li su vrednosti odogovarajue
-        2. Umesto komita uradimo rollback, proverimo da li su vrednosti kao u pocetku
-*/
 
     }
 }

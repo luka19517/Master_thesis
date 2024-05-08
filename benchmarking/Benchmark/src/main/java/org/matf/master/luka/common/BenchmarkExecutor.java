@@ -1,8 +1,8 @@
 package org.matf.master.luka.common;
 
+import org.matf.master.luka.common.model.ExecutePaymentInfo;
 import org.matf.master.luka.common.model.FXTransaction;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 public interface BenchmarkExecutor {
@@ -14,25 +14,28 @@ public interface BenchmarkExecutor {
         long totalExecutePayment = 0;
         long totalCheckTransactionStatus = 0;
 
-        oltpWorkloadUtility.testConsistency();
+//        oltpWorkloadUtility.testConsistency();
 
         for(int i = 0 ; i<totalTransactions; i++){
             FXTransaction fxTransaction = DataOnDemandUtility.createFXTransaction(i);
             long createFXTransactionStart = System.currentTimeMillis();
-            oltpWorkloadUtility.createFXTransaction(fxTransaction);
+            ExecutePaymentInfo executePaymentInfo = oltpWorkloadUtility.createFXTransaction(fxTransaction);
             long createFXTransactionFinish = System.currentTimeMillis();
-            oltpWorkloadUtility.testConsistency();
+//            oltpWorkloadUtility.testConsistency();
             long executePaymentStart = System.currentTimeMillis();
-            oltpWorkloadUtility.executePayment(fxTransaction);
+            oltpWorkloadUtility.executePayment(executePaymentInfo);
             long executePaymentFinish = System.currentTimeMillis();
-            oltpWorkloadUtility.testConsistency();
-            long checkTransactionStatusStart = System.currentTimeMillis();
-            oltpWorkloadUtility.checkTransactionStatus(fxTransaction);
-            long checkTransactionStatusFinish = System.currentTimeMillis();
+//            oltpWorkloadUtility.testConsistency();
+//            long checkTransactionStatusStart = System.currentTimeMillis();
+//            oltpWorkloadUtility.checkTransactionStatus(fxTransaction);
+//            long checkTransactionStatusFinish = System.currentTimeMillis();
 
-            totalCreateFXTransaction+=createFXTransactionFinish-createFXTransactionStart;
-            totalExecutePayment+=executePaymentFinish-executePaymentStart;
-            totalCheckTransactionStatus+=checkTransactionStatusFinish-checkTransactionStatusStart;
+            System.out.println("Create transaction time for "+i+" : "+(createFXTransactionFinish-createFXTransactionStart));
+//            System.out.println("Execute Payment time for "+i+" : "+(executePaymentFinish-executePaymentStart));
+//            totalCreateFXTransaction+=createFXTransactionFinish-createFXTransactionStart;
+//            totalExecutePayment+=executePaymentFinish-executePaymentStart;
+//            totalCheckTransactionStatus+=checkTransactionStatusFinish-checkTransactionStatusStart;
+
         }
 
         System.out.println("Total create fx transaction: "+totalCreateFXTransaction);
@@ -41,8 +44,6 @@ public interface BenchmarkExecutor {
 
         long totalDuration = totalCreateFXTransaction + totalExecutePayment + totalCheckTransactionStatus;
         System.out.println("Total benchmark duration: "+totalDuration);
-
-
     }
 
 }

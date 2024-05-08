@@ -40,7 +40,7 @@ public class Main {
         System.out.println("Connection retrieved successfully");
 
         System.out.println("Workload start");
-        benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, 0);
+        benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, 10);
         System.out.println("Workload end");
 
         System.out.println("Close start");

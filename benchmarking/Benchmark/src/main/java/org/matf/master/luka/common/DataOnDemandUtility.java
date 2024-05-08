@@ -1,26 +1,38 @@
 package org.matf.master.luka.common;
 
 import org.matf.master.luka.common.model.FXAccount;
-import org.matf.master.luka.common.model.FXRates;
 import org.matf.master.luka.common.model.FXTransaction;
-import org.matf.master.luka.common.model.FXUser;
+
+import java.math.BigDecimal;
 
 public class DataOnDemandUtility {
 
-    public static FXTransaction createFXTransaction(int seed){
-        return FXTransaction.builder().build();
+    public static FXTransaction createFXTransaction(int seed) {
+        return FXTransaction.builder().id(seed).amount(BigDecimal.TEN).fxAccount_from(generateFXAccountWithID(seed)).fxAccount_to(generateFXAccountWithID(seed+30000)).build();
     }
 
-    public static FXUser createFXUser(int seed){
-        return FXUser.builder().build();
+    private static FXAccount generateFXAccountWithID(long id){
+        return FXAccount.builder().id(id).currency_code(getCurrencyCode(id)).build();
     }
 
-    public static FXRates createFXRate(int seed){
-        return FXRates.builder().build();
+    private static String getCurrencyCode(long id){
+        String currencyCode;
+        switch ((int) id / 30000) {
+            case 0 -> {
+                currencyCode = "EUR";
+            }
+            case 1 -> {
+                currencyCode = "USD";
+            }
+            case 2 -> {
+                currencyCode = "DIN";
+            }
+            default -> {
+                currencyCode = "CHF";
+            }
+        }
 
+        return currencyCode;
     }
 
-    public static FXAccount createFXAccount(int seed){
-        return FXAccount.builder().build();
-    }
 }
