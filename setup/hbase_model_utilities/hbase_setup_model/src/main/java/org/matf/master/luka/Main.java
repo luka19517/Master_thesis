@@ -15,6 +15,9 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Configuration config = HBaseConfiguration.create();
+        config.set("hbase.master", "localhost:16010");
+        config.set("hbase.zookeeper.quorum","zookeeper:2181");
+        config.set("hbase.zookeeper.property.clientPort", "2181");
         Connection hbaseConnection = ConnectionFactory.createConnection(config);
 
         Admin admin = hbaseConnection.getAdmin();
@@ -76,6 +79,7 @@ public class Main {
 
 
         //------------------------------FXACCOUNTS-----------------------------
+        fxAccountsDescriptor.addFamily(new HColumnDescriptor("id"));
         fxAccountsDescriptor.addFamily(new HColumnDescriptor("fxuser"));
         fxAccountsDescriptor.addFamily(new HColumnDescriptor("balance"));
         fxAccountsDescriptor.addFamily(new HColumnDescriptor("timestamps"));
@@ -108,6 +112,7 @@ public class Main {
             long balance= (i>=30000 ? 0 : i%10*10000+i%9*1000+i%8*100+i%7*10+i%6);
             long created = System.currentTimeMillis();
 
+            put.addColumn(Bytes.toBytes("id"),Bytes.toBytes("id"),Bytes.toBytes(i));
             put.addColumn(Bytes.toBytes("fxuser"),Bytes.toBytes("fxuser"),Bytes.toBytes(user));
             put.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"),Bytes.toBytes(balance));
             put.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("cur_code"),Bytes.toBytes(currencyCode));
