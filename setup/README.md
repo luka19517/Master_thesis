@@ -2,19 +2,10 @@
 
 Komande izvrsavati u git bash-u
 
-Pokretanje postgres-a i hbase-a
+Pokretanje kontejnera i podesavanje okruzenja
 
-	./start-databases.sh
+	./prepare-env.sh
 
-Zaustavlanje postgres-a i hbase-a
-
-	./stop-databases.sh
-
-Za pokretanje psql wrapper-a sa lokalne masine:
-
-	sh ./psqlWrapper.sh
-
-Komanda koja se unese ce biti izvrsena na docker kontejneru
 
 # HBase model
 
