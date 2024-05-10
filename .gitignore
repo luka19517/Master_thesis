@@ -10,3 +10,6 @@ docker/HBase/hbase-client/.idea/compiler.xml
 /setup/hbase_model_utilities/hbase_setup_model/.idea
 /setup/hbase_model_utilities/hbase_setup_model/target
 /benchmarking/Benchmark/.idea
+/setup/benchmark_postgres.jar
+/setup/benchmark_hbase.jar
+/setup/hbase_setup_model.jar
