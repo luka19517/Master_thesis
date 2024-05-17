@@ -9,6 +9,7 @@ import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class Main {
@@ -46,7 +47,7 @@ public class Main {
             String username = "username_"+i;
             String password = "password_"+i;
             String startBalanceCurCode="EUR";
-            long startBalance = i%10*10000+i%9*1000+i%8*100+i%7*10+i%6;
+            long startBalance = 1000;
             String firstName = "firstname_"+i;
             String lastName = "lastname_"+i;
             String street = "street_"+i%100;
@@ -109,10 +110,10 @@ public class Main {
                     break;
                 }
             }
-            long balance= (i>=30000 ? 0 : i%10*10000+i%9*1000+i%8*100+i%7*10+i%6);
+            BigDecimal balance= i>=30000 ? BigDecimal.ZERO : new BigDecimal(1000);
             long created = System.currentTimeMillis();
 
-            put.addColumn(Bytes.toBytes("id"),Bytes.toBytes("id"),Bytes.toBytes(i));
+            put.addColumn(Bytes.toBytes("id"),Bytes.toBytes("id"),Bytes.toBytes(new BigDecimal(i)));
             put.addColumn(Bytes.toBytes("fxuser"),Bytes.toBytes("fxuser"),Bytes.toBytes(user));
             put.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"),Bytes.toBytes(balance));
             put.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("cur_code"),Bytes.toBytes(currencyCode));
@@ -123,6 +124,7 @@ public class Main {
 
 
         //------------------------------FXTRANSACTION-----------------------------
+        fxTransactionDescriptor.addFamily(new HColumnDescriptor("id"));
         fxTransactionDescriptor.addFamily(new HColumnDescriptor("info"));
         fxTransactionDescriptor.addFamily(new HColumnDescriptor("status"));
         fxTransactionDescriptor.addFamily(new HColumnDescriptor("date"));

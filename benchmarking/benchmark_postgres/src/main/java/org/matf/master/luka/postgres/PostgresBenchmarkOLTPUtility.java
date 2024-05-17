@@ -58,7 +58,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         insertTransactionSt.setLong(1, fxTransaction.getId());
         insertTransactionSt.setLong(2, fxTransaction.getFxAccount_from().getId());
         insertTransactionSt.setLong(3, fxTransaction.getFxAccount_to().getId());
-        insertTransactionSt.setBigDecimal(4, neededResources);
+        insertTransactionSt.setBigDecimal(4, fxTransaction.getAmount());
         insertTransactionSt.setString(5, transactionStatus);
         insertTransactionSt.setDate(6, new Date(System.currentTimeMillis()));
         insertTransactionSt.executeUpdate();

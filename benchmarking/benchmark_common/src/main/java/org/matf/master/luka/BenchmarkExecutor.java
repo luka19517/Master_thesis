@@ -37,12 +37,12 @@ public interface BenchmarkExecutor {
 
         }
 
-        System.out.println("Total create fx transaction: " + totalCreateFXTransaction);
-        System.out.println("Total execute payment: " + totalExecutePayment);
-        System.out.println("Total check transaction status: " + totalCheckTransactionStatus);
+        System.err.println("Total create fx transaction: " + totalCreateFXTransaction);
+        System.err.println("Total execute payment: " + totalExecutePayment);
+        System.err.println("Total check transaction status: " + totalCheckTransactionStatus);
 
         long totalDuration = totalCreateFXTransaction + totalExecutePayment + totalCheckTransactionStatus;
-        System.out.println("Total benchmark duration: " + totalDuration);
+        System.err.println("Total benchmark duration: " + totalDuration);
     }
 
 }
