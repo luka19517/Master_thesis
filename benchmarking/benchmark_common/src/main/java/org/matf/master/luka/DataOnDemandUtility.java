@@ -2,6 +2,7 @@ package org.matf.master.luka;
 
 import org.matf.master.luka.model.FXAccount;
 import org.matf.master.luka.model.FXTransaction;
+import org.matf.master.luka.model.FXUser;
 
 import java.math.BigDecimal;
 
@@ -12,7 +13,11 @@ public class DataOnDemandUtility {
     }
 
     private static FXAccount generateFXAccountWithID(long id) {
-        return FXAccount.builder().id(id).currency_code(getCurrencyCode(id)).build();
+        return FXAccount.builder().id(id).currency_code(getCurrencyCode(id)).fxUser(generateFxUserWithUsername(id)).build();
+    }
+
+    private static FXUser generateFxUserWithUsername(long id){
+        return FXUser.builder().username("username_"+id).build();
     }
 
     private static String getCurrencyCode(long id) {

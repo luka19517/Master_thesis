@@ -3,10 +3,7 @@ package org.matf.master.luka.hbase;
 import org.apache.hadoop.hbase.CompareOperator;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.ColumnValueFilter;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.matf.master.luka.BenchmarkOLTPUtility;
 import org.matf.master.luka.model.ExecutePaymentInfo;
@@ -24,19 +21,10 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
         //dohvatanje
         Table fxAccount = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxaccounts"));
-        SingleColumnValueFilter filter = new SingleColumnValueFilter(
-                Bytes.toBytes("id"),
-                Bytes.toBytes("id"),
-                CompareOperator.EQUAL,
-                Bytes.toBytes(new BigDecimal(fxTransaction.getId()))
-        );
-        filter.setFilterIfMissing(true);
 
         Scan accountScan = new Scan();
-        accountScan.setFilter(filter);
-        accountScan.addColumn(Bytes.toBytes("id"),Bytes.toBytes("id"));
-        accountScan.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"));
-        accountScan.addColumn(Bytes.toBytes("fxuser"),Bytes.toBytes("fxuser"));
+        accountScan.setFilter(new RowFilter(CompareOperator.EQUAL, new BinaryComparator(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername()+fxTransaction.getFxAccount_from().getCurrency_code()))));
+        accountScan.addFamily(Bytes.toBytes("balance"));
 
         ResultScanner accountScanResult = fxAccount.getScanner(accountScan);
         BigDecimal availableBalance = null;
@@ -56,14 +44,9 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         BigDecimal neededResources = null;
         Table fxRates = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxrate"));
 
-        FilterList findNeededResourcesFilterList = new FilterList();
-        findNeededResourcesFilterList.addFilter(new ColumnValueFilter(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),CompareOperator.EQUAL,Bytes.toBytes(fxTransaction.getFxAccount_from().getCurrency_code())));
-        findNeededResourcesFilterList.addFilter(new ColumnValueFilter(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),CompareOperator.EQUAL,Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code())));
-
         Scan neededResourcesScan = new Scan();
-        neededResourcesScan.setFilter(findNeededResourcesFilterList);
-        neededResourcesScan.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"));
-
+        neededResourcesScan.setFilter(new RowFilter(CompareOperator.EQUAL,new BinaryComparator(Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code()+fxTransaction.getFxAccount_from().getCurrency_code()))));
+        neededResourcesScan.addFamily(Bytes.toBytes("info"));
         ResultScanner neededResourcesScanResult = fxRates.getScanner(neededResourcesScan);
         for (Result res : neededResourcesScanResult) {
             NavigableMap<byte[], NavigableMap<byte[], byte[]>> resultMap = res.getNoVersionMap();
@@ -71,7 +54,7 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 NavigableMap<byte[], byte[]> columnMap = resultMap.get(columnFamily);
                 for (byte[] column : columnMap.keySet()) {
                     if(Bytes.toString(column).equals("rate"))
-                        neededResources = Bytes.toBigDecimal(columnMap.get(column));
+                        neededResources = Bytes.toBigDecimal(columnMap.get(column)).multiply(fxTransaction.getAmount());
                 }
             }
         }
@@ -96,7 +79,12 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
 
 
-        return null;
+        return ExecutePaymentInfo.builder()
+                .amountToGive(neededResources)
+                .amountToReceive(fxTransaction.getAmount())
+                .accountFrom(fxTransaction.getFxAccount_from().getId())
+                .accountTo(fxTransaction.getFxAccount_to().getId())
+                .build();
     }
 
     @Override

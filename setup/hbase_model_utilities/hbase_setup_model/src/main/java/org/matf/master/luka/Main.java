@@ -88,7 +88,6 @@ public class Main {
         Table fxAccounts = hbaseConnection.getTable(fxAccountsTable);
 
         for(int i = 0;i<120000;i++) {
-            Put put = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
 
             String user = "username_"+i%30000;
             String currencyCode;
@@ -113,6 +112,7 @@ public class Main {
             BigDecimal balance= i>=30000 ? BigDecimal.ZERO : new BigDecimal(1000);
             long created = System.currentTimeMillis();
 
+            Put put = new Put(Bytes.toBytes(user+currencyCode));
             put.addColumn(Bytes.toBytes("id"),Bytes.toBytes("id"),Bytes.toBytes(new BigDecimal(i)));
             put.addColumn(Bytes.toBytes("fxuser"),Bytes.toBytes("fxuser"),Bytes.toBytes(user));
             put.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"),Bytes.toBytes(balance));
@@ -137,76 +137,76 @@ public class Main {
         admin.createTable(fxRatesDescriptor);
         Table fxRates = hbaseConnection.getTable(fxRatesTable);
 
-        Put put = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put = new Put(Bytes.toBytes("EURUSD"));
         put.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("EUR"));
         put.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("USD"));
-        put.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("1.08"));
+        put.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("1.08")));
         fxRates.put(put);
 
-        Put put2 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put2 = new Put(Bytes.toBytes("EURDIN"));
         put2.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("EUR"));
         put2.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("DIN"));
-        put2.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("117.05"));
+        put2.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("117.05")));
         fxRates.put(put2);
 
-        Put put3 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put3 = new Put(Bytes.toBytes("EURCHF"));
         put3.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("EUR"));
         put3.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("CHF"));
-        put3.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("0.97"));
+        put3.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("0.97")));
         fxRates.put(put3);
 
-        Put put4 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put4 = new Put(Bytes.toBytes("USDEUR"));
         put4.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("USD"));
         put4.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("EUR"));
-        put4.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("0.92"));
+        put4.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("0.92")));
         fxRates.put(put4);
 
-        Put put5 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put5 = new Put(Bytes.toBytes("USDDIN"));
         put5.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("USD"));
         put5.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("DIN"));
-        put5.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("108.02"));
+        put5.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("108.02")));
         fxRates.put(put5);
 
-        Put put6 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put6 = new Put(Bytes.toBytes("USDCHF"));
         put6.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("USD"));
         put6.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("CHF"));
-        put6.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("0.90"));
+        put6.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("0.90")));
         fxRates.put(put6);
 
-        Put put7 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put7 = new Put(Bytes.toBytes("DINEUR"));
         put7.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("DIN"));
         put7.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("EUR"));
-        put7.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("0.008"));
+        put7.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("0.008")));
         fxRates.put(put7);
 
-        Put put8 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put8 = new Put(Bytes.toBytes("DINUSD"));
         put8.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("DIN"));
         put8.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("USD"));
-        put8.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("0.009"));
+        put8.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("0.009")));
         fxRates.put(put8);
 
-        Put put9 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put9 = new Put(Bytes.toBytes("DINCHF"));
         put9.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("DIN"));
         put9.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("CHF"));
-        put9.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("0.008"));
+        put9.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("0.008")));
         fxRates.put(put9);
 
-        Put put10 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put10 = new Put(Bytes.toBytes("CHFEUR"));
         put10.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("CHF"));
         put10.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("EUR"));
-        put10.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("1.022"));
+        put10.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("1.022")));
         fxRates.put(put10);
 
-        Put put11 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put11 = new Put(Bytes.toBytes("CHFUSD"));
         put11.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("CHF"));
         put11.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("USD"));
-        put11.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("1.108"));
+        put11.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("1.108")));
         fxRates.put(put11);
 
-        Put put12 = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
+        Put put12 = new Put(Bytes.toBytes("CHFDIN"));
         put12.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_from"),Bytes.toBytes("CHF"));
         put12.addColumn(Bytes.toBytes("info"),Bytes.toBytes("cur_to"),Bytes.toBytes("DIN"));
-        put12.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes("119.71"));
+        put12.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"),Bytes.toBytes(new BigDecimal("119.71")));
         fxRates.put(put12);
 
     }
