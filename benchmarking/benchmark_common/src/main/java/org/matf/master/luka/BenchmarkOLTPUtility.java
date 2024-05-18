@@ -19,7 +19,7 @@ public interface BenchmarkOLTPUtility {
     azuriraj stanje oba naloga
     azuriraj status transakcije
      */
-    void executePayment(ExecutePaymentInfo fxTransaction) throws SQLException;
+    void executePayment(ExecutePaymentInfo fxTransaction) throws SQLException, IOException;
 
     /*
     dohvatanje statusa iz FXTRANSACTION

@@ -13,5 +13,7 @@ public class ExecutePaymentInfo {
     private BigDecimal amountToReceive;
     private long accountFrom;
     private long accountTo;
+    private String accountFromHBaseKeyID;
+    private String accountToHBaseKeyID;
 
 }
