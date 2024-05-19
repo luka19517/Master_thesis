@@ -6,9 +6,14 @@ import org.matf.master.luka.hbase.HBaseBenchmarkUtility;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws SQLException, IOException {
+
+        System.out.println("Enter number of transactions: ");
+        Scanner transactionNumInput = new Scanner( System.in );
+        int numOfTransactions = transactionNumInput.nextInt();
 
         BenchmarkUtility benchmarkUtility = new HBaseBenchmarkUtility();
         BenchmarkOLTPUtility benchmarkOLTPUtility = new HBaseBenchmarkOLTPUtility();
@@ -21,7 +26,7 @@ public class Main {
         System.out.println("Connection retrieved successfully");
 
         System.out.println("Workload start");
-        benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, 1000);
+        benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, numOfTransactions);
         System.out.println("Workload end");
 
         System.out.println("Close start");

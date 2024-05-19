@@ -19,7 +19,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 WHERE FA.ID = ?
                 """;
         PreparedStatement availableBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(availableBalanceString);
-        availableBalanceSt.setLong(1, fxTransaction.getId());
+        availableBalanceSt.setLong(1, fxTransaction.getFxAccount_from().getId());
         ResultSet availableBalanceRS = availableBalanceSt.executeQuery();
         BigDecimal availableBalance = null;
         while (availableBalanceRS.next()) {

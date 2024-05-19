@@ -23,44 +23,26 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         //dohvatanje
         Table fxAccount = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxaccounts"));
 
-        long scanFxAccountBeforeLoopStart = System.currentTimeMillis();
-        Scan accountScan = new Scan(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername() + fxTransaction.getFxAccount_from().getCurrency_code()));
-        accountScan.setBatch(1);
-        accountScan.setCacheBlocks(true);
-        accountScan.setCaching(20);
-        accountScan.setFilter(new RowFilter(CompareOperator.EQUAL, new BinaryComparator(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername() + fxTransaction.getFxAccount_from().getCurrency_code()))));
+        Scan accountScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername() + fxTransaction.getFxAccount_from().getCurrency_code()));
+        accountScan.setMaxResultSize(1);
         accountScan.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"));
-
         ResultScanner accountScanResult = fxAccount.getScanner(accountScan);
         BigDecimal availableBalance = null;
-        long scanFxAccountBeforeLoopEnd = System.currentTimeMillis();
-
-        long scanFxAccountStart = System.currentTimeMillis();
         for (Result res : accountScanResult) {
             availableBalance = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("balance"),Bytes.toBytes("balance")));
             break;
         }
         accountScanResult.close();
-        long scanFxAccountEnd = System.currentTimeMillis();
-        //System.out.println("Scan fxaccount table before loop length: "+(scanFxAccountBeforeLoopEnd-scanFxAccountBeforeLoopStart));
-        //System.out.println("Scan fxaccount table for loop length: "+(scanFxAccountEnd-scanFxAccountStart));
 
         BigDecimal neededResources = null;
         Table fxRates = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxrate"));
 
-        Scan neededResourcesScan = new Scan();
-        neededResourcesScan.setFilter(new RowFilter(CompareOperator.EQUAL, new BinaryComparator(Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code() + fxTransaction.getFxAccount_from().getCurrency_code()))));
-        neededResourcesScan.addFamily(Bytes.toBytes("info"));
+        Scan neededResourcesScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code() + fxTransaction.getFxAccount_from().getCurrency_code()));
+        accountScan.setMaxResultSize(1);
+        neededResourcesScan.addColumn(Bytes.toBytes("info"),Bytes.toBytes("rate"));
         ResultScanner neededResourcesScanResult = fxRates.getScanner(neededResourcesScan);
         for (Result res : neededResourcesScanResult) {
-            NavigableMap<byte[], NavigableMap<byte[], byte[]>> resultMap = res.getNoVersionMap();
-            for (byte[] columnFamily : resultMap.keySet()) {
-                NavigableMap<byte[], byte[]> columnMap = resultMap.get(columnFamily);
-                for (byte[] column : columnMap.keySet()) {
-                    if (Bytes.toString(column).equals("rate"))
-                        neededResources = Bytes.toBigDecimal(columnMap.get(column)).multiply(fxTransaction.getAmount());
-                }
-            }
+            neededResources = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("info"),Bytes.toBytes("rate"))).multiply(fxTransaction.getAmount());
         }
         neededResourcesScanResult.close();
 
@@ -72,7 +54,6 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
         Table fxtransaction = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
 
-        long putTransactionStart = System.currentTimeMillis();
         Put put = new Put(Bytes.toBytes(UUID.randomUUID().toString()));
         put.addColumn(Bytes.toBytes("id"), Bytes.toBytes("id"), Bytes.toBytes(fxTransaction.getId()));
         put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("fxaccount_from"), Bytes.toBytes(fxTransaction.getFxAccount_from().getId()));
@@ -81,9 +62,6 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         put.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"), Bytes.toBytes(transactionStatus));
         put.addColumn(Bytes.toBytes("date"), Bytes.toBytes("entry_date"), Bytes.toBytes(System.currentTimeMillis()));
         fxtransaction.put(put);
-        long putTransactionEnd = System.currentTimeMillis();
-
-        //System.out.println("Put transaction: "+(putTransactionEnd-putTransactionStart));
 
 
         return ExecutePaymentInfo.builder()
@@ -99,51 +77,52 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
         Table fxAccountFrom = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxaccounts"));
 
-        Scan fxAccountsFromScan = new Scan(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
-        fxAccountsFromScan.setFilter(new RowFilter(CompareOperator.EQUAL, new BinaryComparator(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()))));
+        //long scan1Start = System.currentTimeMillis();
+        Scan fxAccountsFromScan = new Scan().withStartRow(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
+        fxAccountsFromScan.setMaxResultSize(1);
         fxAccountsFromScan.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"));
         ResultScanner fxAccountsFromScanResult = fxAccountFrom.getScanner(fxAccountsFromScan);
         BigDecimal fromBalance = null;
 
         for (Result res : fxAccountsFromScanResult) {
-            NavigableMap<byte[], NavigableMap<byte[], byte[]>> resultMap = res.getNoVersionMap();
-            for (byte[] columnFamily : resultMap.keySet()) {
-                NavigableMap<byte[], byte[]> columnMap = resultMap.get(columnFamily);
-                for (byte[] column : columnMap.keySet()) {
-                    if (Bytes.toString(column).equals("balance"))
-                        fromBalance = Bytes.toBigDecimal(columnMap.get(column));
-                }
-            }
+            fromBalance = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("balance"),Bytes.toBytes("balance")));
+            break;
         }
         fxAccountsFromScanResult.close();
+        //long scan1End = System.currentTimeMillis();
 
+        //long put1Start = System.currentTimeMillis();
         Put put = new Put(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
         assert fromBalance != null;
         put.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"),Bytes.toBytes(fromBalance.subtract(executePaymentInfo.getAmountToGive())));
         fxAccountFrom.put(put);
+        //long put1End = System.currentTimeMillis();
 
-        Scan fxAccountsToScan = new Scan(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
-        fxAccountsToScan.setFilter(new RowFilter(CompareOperator.EQUAL, new BinaryComparator(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()))));
+        //long scan2Start = System.currentTimeMillis();
+        Scan fxAccountsToScan = new Scan().withStartRow(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
+        fxAccountsToScan.setMaxResultSize(1);
         fxAccountsToScan.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"));
         ResultScanner fxAccountsToScanResult = fxAccountFrom.getScanner(fxAccountsToScan);
         BigDecimal toBalance = null;
 
         for (Result res : fxAccountsToScanResult) {
-            NavigableMap<byte[], NavigableMap<byte[], byte[]>> resultMap = res.getNoVersionMap();
-            for (byte[] columnFamily : resultMap.keySet()) {
-                NavigableMap<byte[], byte[]> columnMap = resultMap.get(columnFamily);
-                for (byte[] column : columnMap.keySet()) {
-                    if (Bytes.toString(column).equals("balance"))
-                        toBalance = Bytes.toBigDecimal(columnMap.get(column));
-                }
-            }
+            toBalance = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("balance"),Bytes.toBytes("balance")));
+            break;
         }
         fxAccountsToScanResult.close();
+        //long scan2End = System.currentTimeMillis();
 
+        //long put2Start = System.currentTimeMillis();
         Put put2 = new Put(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
         assert toBalance != null;
         put2.addColumn(Bytes.toBytes("balance"),Bytes.toBytes("balance"),Bytes.toBytes(fromBalance.add(executePaymentInfo.getAmountToReceive())));
         fxAccountFrom.put(put2);
+        //long put2End = System.currentTimeMillis();
+
+//        System.out.println("Scan1 length: "+(scan1End-scan1Start));
+//        System.out.println("Put1 length: "+(put1End-put1Start));
+//        System.out.println("Scan2 length: "+(scan2End-scan2Start));
+//        System.out.println("Put2 length: "+(put2End-put2Start));
     }
 
     @Override

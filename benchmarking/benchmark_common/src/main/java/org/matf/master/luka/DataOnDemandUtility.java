@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class DataOnDemandUtility {
 
     public static FXTransaction createFXTransaction(int seed) {
-        return FXTransaction.builder().id(seed).amount(BigDecimal.TEN).fxAccount_from(generateFXAccountWithID(seed)).fxAccount_to(generateFXAccountWithID(seed + 30000)).build();
+        return FXTransaction.builder().id(seed).amount(BigDecimal.TEN).fxAccount_from(generateFXAccountWithID(seed%120000)).fxAccount_to(generateFXAccountWithID((seed + 30000)%120000)).build();
     }
 
     private static FXAccount generateFXAccountWithID(long id) {

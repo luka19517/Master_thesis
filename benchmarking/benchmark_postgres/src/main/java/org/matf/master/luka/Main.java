@@ -11,6 +11,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws SQLException, IOException {
 
+        System.out.println("Enter number of transactions: ");
+        Scanner transactionNumInput = new Scanner( System.in );
+        int numOfTransactions = transactionNumInput.nextInt();
+
         BenchmarkUtility benchmarkUtility = new PostgresBenchmarkUtility();
         BenchmarkOLTPUtility benchmarkOLTPUtility = new PostgresBenchmarkOLTPUtility();
         BenchmarkExecutor benchmarkExecutor = new PostgresBenchmarkExecutor();
@@ -20,7 +24,7 @@ public class Main {
         System.out.println("Connection retrieved successfully");
 
         System.out.println("Workload start");
-        benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, 1000);
+        benchmarkExecutor.executeOLTPWorkload(benchmarkOLTPUtility, numOfTransactions);
         System.out.println("Workload end");
 
         System.out.println("Close start");
