@@ -3,7 +3,8 @@ Use case analysis for relational and column oriented non relational databases
 
 # Running benchmarks
 
-For running benchmarks it is necessary to have installed maven and java and Docker Desktop client
+For running benchmarks it is necessary to have installed maven, java (both 8 and 17 for now) and Docker Desktop client.
+
 After running ./prepareEnv.sh (read /setup/README.md) wait for all of the containers to be started.
 
 ## Running hbase benchmark
