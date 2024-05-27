@@ -27,7 +27,7 @@ public interface BenchmarkExecutor {
             long executePaymentFinish = System.currentTimeMillis();
             //oltpWorkloadUtility.testConsistency();
             long checkTransactionStatusStart = System.currentTimeMillis();
-            oltpWorkloadUtility.checkTransactionStatus(fxTransaction);
+            String status = oltpWorkloadUtility.checkTransactionStatus(fxTransaction);
             long checkTransactionStatusFinish = System.currentTimeMillis();
 
 

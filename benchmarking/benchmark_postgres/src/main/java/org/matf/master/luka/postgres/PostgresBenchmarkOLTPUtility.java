@@ -138,7 +138,21 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void checkTransactionStatus(FXTransaction fxTransaction) {
+    public String checkTransactionStatus(FXTransaction fxTransaction) throws SQLException {
+        String checkTransactionStatusString = """
+                SELECT STATUS
+                FROM postgresdb.FXTRANSACTION
+                WHERE ID = ?
+                """;
+        PreparedStatement checkTransactionStatusSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(checkTransactionStatusString);
+        checkTransactionStatusSt.setLong(1, fxTransaction.getId());
+        ResultSet checkTransactionStatusRS = checkTransactionStatusSt.executeQuery();
+        String status=null;
+        while (checkTransactionStatusRS.next()) {
+            status = checkTransactionStatusRS.getString(1);
+        }
+
+        return status;
 
     }
 

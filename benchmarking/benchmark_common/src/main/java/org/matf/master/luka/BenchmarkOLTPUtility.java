@@ -24,7 +24,7 @@ public interface BenchmarkOLTPUtility {
     /*
     dohvatanje statusa iz FXTRANSACTION
      */
-    void checkTransactionStatus(FXTransaction fxTransaction);
+    String checkTransactionStatus(FXTransaction fxTransaction) throws SQLException, IOException;
 
     void testConsistency() throws SQLException;
 }
