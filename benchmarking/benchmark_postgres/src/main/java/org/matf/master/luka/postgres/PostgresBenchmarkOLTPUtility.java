@@ -67,6 +67,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         PostgresBenchmarkUtility.postgresSQLDriverConnection.commit();
 
         return ExecutePaymentInfo.builder()
+                .transactionID(fxTransaction.getId())
                 .amountToGive(neededResources)
                 .amountToReceive(fxTransaction.getAmount())
                 .accountFrom(fxTransaction.getFxAccount_from().getId())
@@ -127,6 +128,17 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         updateToAccountSt.setBigDecimal(1, toAccountOldBalance.add(executePaymentInfo.getAmountToReceive()));
         updateToAccountSt.setLong(2, executePaymentInfo.getAccountTo());
         updateToAccountSt.executeUpdate();
+
+        String updateTransactionStatus = """
+                UPDATE postgresdb.FXTRANSACTION
+                SET STATUS = ?
+                WHERE id = ?
+                """;
+        PreparedStatement updateTransactionStatusSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(updateTransactionStatus);
+        updateTransactionStatusSt.setString(1, "PROCESSED");
+        updateTransactionStatusSt.setLong(2, executePaymentInfo.getTransactionID());
+        updateTransactionStatusSt.executeUpdate();
+
 
         fromAccountOldBalanceRS.close();
         fromAccountBalanceSt.close();

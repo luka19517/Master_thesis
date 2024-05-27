@@ -59,6 +59,7 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
 
         return ExecutePaymentInfo.builder()
+                .transactionID(fxTransaction.getId())
                 .amountToGive(neededResources)
                 .amountToReceive(fxTransaction.getAmount())
                 .accountToHBaseKeyID(fxTransaction.getFxAccount_to().getFxUser().getUsername() + fxTransaction.getFxAccount_to().getCurrency_code())
@@ -104,6 +105,12 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         assert toBalance != null;
         put2.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(toBalance.add(executePaymentInfo.getAmountToReceive())));
         fxAccount.put(put2);
+
+        Table fxTransaction = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
+        Put fxTransactionStatusUpdate = new Put(Bytes.toBytes(executePaymentInfo.getTransactionID()));
+        fxTransactionStatusUpdate.addColumn(Bytes.toBytes("status"),Bytes.toBytes("status"),Bytes.toBytes("PROCESSED"));
+        fxTransaction.put(fxTransactionStatusUpdate);
+
     }
 
     @Override

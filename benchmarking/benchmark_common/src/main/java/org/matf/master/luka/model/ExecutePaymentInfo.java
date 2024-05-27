@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 @Builder
 public class ExecutePaymentInfo {
 
+    private long transactionID;
     private BigDecimal amountToGive;
     private BigDecimal amountToReceive;
     private long accountFrom;
     private long accountTo;
     private String accountFromHBaseKeyID;
     private String accountToHBaseKeyID;
-
 }
