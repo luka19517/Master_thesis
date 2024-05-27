@@ -122,7 +122,6 @@ public class Main {
 
 
         //------------------------------FXTRANSACTION-----------------------------
-        fxTransactionDescriptor.addFamily(new HColumnDescriptor("id"));
         fxTransactionDescriptor.addFamily(new HColumnDescriptor("info"));
         fxTransactionDescriptor.addFamily(new HColumnDescriptor("status"));
         fxTransactionDescriptor.addFamily(new HColumnDescriptor("date"));
