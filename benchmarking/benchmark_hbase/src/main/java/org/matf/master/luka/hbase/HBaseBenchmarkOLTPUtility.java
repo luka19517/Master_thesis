@@ -2,7 +2,6 @@ package org.matf.master.luka.hbase;
 
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.regionserver.MultiVersionConcurrencyControl;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.matf.master.luka.BenchmarkOLTPUtility;
 import org.matf.master.luka.model.ExecutePaymentInfo;
@@ -71,7 +70,6 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     @Override
     public void executePayment(ExecutePaymentInfo executePaymentInfo) throws IOException {
 
-        MultiVersionConcurrencyControl mvcc = new MultiVersionConcurrencyControl();
         Table fxAccount = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxaccounts"));
 
         Scan fxAccountsFromScan = new Scan().withStartRow(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
@@ -99,26 +97,20 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         }
         fxAccountsToScanResult.close();
 
-        MultiVersionConcurrencyControl.WriteEntry writeEntry = mvcc.begin();
-        try {
-            Put put = new Put(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
-            assert fromBalance != null;
-            put.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(fromBalance.subtract(executePaymentInfo.getAmountToGive())));
-            fxAccount.put(put);
+        Put put = new Put(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
+        assert fromBalance != null;
+        put.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(fromBalance.subtract(executePaymentInfo.getAmountToGive())));
+        fxAccount.put(put);
 
-            Put put2 = new Put(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
-            assert toBalance != null;
-            put2.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(toBalance.add(executePaymentInfo.getAmountToReceive())));
-            fxAccount.put(put2);
+        Put put2 = new Put(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
+        assert toBalance != null;
+        put2.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(toBalance.add(executePaymentInfo.getAmountToReceive())));
+        fxAccount.put(put2);
 
-            Table fxTransaction = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
-            Put fxTransactionStatusUpdate = new Put(Bytes.toBytes(executePaymentInfo.getTransactionID()));
-            fxTransactionStatusUpdate.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"), Bytes.toBytes("PROCESSED"));
-            fxTransaction.put(fxTransactionStatusUpdate);
-            mvcc.completeAndWait(writeEntry);
-        }catch (Exception e) {
-            mvcc.complete(writeEntry);
-        }
+        Table fxTransaction = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
+        Put fxTransactionStatusUpdate = new Put(Bytes.toBytes(executePaymentInfo.getTransactionID()));
+        fxTransactionStatusUpdate.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"), Bytes.toBytes("PROCESSED"));
+        fxTransaction.put(fxTransactionStatusUpdate);
 
     }
 
