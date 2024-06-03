@@ -5,7 +5,8 @@ import java.sql.SQLException;
 
 public interface BenchmarkUtility {
 
-    void connect() throws SQLException, IOException;
-    void close() throws IOException;
+    Object connect() throws IOException,SQLException;
+
+    void close() throws IOException,SQLException;
 
 }

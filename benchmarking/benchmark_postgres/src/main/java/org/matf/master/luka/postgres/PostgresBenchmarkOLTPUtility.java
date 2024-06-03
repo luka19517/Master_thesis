@@ -11,14 +11,14 @@ import java.util.Objects;
 public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
     @Override
-    public ExecutePaymentInfo createFXTransaction(FXTransaction fxTransaction) throws SQLException {
+    public ExecutePaymentInfo createFXTransaction(Object connection, FXTransaction fxTransaction) throws SQLException {
         //dohvati stanja sa ciljanih FXACCOUNT_FROM, FXACCOUNT_TO
         String availableBalanceString = """
                 SELECT FA.BALANCE
                 FROM postgresdb.FXACCOUNT FA
                 WHERE FA.ID = ?
                 """;
-        PreparedStatement availableBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(availableBalanceString);
+        PreparedStatement availableBalanceSt = ((Connection) connection).prepareStatement(availableBalanceString);
         availableBalanceSt.setLong(1, fxTransaction.getFxAccount_from().getId());
         ResultSet availableBalanceRS = availableBalanceSt.executeQuery();
         BigDecimal availableBalance = null;
@@ -33,7 +33,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 FROM postgresdb.FXRATES FR
                 WHERE FR.CURRENCY_TO = ? AND FR.CURRENCY_FROM = ?
                 """;
-        PreparedStatement neededResourcesSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(neededResourcesString);
+        PreparedStatement neededResourcesSt =  ((Connection) connection).prepareStatement(neededResourcesString);
         neededResourcesSt.setString(1, fxTransaction.getFxAccount_from().getCurrency_code());
         neededResourcesSt.setString(2, fxTransaction.getFxAccount_to().getCurrency_code());
         ResultSet neededResourcesRS = neededResourcesSt.executeQuery();
@@ -54,7 +54,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 INSERT INTO postgresdb.FXTRANSACTION(ID,FXACCOUNT_FROM, FXACCOUNT_TO, AMOUNT, STATUS, ENTRY_DATE)
                 VALUES(?,?,?,?,?,?)
                 """;
-        PreparedStatement insertTransactionSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(insertTransactionString);
+        PreparedStatement insertTransactionSt =  ((Connection) connection).prepareStatement(insertTransactionString);
         insertTransactionSt.setLong(1, fxTransaction.getId());
         insertTransactionSt.setLong(2, fxTransaction.getFxAccount_from().getId());
         insertTransactionSt.setLong(3, fxTransaction.getFxAccount_to().getId());
@@ -64,7 +64,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         insertTransactionSt.executeUpdate();
         insertTransactionSt.close();
 
-        PostgresBenchmarkUtility.postgresSQLDriverConnection.commit();
+        ((Connection) connection).commit();
 
         return ExecutePaymentInfo.builder()
                 .transactionID(fxTransaction.getId())
@@ -76,14 +76,14 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void executePayment(ExecutePaymentInfo executePaymentInfo) throws SQLException {
+    public void executePayment(Object connection, ExecutePaymentInfo executePaymentInfo) throws SQLException {
 
         String fromAccountOldBalanceString = """
                 SELECT BALANCE
                 FROM postgresdb.FXACCOUNT
                 WHERE ID = ?
                 """;
-        PreparedStatement fromAccountBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(fromAccountOldBalanceString);
+        PreparedStatement fromAccountBalanceSt =  ((Connection) connection).prepareStatement(fromAccountOldBalanceString);
         fromAccountBalanceSt.setLong(1, executePaymentInfo.getAccountFrom());
         ResultSet fromAccountOldBalanceRS = fromAccountBalanceSt.executeQuery();
         BigDecimal oldBalance = null;
@@ -98,7 +98,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 SET BALANCE = ?
                 WHERE id = ?
                 """;
-        PreparedStatement updateFromAccountSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(updateFromAccountString);
+        PreparedStatement updateFromAccountSt = ((Connection) connection).prepareStatement(updateFromAccountString);
         assert oldBalance != null;
         updateFromAccountSt.setBigDecimal(1, oldBalance.subtract(executePaymentInfo.getAmountToGive()));
         updateFromAccountSt.setLong(2, executePaymentInfo.getAccountFrom());
@@ -110,7 +110,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 FROM postgresdb.FXACCOUNT
                 WHERE ID = ?
                 """;
-        PreparedStatement toAccountBalanceSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(toAccountOldBalanceString);
+        PreparedStatement toAccountBalanceSt =  ((Connection) connection).prepareStatement(toAccountOldBalanceString);
         toAccountBalanceSt.setLong(1, executePaymentInfo.getAccountTo());
         ResultSet toAccountOldBalanceRS = toAccountBalanceSt.executeQuery();
         BigDecimal toAccountOldBalance = null;
@@ -123,7 +123,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 SET BALANCE = ?
                 WHERE id = ?
                 """;
-        PreparedStatement updateToAccountSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(updateToAccountString);
+        PreparedStatement updateToAccountSt =  ((Connection) connection).prepareStatement(updateToAccountString);
         assert toAccountOldBalance != null;
         updateToAccountSt.setBigDecimal(1, toAccountOldBalance.add(executePaymentInfo.getAmountToReceive()));
         updateToAccountSt.setLong(2, executePaymentInfo.getAccountTo());
@@ -134,7 +134,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 SET STATUS = ?
                 WHERE id = ?
                 """;
-        PreparedStatement updateTransactionStatusSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(updateTransactionStatus);
+        PreparedStatement updateTransactionStatusSt =  ((Connection) connection).prepareStatement(updateTransactionStatus);
         updateTransactionStatusSt.setString(1, "PROCESSED");
         updateTransactionStatusSt.setLong(2, executePaymentInfo.getTransactionID());
         updateTransactionStatusSt.executeUpdate();
@@ -146,17 +146,17 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         toAccountOldBalanceRS.close();
         toAccountBalanceSt.close();
         updateToAccountSt.close();
-        PostgresBenchmarkUtility.postgresSQLDriverConnection.commit();
+        ((Connection) connection).commit();
     }
 
     @Override
-    public String checkTransactionStatus(FXTransaction fxTransaction) throws SQLException {
+    public String checkTransactionStatus(Object connection, FXTransaction fxTransaction) throws SQLException {
         String checkTransactionStatusString = """
                 SELECT STATUS
                 FROM postgresdb.FXTRANSACTION
                 WHERE ID = ?
                 """;
-        PreparedStatement checkTransactionStatusSt = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(checkTransactionStatusString);
+        PreparedStatement checkTransactionStatusSt =  ((Connection) connection).prepareStatement(checkTransactionStatusString);
         checkTransactionStatusSt.setLong(1, fxTransaction.getId());
         ResultSet checkTransactionStatusRS = checkTransactionStatusSt.executeQuery();
         String status=null;
@@ -169,7 +169,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void testConsistency() throws SQLException {
+    public void testConsistency(Object connection) throws SQLException {
 
 /*
         1. sum(FXACCOUNT_RATE*FXACCOUNT_BALANCE) = START_BALANCE
@@ -182,7 +182,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                 SELECT FU.ID USERID, FU.START_BALANCE START_BALANCE, FU.START_BALANCECURRENCY START_BALANCECURRENCY
                 FROM postgresdb.FXUSER FU
                 """;
-        Statement statement = PostgresBenchmarkUtility.postgresSQLDriverConnection.createStatement();
+        Statement statement =  ((Connection) connection).createStatement();
         ResultSet rs = statement.executeQuery(selectUsersSQL);
         while (rs.next()) {
             long userID = rs.getLong("USERID");
@@ -194,7 +194,7 @@ public class PostgresBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
                     FROM postgresdb.FXACCOUNT FA, postgresdb.FXRATES FR
                     WHERE FA.FXUSER = ? AND FR.CURRENCY_TO=? AND FR.CURRENCY_FROM=FA.CURRENCY_CODE
                     """;
-            PreparedStatement selectTotalFromAccounts = PostgresBenchmarkUtility.postgresSQLDriverConnection.prepareStatement(totalFromAccountsSQL);
+            PreparedStatement selectTotalFromAccounts =  ((Connection) connection).prepareStatement(totalFromAccountsSQL);
             selectTotalFromAccounts.setLong(1, userID);
             selectTotalFromAccounts.setString(2, startBalanceCurrency);
 

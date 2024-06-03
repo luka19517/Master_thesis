@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
 
     @Override
-    public ExecutePaymentInfo createFXTransaction(FXTransaction fxTransaction) throws IOException {
+    public ExecutePaymentInfo createFXTransaction(Object connection, FXTransaction fxTransaction) throws IOException {
 
         //dohvatanje
-        Table fxAccount = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxaccounts"));
+        Table fxAccount = ((Connection )connection).getTable(TableName.valueOf("fxaccounts"));
 
         Scan accountScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername() + fxTransaction.getFxAccount_from().getCurrency_code()));
         accountScan.setMaxResultSize(1);
@@ -30,7 +30,7 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         accountScanResult.close();
 
         BigDecimal neededResources = null;
-        Table fxRates = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxrate"));
+        Table fxRates = ((Connection )connection).getTable(TableName.valueOf("fxrate"));
 
         Scan neededResourcesScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code() + fxTransaction.getFxAccount_from().getCurrency_code()));
         accountScan.setMaxResultSize(1);
@@ -47,7 +47,7 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
             transactionStatus = "BLOCKED";
         }
 
-        Table fxtransaction = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
+        Table fxtransaction =((Connection )connection).getTable(TableName.valueOf("fxtransaction"));
 
         Put put = new Put(Bytes.toBytes(fxTransaction.getId()));
         put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("fxaccount_from"), Bytes.toBytes(fxTransaction.getFxAccount_from().getId()));
@@ -68,9 +68,9 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void executePayment(ExecutePaymentInfo executePaymentInfo) throws IOException {
+    public void executePayment(Object connection,ExecutePaymentInfo executePaymentInfo) throws IOException {
 
-        Table fxAccount = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxaccounts"));
+        Table fxAccount = ((Connection )connection).getTable(TableName.valueOf("fxaccounts"));
 
         Scan fxAccountsFromScan = new Scan().withStartRow(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
         fxAccountsFromScan.setMaxResultSize(1);
@@ -107,7 +107,7 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         put2.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(toBalance.add(executePaymentInfo.getAmountToReceive())));
         fxAccount.put(put2);
 
-        Table fxTransaction = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
+        Table fxTransaction = ((Connection )connection).getTable(TableName.valueOf("fxtransaction"));
         Put fxTransactionStatusUpdate = new Put(Bytes.toBytes(executePaymentInfo.getTransactionID()));
         fxTransactionStatusUpdate.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"), Bytes.toBytes("PROCESSED"));
         fxTransaction.put(fxTransactionStatusUpdate);
@@ -115,8 +115,8 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public String checkTransactionStatus(FXTransaction fxTransaction) throws IOException {
-        Table fxTransactions = HBaseBenchmarkUtility.hbaseConnection.getTable(TableName.valueOf("fxtransaction"));
+    public String checkTransactionStatus(Object connection , FXTransaction fxTransaction) throws IOException {
+        Table fxTransactions = ((Connection )connection).getTable(TableName.valueOf("fxtransaction"));
         Scan fxTransactionsScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getId()));
         fxTransactionsScan.setMaxResultSize(1);
         fxTransactionsScan.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"));
@@ -131,7 +131,7 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void testConsistency() {
+    public void testConsistency(Object connection) {
 
 /*
         U startu korisnik ima 5000

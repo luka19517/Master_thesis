@@ -10,19 +10,17 @@ import java.io.IOException;
 
 public class HBaseBenchmarkUtility implements BenchmarkUtility {
 
-    public static Connection hbaseConnection;
 
     @Override
-    public void connect() throws IOException {
+    public Object connect() throws IOException {
         Configuration config = HBaseConfiguration.create();
         config.set("hbase.master", "localhost:16010");
-        config.set("hbase.zookeeper.quorum","zookeeper:2181");
+        config.set("hbase.zookeeper.quorum", "zookeeper:2181");
         config.set("hbase.zookeeper.property.clientPort", "2181");
-        hbaseConnection = ConnectionFactory.createConnection(config);
+        return ConnectionFactory.createConnection(config);
     }
 
     @Override
     public void close() throws IOException {
-        hbaseConnection.close();
     }
 }

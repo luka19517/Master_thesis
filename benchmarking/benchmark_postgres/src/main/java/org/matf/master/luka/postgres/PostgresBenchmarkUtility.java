@@ -9,21 +9,19 @@ import java.util.Properties;
 
 public class PostgresBenchmarkUtility implements BenchmarkUtility {
 
-    public static Connection postgresSQLDriverConnection;
 
     @Override
-    public void connect() throws SQLException {
-
+    public Object connect() throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/postgresdb";
         Properties props = new Properties();
         props.setProperty("user", "postgres");
         props.setProperty("password", "postgres");
-        postgresSQLDriverConnection = DriverManager.getConnection(url, props);
-        postgresSQLDriverConnection.setAutoCommit(false);
+        Connection postgresConnection = DriverManager.getConnection(url, props);
+        postgresConnection.setAutoCommit(false);
+        return postgresConnection;
     }
 
     @Override
     public void close() {
-
     }
 }

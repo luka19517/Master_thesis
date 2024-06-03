@@ -13,18 +13,18 @@ public interface BenchmarkOLTPUtility {
     dohvati odgovarajuci valutni par
     dodaj novi slog u FXTRANSACTION tabelu u statusu NEW/BLOCKED.
     */
-    ExecutePaymentInfo createFXTransaction(FXTransaction fxTransaction) throws SQLException, IOException;
+    ExecutePaymentInfo createFXTransaction(Object connection, FXTransaction fxTransaction) throws SQLException, IOException;
 
     /*
     azuriraj stanje oba naloga
     azuriraj status transakcije
      */
-    void executePayment(ExecutePaymentInfo fxTransaction) throws SQLException, IOException;
+    void executePayment(Object connection, ExecutePaymentInfo fxTransaction) throws SQLException, IOException;
 
     /*
     dohvatanje statusa iz FXTRANSACTION
      */
-    String checkTransactionStatus(FXTransaction fxTransaction) throws SQLException, IOException;
+    String checkTransactionStatus(Object connection, FXTransaction fxTransaction) throws SQLException, IOException;
 
-    void testConsistency() throws SQLException;
+    void testConsistency(Object connection) throws SQLException;
 }
