@@ -34,8 +34,8 @@ public class BenchmarkSingleClientExecutor implements Runnable {
                 this.benchmarkOLTPUtility.executePayment(connection,executePaymentInfo);
                 //oltpWorkloadUtility.testConsistency();
                 String status = benchmarkOLTPUtility.checkTransactionStatus(connection,fxTransaction);
-                endSignal.countDown();
             }
+            endSignal.countDown();
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
