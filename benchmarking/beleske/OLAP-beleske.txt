@@ -1,7 +1,7 @@
 References: 
 https://www.tpc.org/tpc_documents_current_versions/current_specifications5.asp
 
-Tabele: 
+MODEL: 
 
 PRODUCT
 	ID
@@ -57,11 +57,13 @@ ORDER_ITEM
 	COMMITDATE
 	RECEIPTDATE
 	COMMENT
+	
+	
+-----------------------------------------------------------------------------
  
 UPITI
 
-1-----------------------------------
-This query reports the amount of business that was billed, shipped by status
+1. This query reports the amount of business that was billed, shipped by status
 
 select
 	OI.STATUS,
@@ -81,10 +83,9 @@ group by
 	OI.STATUS
 order by
 	OI.STATUS;
----------------------------------------
 
-2--------------------------------------
-This query finds which supplier should be selected to place an order for a given part size and part type.
+
+2. This query finds which supplier should be selected to place an order for a given part size and part type.
 
 select
 	s.name,
@@ -116,9 +117,8 @@ n.name,
 s.name,
 p.id;
 
------------------------------------
-3-----------------------------------
-This query determines how much profit is made on a given line of parts, broken out by year
+
+3.This query determines how much profit is made on a given line of parts, broken out by year
 
 select 
 	o_year,
@@ -147,3 +147,17 @@ order by
 o_year desc;
 
 -----------------------------------------------------
+
+MERENJE
+
+Rezultat = load time + total time in seconds to execute all queries 
+
+------------------------------------------------------
+
+OPSTE KARAKTERISTIKE UPITA KOD OLAP SISTEMA
+
+Visok nivo kompleksonsti
+Siroko polje pristupa
+Ad hoc prirode
+Rade sa visokim procentom dostupnih podataka
+Sadrze parametre
