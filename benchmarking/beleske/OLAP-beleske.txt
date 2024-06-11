@@ -1,165 +1,145 @@
 References: 
 https://www.tpc.org/tpc_documents_current_versions/current_specifications5.asp
 
+Tabele: 
 
-Rezultat = load time + total time in seconds to execute all queries 
+PRODUCT
+	ID
+	NAME
+	BRAND
+	TYPE
+	SIZE
+	CONRAINER
+	RETAIL PRICE
+	COMMENT
 
-
-Karakteristike upita kod OLAP sistema
-
-Visok nivo kompleksonsti
-Siroko polje pristupa
-Ad hoc prirode
-Rade sa visokim procentom dostupnih podataka
-Sadrze parametre
-
-
-Rezultat = load time + total time in seconds to execute all queries 
-
-This query reports the amount of business that was billed, shipped, and returned
-
-tabela PART
-ID
-NAME
-BRAND
-TYPE
-SIZE
-CONRAINER
-RETAIL PRICE
-COMMENT
-
-tabela SUPPLIER
-ID
-NAME
-ADDRESS
-PHONE
-
-tabela PARTSUPPLIER
-PART
-SUPPLIEAR
-AVAILABLE
-COST
-COMMENT
-
-tabela CUSTOMER
-ID
-NAME
-ADDRESS
-PHONE
-COMMENT
-
-tabela ORDERS
-ID
-CUSTOMER
-ORDERSTATUS
-TOTALPRICE
-ORDERDATE
-ORDERPRIORUTY
-SHIPPRIORITY
-COMMENT
-
-tabela LINEITEM
-ORDER
-PART
 SUPPLIER
-NUMBER
-QUANTITY
-EXTENDEDPRICE
-DISCOUNT
-TAX
-LINESTATUS
-SHIPDATE
-COMMITDATE
-RECEIPTDATE
-COMMENT
+	ID
+	NAME
+	ADDRESS
+	PHONE
+
+PRODUCTSUPPLIER
+	PART
+	SUPPLIEAR
+	AVAILABLE
+	COST
+	COMMENT
+
+CUSTOMER
+	ID
+	NAME
+	ADDRESS
+	PHONE
+	COMMENT
+
+ORDER
+	ID
+	CUSTOMER
+	ORDERSTATUS
+	TOTALPRICE
+	ORDERDATE
+	ORDERPRIORUTY
+	SHIPPRIORITY
+	COMMENT
+
+ORDER_ITEM
+	ORDER
+	PART
+	SUPPLIER
+	NUMBER
+	QUANTITY
+	EXTENDEDPRICE
+	DISCOUNT
+	TAX
+	LINESTATUS
+	SHIPDATE
+	COMMITDATE
+	RECEIPTDATE
+	COMMENT
  
 UPITI
 
 1-----------------------------------
-This query reports the amount of business that was billed, shipped, and returned
+This query reports the amount of business that was billed, shipped by status
 
 select
-	l_returnflag,
-	l_linestatus,
-	sum(l_quantity) as sum_qty,
-	sum(l_extendedprice) as sum_base_price,
-	sum(l_extendedprice*(1-l_discount)) as sum_disc_price,
-	sum(l_extendedprice*(1-l_discount)*(1+l_tax)) as sum_charge,
-	avg(l_quantity) as avg_qty,
-	avg(l_extendedprice) as avg_price,
-	avg(l_discount) as avg_disc,
+	OI.STATUS,
+	sum(OI.QUANTITY) as sum_qty,
+	sum(OI.BASE_PRICE) as sum_base_price,
+	sum(OI.BASE_PRICE*(1-OI.discount)) as sum_disc_price,
+	sum(OI.BASE_PRICE*(1-OI.discount)*(1+OI.TAX)) as sum_charge,
+	avg(OI.QUANTITY) as avg_qty,
+	avg(OI.BASE_PRICE) as avg_price,
+	avg(OI.DISCOUNT) as avg_disc,
 	count(*) as count_order
 from
-	lineitem
+	ORDERITEM OI
 where
-	l_shipdate <= date '1998-12-01' - interval '[DELTA]' day (3)
+	OI.SHIP_DATE <= date '1998-12-01' - interval ? day 
 group by
-	l_returnflag,
-	l_linestatus
+	OI.STATUS
 order by
-	l_returnflag,
-	l_linestatus;
+	OI.STATUS;
 ---------------------------------------
 
 2--------------------------------------
 This query finds which supplier should be selected to place an order for a given part size and part type.
 
 select
-	s_name,
-	p_id,
-	s_address,
-	s_phone,
-	s_comment
+	s.name,
+	p.id,
+	s.address,
+	s.phone,
+	s.comment
 from
-	part p,
-	supplier s,
-	partsupp ps
+	PRODUCT p,
+	SUPPLIER s,
+	PRODUCTSUPPLIER ps
 where
-	p_id = ps_part
-	and s_id = ps_supplier
-	and p_size = [SIZE]
-	and p_type like '%[TYPE]'
-	and ps_supplycost = (
+	p.id = ps.product
+	and s.id = ps.supplier
+	and p.size = [SIZE]
+	and p.type like ?
+	and ps.cost = (
 		select
-			min(ps2_supplycost)
+			min(ps2.cost)
 		from 
-			partsupp ps2,
-			supplier s2,
+			PRODUCTSUPPLIER ps2,
+			SUPPLIER s2,
 		where
-			p_id = ps2_partkey
-			and s2_id = ps2_supplier
+			p.id = ps2.product
+			and s2.id = ps2.supplier
 		)
 order by
-n_name,
-s_name,
-p_id;
+n.name,
+s.name,
+p.id;
 
 -----------------------------------
 3-----------------------------------
-This query determines how much profit is made on a given line of parts, broken out by supplier nation and year
+This query determines how much profit is made on a given line of parts, broken out by year
 
 select 
 	o_year,
 	sum(amount) as sum_profit
 from (
 	select
-		extract(year from o_orderdate) as o_year,
-		l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity as amount
+		extract(year from o.date) as o_year,
+		oi.base_price * (1 - oi.discount) - ps.supply_cost * oi.quantity as amount
 	from
-		part,
-		supplier,
-		lineitem,
-		partsupp,
-		orders,	
-		nation
+		PRODUCT p,
+		SUPPLIER s,
+		ORDERITEM oi,
+		PRODUCTSUPPLIER ps,
+		ORDER o
 	where
-		s_suppkey = l_suppkey
-		and ps_suppkey = l_suppkey
-		and ps_partkey = l_partkey
-		and p_partkey = l_partkey
-		and o_orderkey = l_orderkey
-		and s_nationkey = n_nationkey
-		and p_name like '%[COLOR]%'
+		s.id = oi.supplier
+		and ps.supplier = oi.supplier
+		and ps.product = oi.product
+		and p.id = oi.product
+		and o.id = oi.order
+		and p.name like ?
 ) as profit
 group by
 o_year
@@ -167,36 +147,3 @@ order by
 o_year desc;
 
 -----------------------------------------------------
-4----------------------------------------------------
-This query finds out how many suppliers can supply parts with given attributes. It might be used, for example, to
-determine whether there is a sufficient number of suppliers for heavily ordered parts.
-
-select
-	p_brand,
-	p_type,
-	p_size,
-	count(distinct ps_suppkey) as supplier_cnt
-from
-	partsupp,
-	part
-	where
-	p_id = ps_part
-	and p_brand <> '[BRAND]'
-	and p_type like '[TYPE]%'
-	and p_size in ([SIZE1], [SIZE2], [SIZE3], [SIZE4], [SIZE5], [SIZE6], [SIZE7], [SIZE8])
-	and ps_supplier not in (
-		select
-			s_suppkey
-		from
-			supplier
-		where
-			s_comment like '%Customer%Complaints%'
-	)
-group by
-	p_brand,
-	p_type,
-	p_size
-order by
-	p_brand,
-	p_type,
-	p_size;
