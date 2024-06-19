@@ -5,8 +5,8 @@ obradu od strane korisnika ili masine.
 Iako kroz svoju istoriju racunatstvo vazi za oblast koja uvodi nove tehnologije i alate neverovatnom brzinom to 
 nije slucaj za svaku njenu granu. Postoje koncepti
 koji se kroz istoriju nisu menjali, ili su se slabo menjali i prosirivali. Primera za to ima 
-puno, a to su uglavnom neki univerzanli funkcionalni principi na kojima se zasnivaju
-racunarske masine, kompilatori, operativni sistemi, sistemi za upravljanje podacima itd.
+puno, a to su uglavnom neki univerzanli funkcionalni principi koji se prozimaju kroz 
+racunarske masine, kompilatore, operativne sisteme, sisteme za upravljanje podacima itd.
 
 Kada je rec o istoriji sistema za upravljanje podacima, ona se moze podeliti na 3 faze 
 Na period pre 1970. i Codd-ovog clanka u kojem govori o konceptima Relacionog modelovanja podataka. 
