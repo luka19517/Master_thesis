@@ -1,0 +1,30 @@
+Relacioni sistemi
+
+https://agiledata.org/essays/relationalDatabases.html
+Relational Database Management Systems. Springer.
+
+Relacioni model je najpopularniji model za rad sa podacima.
+On podatke kao i veze izmedju njih predstavlja kroz skup relacija.
+
+Iako kao fundamentalna ideja iza relacionog modela stoji tabelarni prikaz podataka, sto uvecava njegovu intuitivnost,
+korisno je imati na umu formalnu terminologiju koja se koristi u ovakvim sistemima.
+
+Svaki red tabele se naziva ntorka
+Svaka kolona tabele se zove atribut
+Presek reda i kolone je vrednosna celija
+
+Cesto se javlja dilema oko razlike izmedju tabele i relacije.
+Tabela je siri pojam, a da bi jedna tabela ujedno bila relacija mora ispuniti sledece uslove:
+	presek kolone i vrste mora predstavljati jedinstvenu vrednost (datum)
+	Sve vrednosne celije jedne kolone pripadaju istom tipu
+	Svaka kolona ima jedinostveno ime
+	Ne postoje dva identicna reda
+
+
+
+
+- Koncept kljuca relacionog modela
+
+- Integritet relacionog modela
+
+- ACID 
