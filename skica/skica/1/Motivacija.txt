@@ -35,8 +35,8 @@ Iako su pridosle tehnologije ucestvovale u resavanju tih problema, decenije vlad
 relacionih sistema za cuvanje podataka ostavile su dubok trag u praksama rada sa podacima, 
 i sa razlogom predstavljaju defakto standard i dan danas. 
 
-Sistematizovanje ogromne kolicine fizickog prostora na kojem se podaci mogu cuvati a 
-i kasnije koristili, kao i fleksibilnost strukture podataka sa kojima se radi
+Sistematizovanje ogromne kolicine fizickog prostora na kojem se podaci mogu cuvati 
+i kasnije koristiti, kao i fleksibilnost strukture podataka sa kojima se radi
 jesu glavni problemi na koje su se fokusirale tehnologije nastale u NoSQL pokretu.
 To sa sobom nosi umanjenje stabilnosti i oslanjanja na razvijen ekosistem koju neke organizacije 
 usled striktne biznis logike ne mogu priustiti. 
@@ -50,6 +50,8 @@ Iz navedenog se naslucuje da nijedan od navedenih koncepata ne prednjaci po defa
 zato je bitno postojanje materijala koji se bave analizom slucajeva upotrebe navedenih 
 tehnologija. Pored teorijske analize koja se moze pronaci u relevantnim javnim dokumentacijama
 korisno je imati i konkretne implementacije benchmark-a ciji se rezultati mogu koristiti da se na osnovu 
-njih povuci paralele sa potrebama konkretnih realnih sistema.
+njih povuku paralele sa potrebama konkretnih realnih sistema.
+
+Cilj rada .... iz prijave teme
 
 

@@ -1,1 +1,9 @@
 Kolonski orijentisani sistemi
+
+Arhitektura
+
+Dizajn kljuceva
+
+integritet
+
+delimican ACID

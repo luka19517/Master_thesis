@@ -22,7 +22,6 @@ Tabela je siri pojam, a da bi jedna tabela ujedno bila relacija mora ispuniti sl
 
 
 
-
 - Koncept kljuca relacionog modela
 
 - Integritet relacionog modela
