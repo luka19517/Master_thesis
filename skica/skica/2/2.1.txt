@@ -26,4 +26,6 @@ Tabela je siri pojam, a da bi jedna tabela ujedno bila relacija mora ispuniti sl
 
 - Integritet relacionog modela
 
+- Normalne forme
+
 - ACID 

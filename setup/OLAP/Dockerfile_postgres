@@ -1,0 +1,5 @@
+FROM postgres:latest
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+RUN apt-get update
+RUN apt-get install -y openjdk-17-jdk
+RUN echo 'export JAVA_HOME=`dirname $(dirname $(readlink -f $(which javac)))`'

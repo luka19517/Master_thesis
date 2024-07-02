@@ -1,0 +1,16 @@
+version: '2'
+services: 
+  postgres:
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./setup_postgres_model.sql:/docker-entrypoint-initdb.d/create_script.sql
+      - ./olap_benchmark_postgres.jar:/olap_benchmark_postgres.jar
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgresdb
+    build:
+      context: .
+      dockerfile: ./Dockerfile_postgres
