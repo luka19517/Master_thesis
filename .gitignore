@@ -14,3 +14,8 @@ docker/HBase/hbase-client/.idea/compiler.xml
 /setup/benchmark_hbase.jar
 /setup/hbase_setup_model.jar
 setup/OLAP/product.tsv
+setup/OLAP/supplier.tsv
+setup/OLAP/productsupplier.tsv
+setup/OLAP/order.tsv
+setup/OLAP/customer.tsv
+setup/OLAP/orderitem.tsv

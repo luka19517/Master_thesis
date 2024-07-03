@@ -24,6 +24,9 @@ services:
       - ./productsupplier.tsv:/productsupplier.tsv
       - ./product.tsv:/product.tsv
       - ./supplier.tsv:/supplier.tsv
+      - ./customer.tsv:/customer.tsv
+      - ./order.tsv:/order.tsv
+      - ./orderitem.tsv:/orderitem.tsv
       - ./hbase_setup_olap_model.jar:/hbase_setup_olap_model.jar
       - ./olap_benchmark_hbase.jar:/olap_benchmark_hbase.jar
 

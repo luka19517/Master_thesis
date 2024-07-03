@@ -28,7 +28,7 @@ public class Main {
         TableName productSupplierTable = TableName.valueOf("productsupplier");
         TableName customerTable = TableName.valueOf("customer");
         TableName orderTable = TableName.valueOf("order");
-        TableName orderItemTable = TableName.valueOf("order_item");
+        TableName orderItemTable = TableName.valueOf("orderitem");
 
 
         HTableDescriptor productDescriptor = new HTableDescriptor(productTable);

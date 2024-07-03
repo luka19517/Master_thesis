@@ -33,36 +33,20 @@ public class HBaseBenchmarkOLAPUtility implements BenchmarkOLAPUtility {
         Job productSupplierJob = ImportTsv.createSubmittableJob(config,new String[]{"productsupplier", "productsupplier.tsv"});
         productSupplierJob.waitForCompletion(true);
 
-//        Admin admin = ((Connection)connection).getAdmin();
-//        TableName productTable = TableName.valueOf("product");
-//        TableName supplierTable = TableName.valueOf("supplier");
-//        TableName productSupplierTable = TableName.valueOf("productsupplier");
-//        TableName customerTable = TableName.valueOf("customer");
-//        TableName orderTable = TableName.valueOf("order");
-//        TableName orderItemTable = TableName.valueOf("order_item");
-//
-//        Table product= ((Connection)connection).getTable(productTable);
-//        for(int i=0;i<200000;i++){
-//            String name = "name_"+i;
-//            String brand = "brand_"+i;
-//            String type = "type_"+i;
-//            int size = i%200;
-//            String container = "container_"+i;
-//            BigDecimal price = new BigDecimal("1000");
-//            String comment = "comment_"+i;
-//
-//            Put put = new Put(Bytes.toBytes(name));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("name"),Bytes.toBytes(name));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("brand"),Bytes.toBytes(brand));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("type"),Bytes.toBytes(type));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("size"),Bytes.toBytes(size));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("container"),Bytes.toBytes(container));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("price"),Bytes.toBytes(price));
-//            put.addColumn(Bytes.toBytes("cf1"),Bytes.toBytes("comment"),Bytes.toBytes(comment));
-//
-//
-//            product.put(put);
-//        }
+        config.set("importtsv.separator", ",");
+        config.set("importtsv.columns", "HBASE_ROW_KEY,data:name,data:address,data:phone,data:comment");
+        Job customerJob = ImportTsv.createSubmittableJob(config,new String[]{"customer", "customer.tsv"});
+        customerJob.waitForCompletion(true);
+
+        config.set("importtsv.separator", ",");
+        config.set("importtsv.columns", "HBASE_ROW_KEY,data:customer,data:status,data:total_price,data:entry_date,data:priority,data:comment");
+        Job orderJob = ImportTsv.createSubmittableJob(config,new String[]{"order", "order.tsv"});
+        orderJob.waitForCompletion(true);
+
+        config.set("importtsv.separator", ",");
+        config.set("importtsv.columns", "HBASE_ROW_KEY,data:order,data:product,data:supplier,data:orderNo,data:quantity,data:basePrice,data:discount,data:tax,data:status,data:shipDate,data:commitDate,data:comment");
+        Job orderItemJob = ImportTsv.createSubmittableJob(config,new String[]{"orderitem", "orderitem.tsv"});
+        orderItemJob.waitForCompletion(true);
 
     }
 
