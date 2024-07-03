@@ -21,6 +21,10 @@ services:
       - 16000:16000
       - 16010:16010
     volumes:
+      - ./productsupplier.tsv:/productsupplier.tsv
+      - ./product.tsv:/product.tsv
+      - ./supplier.tsv:/supplier.tsv
+      - ./hbase_setup_olap_model.jar:/hbase_setup_olap_model.jar
       - ./olap_benchmark_hbase.jar:/olap_benchmark_hbase.jar
 
   hbase-regionserver:

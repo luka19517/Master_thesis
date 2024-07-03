@@ -3,8 +3,8 @@ https://www.tpc.org/tpc_documents_current_versions/current_specifications5.asp
 
 MODEL: 
 
-PRODUCT (200 000)
-	ID
+PRODUCT (2 000 000)
+	ID 
 	NAME
 	BRAND
 	TYPE
@@ -76,7 +76,7 @@ select
 from
 	ORDERITEM OI
 where
-	OI.SHIP_DATE <= date '1998-12-01' - interval ? day 
+	OI.SHIP_DATE = ?
 group by
 	OI.STATUS
 order by

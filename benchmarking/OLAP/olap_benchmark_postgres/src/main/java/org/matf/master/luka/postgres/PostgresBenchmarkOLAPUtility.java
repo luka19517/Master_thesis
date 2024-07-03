@@ -1,13 +1,14 @@
 package org.matf.master.luka.postgres;
 
 import org.matf.master.olap.benchmark.BenchmarkOLAPUtility;
+import org.matf.master.olap.benchmark.BenchmarkUtility;
 
 import java.math.BigDecimal;
 import java.sql.*;
 
 public class PostgresBenchmarkOLAPUtility implements BenchmarkOLAPUtility {
     @Override
-    public void bulkLoad(Object connection) throws SQLException {
+    public void bulkLoad(Object connection) throws Exception {
 /*
 
 PRODUCT (200 000)

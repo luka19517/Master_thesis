@@ -8,10 +8,9 @@ import java.util.concurrent.CountDownLatch;
 
 public interface BenchmarkExecutor {
 
-    default void executeBulkLoad(BenchmarkUtility benchmarkUtility,BenchmarkOLAPUtility olapUtility) throws SQLException {
-        Object connection = benchmarkUtility.connect();
+    default void executeBulkLoad(BenchmarkUtility benchmarkUtility,BenchmarkOLAPUtility olapUtility) throws Exception {
         long bulkLoadStart = System.currentTimeMillis();
-        olapUtility.bulkLoad(connection);
+        olapUtility.bulkLoad(benchmarkUtility.connect());
         long bulkLoadEnd = System.currentTimeMillis();
         System.out.println("Bulk load duration: "+(bulkLoadEnd-bulkLoadStart));
     }

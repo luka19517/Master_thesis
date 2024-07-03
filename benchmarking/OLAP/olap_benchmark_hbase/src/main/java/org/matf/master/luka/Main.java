@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
 
         System.out.println("Enter number of iterations: ");
         Scanner transactionNumInput = new Scanner( System.in );
