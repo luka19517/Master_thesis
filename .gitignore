@@ -13,3 +13,4 @@ docker/HBase/hbase-client/.idea/compiler.xml
 /setup/benchmark_postgres.jar
 /setup/benchmark_hbase.jar
 /setup/hbase_setup_model.jar
+setup/OLAP/product.tsv
