@@ -14,8 +14,6 @@ public class PostgresBenchmarkUtility implements BenchmarkUtility {
         Properties props = new Properties();
         props.setProperty("user", "postgres");
         props.setProperty("password", "postgres");
-        Connection postgresConnection = DriverManager.getConnection(url, props);
-        postgresConnection.setAutoCommit(false);
-        return postgresConnection;
+        return DriverManager.getConnection(url, props);
     }
 }

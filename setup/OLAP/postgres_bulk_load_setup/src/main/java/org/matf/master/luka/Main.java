@@ -1,11 +1,7 @@
 package org.matf.master.luka;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +12,8 @@ public class Main {
 
         for(int i=0;i<2000000;i++) {
             List<String> row = new ArrayList<>();
+            row.add(""+i);
             String name = "name_" + i;
-            row.add(name);
             row.add(name);
             String brand = "brand_" + i;
             row.add(brand);
@@ -36,7 +32,7 @@ public class Main {
 
         String productContent = convertToCSV(productLines);
 
-        File productCsvOutputFile = new File("productHB.csv");
+        File productCsvOutputFile = new File("productPG.csv");
         int bufferSize = 16384*10;
 
         PrintWriter productOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(productCsvOutputFile.toPath())), bufferSize), true);
@@ -46,8 +42,8 @@ public class Main {
         List<String> supplierLines = new ArrayList<>();
         for(int i=0;i<10000;i++) {
             List<String> row = new ArrayList<>();
+            row.add(""+i);
             String name = "name_"+i;
-            row.add(name);
             row.add(name);
             String address = "address_"+i;
             row.add(address);
@@ -58,7 +54,7 @@ public class Main {
 
         String supplierContent = convertToCSV(supplierLines);
 
-        File supplierCsvOutputFile = new File("supplierHB.csv");
+        File supplierCsvOutputFile = new File("supplierPG.csv");
 
         PrintWriter supplierOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(supplierCsvOutputFile.toPath())), bufferSize), true);
         supplierOut.println(supplierContent);
@@ -68,9 +64,9 @@ public class Main {
         List<String> productSupplier = new ArrayList<>();
         for(int i=0;i<800000;i++) {
             List<String> row = new ArrayList<>();
-            String product = "name_"+(i%732000);
-            String supplier = "name_"+i%9837;
-            row.add(product+supplier);
+            row.add(""+i);
+            String product = ""+(i%732000);
+            String supplier = ""+i%9837;
             row.add(product);
             row.add(supplier);
             String available = ""+i%100;
@@ -84,7 +80,7 @@ public class Main {
 
         String productSupplierContent = convertToCSV(productSupplier);
 
-        File productSupplierCsvOutputFile = new File("productsupplierHB.csv");
+        File productSupplierCsvOutputFile = new File("productsupplierPG.csv");
 
         PrintWriter productSupplierOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(productSupplierCsvOutputFile.toPath())), bufferSize), true);
         productSupplierOut.println(productSupplierContent);
@@ -92,8 +88,8 @@ public class Main {
         List<String> customerLines = new ArrayList<>();
         for(int i=0;i<150000;i++) {
             List<String> row = new ArrayList<>();
+            row.add(""+i);
             String name = "name_"+i;
-            row.add(name);
             row.add(name);
             String address = "address_"+i;
             row.add(address);
@@ -106,7 +102,7 @@ public class Main {
 
         String customerContent = convertToCSV(customerLines);
 
-        File customerCsvOutputFile = new File("customerHB.csv");
+        File customerCsvOutputFile = new File("customerPG.csv");
 
         PrintWriter customerOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(customerCsvOutputFile.toPath())), bufferSize), true);
         customerOut.println(customerContent);
@@ -117,7 +113,7 @@ public class Main {
             List<String> row = new ArrayList<>();
             String id = ""+i;
             row.add(id);
-            String customer = "name_"+(i%150000);
+            String customer = ""+(i%150000);
             row.add(customer);
             String status = "status"+(i%20);
             row.add(status);
@@ -134,7 +130,7 @@ public class Main {
 
         String orderContent = convertToCSV(orderLines);
 
-        File orderCsvOutputFile = new File("orderHB.csv");
+        File orderCsvOutputFile = new File("orderPG.csv");
 
         PrintWriter orderOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(orderCsvOutputFile.toPath())), bufferSize), true);
         orderOut.println(orderContent);
@@ -143,11 +139,11 @@ public class Main {
         List<String> orderItemLines = new ArrayList<>();
         for(int i=0;i<6000000;i++) {
             List<String> row = new ArrayList<>();
+            row.add(""+i);
             String order = ""+i%1450000;
-            String product = "name_"+i%1970000;
-            String supplier = "name_"+i%9500;
+            String product = ""+i%1970000;
+            String supplier = ""+i%9500;
             String orderNo = ""+(i%7);
-            row.add(order+orderNo);
             row.add(order);
             row.add(product);
             row.add(supplier);
@@ -173,10 +169,11 @@ public class Main {
 
         String orderItemContent = convertToCSV(orderItemLines);
 
-        File orderItemCsvOutputFile = new File("orderitemHB.csv");
+        File orderItemCsvOutputFile = new File("orderitemPG.csv");
 
         PrintWriter orderItemOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(orderItemCsvOutputFile.toPath())), bufferSize), true);
         orderItemOut.println(orderItemContent);
+
     }
 
     private static  String convertToCSVRow(List<String> data) {
@@ -184,6 +181,7 @@ public class Main {
     }
 
     private static  String convertToCSV(List<String> data) {
-        return String.join("\n",data);
+        String result =  String.join("\\n",data);
+        return result.substring(0,result.lastIndexOf("\\n"));
     }
 }

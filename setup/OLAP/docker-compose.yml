@@ -5,6 +5,12 @@ services:
     ports:
       - "5433:5432"
     volumes:
+      - ./productsupplierPG.csv:/productsupplier.csv
+      - ./productPG.csv:/product.csv
+      - ./supplierPG.csv:/supplier.csv
+      - ./customerPG.csv:/customer.csv
+      - ./orderPG.csv:/order.csv
+      - ./orderitemPG.csv:/orderitem.csv
       - ./setup_postgres_model.sql:/docker-entrypoint-initdb.d/create_script.sql
       - ./olap_benchmark_postgres.jar:/olap_benchmark_postgres.jar
     environment:
@@ -21,12 +27,12 @@ services:
       - 16000:16000
       - 16010:16010
     volumes:
-      - ./productsupplier.tsv:/productsupplier.tsv
-      - ./product.tsv:/product.tsv
-      - ./supplier.tsv:/supplier.tsv
-      - ./customer.tsv:/customer.tsv
-      - ./order.tsv:/order.tsv
-      - ./orderitem.tsv:/orderitem.tsv
+      - ./productsupplierHB.csv:/productsupplier.csv
+      - ./productHB.csv:/product.csv
+      - ./supplierHB.csv:/supplier.csv
+      - ./customerHB.csv:/customer.csv
+      - ./orderHB.csv:/order.csv
+      - ./orderitemHB.csv:/orderitem.csv
       - ./hbase_setup_olap_model.jar:/hbase_setup_olap_model.jar
       - ./olap_benchmark_hbase.jar:/olap_benchmark_hbase.jar
 
