@@ -7,7 +7,7 @@ public interface BenchmarkOLAPUtility {
 
     void bulkLoad(Object connection) throws Exception;
 
-    void executeQuery1(Object connection) throws IOException,SQLException;
+    void executeQuery1(Object connection) throws Throwable;
 
     void executeQuery2(Object connection) throws IOException,SQLException;
 

@@ -39,7 +39,7 @@ echo 'PREPARING POSTGRES BULK LOAD RESOURCES..';
 java -jar ./postgres_bulk_load_setup/target/postgres_bulk_load_setup-1.0-SNAPSHOT-jar-with-dependencies.jar;
 
 docker-compose -f docker-compose.yml up --build -d;
-#docker exec -it setup-hbase-master-1 sh -c "java -jar hbase_setup_model.jar";
+winpty docker exec -it olap-hbase-master-1 sh -c "java -jar hbase_setup_olap_model.jar";
 
 
 

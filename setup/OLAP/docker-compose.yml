@@ -1,4 +1,4 @@
-version: '2'
+
 services: 
   postgres:
     container_name: postgres
@@ -33,6 +33,7 @@ services:
       - ./customerHB.csv:/customer.csv
       - ./orderHB.csv:/order.csv
       - ./orderitemHB.csv:/orderitem.csv
+      - ./hbase-site.xml:/hbase/conf/hbase-site.xml
       - ./hbase_setup_olap_model.jar:/hbase_setup_olap_model.jar
       - ./olap_benchmark_hbase.jar:/olap_benchmark_hbase.jar
 

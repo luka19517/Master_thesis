@@ -31,7 +31,7 @@ public class BenchmarkSingleClientExecutor implements Runnable{
                 benchmarkOLAPUtility.executeQuery3(connection);
             }
             endSignal.countDown();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException(e);
         }
     }

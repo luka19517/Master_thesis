@@ -63,7 +63,7 @@ public class Main {
 
         //------------------------------ORDER_ITEM-----------------------------
         orderItemDescriptor.addFamily(new HColumnDescriptor("data"));
-        orderItemDescriptor.addFamily(new HColumnDescriptor("cf2"));
+        orderItemDescriptor.addFamily(new HColumnDescriptor("stats"));
         admin.createTable(orderItemDescriptor);
 
     }
