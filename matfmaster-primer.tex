@@ -52,13 +52,13 @@
 \bib{matfmaster-primer}
 
 % Ime kandidata na srpskom jeziku (u odabranom pismu)
-\autor{Петар П. Петровић}
+\autor{Luka B. Đorović}
 % Naslov teze na srpskom jeziku (u odabranom pismu)
-\naslov{Мастер рад из математике или рачунарства чији је наслов јако дугачак}
+\naslov{Analiza slučajeva upotrebe relacionih i kolonski orijentisanih nerelacionih baza podataka}
 % Godina u kojoj je teza predana komisiji
-\godina{2016}
+\godina{2024}
 % Ime i afilijacija mentora (u odabranom pismu)
-\mentor{др Мика \textsc{Микић}, редован професор\\ Универзитет у Београду, Математички факултет}
+\mentor{др Saša \textsc{Malkov}, vandredni profesor\\ Универзитет у Београду, Математички факултет}
 % Ime i afilijacija prvog člana komisije (u odabranom pismu)
 \komisijaA{др Ана \textsc{Анић}, ванредни професор\\ University of Disneyland, Недођија}
 % Ime i afilijacija drugog člana komisije (u odabranom pismu)
@@ -86,7 +86,7 @@
 % Strana sa podacima o mentoru i članovima komisije
 \komisija
 % Strana sa posvetom (u odabranom pismu)
-\posveta{Мами, тати и деди}
+\posveta{Ovaj rad posvećujem...}
 % Strana sa podacima o disertaciji na srpskom jeziku
 \apstrakt
 % Sadržaj teze
@@ -116,7 +116,7 @@ Iz navedenog se naslucuje da nijedan od navedenih koncepata ne prednjaci po defa
 
 Cilj rada .... iz prijave teme
 
-\cite{}-
+\cite{PostgresHistory}
 
 
 % ------------------------------------------------------------------------------
@@ -135,18 +135,48 @@ Integritet entiteta nalaze da se u tabelu ne moze uneti red koji kao primarni kl
 \subsection{Normalizacija}
 Normalizacja predstavlja jasno definisan proces odlucivanja o tome koji atribut iu relaciji treba da budu grupisani kako bi se izbegla pojava redundantnih podataka. Redundanti podaci zauzimaju prostor na disku i otezavaju odrzavanje sistema. Normalizacija je unapredjivanje  logickog dizajna sistema tako da umanjuje dupliranje podataka kao i postizanje inkonzistentosti kroz invazivne operacije nad podacima, ali ne po cenu ocuvanja integriteta baze. Teorija o normalizaciji se zasniva na konceptima normalnih formi. Odredjenoj relaciji se dodeljuje odredjena normalna forma ukoliko zadovoljava pravila vezana za tu normalnu formu. Trenutno postoji 5 definisanih normalnih formi.
 \subsection{ACID}
-\subsection{SQL}
+
+ACID (Atomicity, Consistency, Isolation, Durability) svojstva služe kao garancija tačnosti i konzistetnosti podataka prilikom konkurentnom pristupu. 
+
+Atomicity se može objasniti pravilom: Jedna transakcija se izvršava u celini ili se ne izvršava nijedan njen deo. U prevodu, dejstvo transakcije je nedeljivo. 
+
+Durability garantuje da će kompletirana transakcija u slučaju prekida rada sistema pre nego što su izmene reflektovane na disk, biti upamćena i izvršena nakon restarta sistema. Svaka izmena se upisjue u log fajl pre nego što je reflektovana na disk, kako bi se operacije mogle poništiti u slučaju poništavanja transakcije.
+
+Consistency se čuva od strane korisnika. Bitno je da korisnik koji pokreće transakciju vodi računa o tome da stanje podataka ostane u konzistentom stanju.
+
+Isolation svojstvo nalaže da se transakcije međusobno izolovane tako da izvršavanje jedne transakcije ne može uticati na izvršavanje druge. Ovo se obezbeđuje pomoću scheduler-a od strane samog sistema za upravljanje bazom podataka.
+
 \subsection{PostgreSQL}
+
+PostgreSQL je trenutno jedan od nanaprednijih baza podataka otvorenog koda.  Nastao iz POSTGRES projekta, vođenog od strane
+Profesora Majkla Stonebraker-a. Prolazio je kroz dosta faza, od POSTGRES-a preko Postgres95 da bi 1996. godine dobio ime koje je i danas aktuelno a to je PostgreSQL kako bi naglasio vezu koju je uspostavio sa najnovijim mogućnostima SQL-a. \cite{PostgresHistory}
 \section{Kolonski-orijentisani model}
 % ------------------------------------------------------------------------------
-\subsection{Glavne razlike u odnosu na relacioni model}
-Koncept kolonski orijetnisanih modela svodi se na cuvanje podataka "kolonama". To bi znacilo da su sve vrednosti kolone jedne tabele smestene fizicki blizu na disku kako bi se postupak skladistenja mogao optimizovati. Vazna razlika je i ta sto ovakav model nudi fleksibilnost sheme za skladistenje podataka. Ne postoji nista nalik Integritetu domena koji spominjan u 2.1.2. Prednost toga je sto eventualna promena strukture podataka nece bitno uticati na unapred definisanu shemu, kao ni iziskivati migraciju podataka, kao sto bi to bio slucaj kod relacionog modela. Osim toga fleksibilnost sheme se ogleda i u tome sto je broj kolona jednog vektora neogranicen, sto moze biti korisno kod cuvanja nekih agregiranih vrednosti. Posledica fleksibilnosti je nepostojanje nepostojece vrednosti (null). Svaki red koji za neku odredjenu kolonu nema vrednost, nece imati ni informaciju o postojanju te kolone za taj red, pa samim tim nema potrebe ni za cuvanjem bilo kakve vrednosti za tu kolonu. Fleksibilnost sheme sa druge strane utice na nedostatak nametnutog integriteta pa kolonski orijentisan model nije ACID, samim tim nije pogodan za sisteme koji prioritiziraju konzistentost iznad skalabilnosti i performansi.
-\subsection{Optimizacije}
+\subsection{Opšte karakteristike}
+\cite{ColumnarOriented}
+Susret sa Big Data problemima dovelo je do potreba za tabelama koje imaju ogroman broj kolona, i ogroman broj redova u okviru tih tabela. Jasno je da nam je za potrebe različitih analitika potreban različit skup kolona. Navedena problematika predstavlja jedan od uočenih problema relacionih modela, gde je samo izvršavanje upita podrazumevalo dohvatanje svih kolona jednog reda, gde bi se filtriranje nepotrebnih kolona izvršavalo nakon što su se sve kolone učitale u memoriju. Kolonski orijentisan model dizajniran je tako da ovakav problem izbegne i uz to donese i druga poboljšanja o kojima će biti reči u nastavku.
+
+Kolonski orijentisan model podatke tabele ne skladišti po redovima, već po kolonama. U prevodu, sve vrednosti kolone svih redova skladište se jedna do druge, a na konkretnu vrednosnu ćeliju referiše se pomoću ključa konkretnog reda kao i kolone čiju vrednost želimo da pročitamo. Ovakav dizajn doveo je do toga da za dohvatanje određenog skupa kolona nema potrebe da čitamo sve vrednosti tog sloga, već je dovoljno da znamo konkretan ključ tog reda kao i imena kolona čije vrednosti želimo da pročitamo.
+
+S obzriom na bliskost   podataka na disku, nameće se mogućnost kompresije podataka, a s obzirom da su ti slični podaci lokalizovani na disku nema potrebe za velikom količinom meta informacija o kompresiji, što ovaj model čini posebno pogodnim za njihovu primenu.
+
+Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleksibilnost sheme. To kao posledicu to da eventualna promena strukture podataka nece bitno uticati na unapred definisanu shemu, kao ni iziskivati migraciju podataka, kao sto bi to bio slucaj kod relacionog modela. Osim toga fleksibilnost sheme se ogleda i u tome sto je broj kolona jednog vektora neogranicen, sto daje dosta prostora za eksperimentisanje sa dizajnom baze. Primer toga kako ovakvo svojstvo modela može doprineti dostizanju prednosti pri analitičkom sistemu možete videti na slici SLIKA 1. 
+
+\subsection{Popularni primenjivi algoritmi kompresije}
+\cite{ColumnarOptimizations}
 \subsubsection{Enkodiranje zasnovano na recniku}
+
+Enkodiranje zasnovano na rečniku (Dictionary based encoding) jeste tehnika kompresije podataka koja se može primeniti na vrednosti jedne kolone. Najefikasnija je nad kolonama koje imaju mali skup mogućih vrednosti. Rade tako što se u memoriji sačuvaju sve moguće vrednosti te kolone i svakoj od njih se dodeli ključ. Veličina ključa je direktno zavisna od kardinalnosti skupa vrednosti te kolone. Svaki unos ili izemna vrednosti kolone u konsultaciji sa postojećim rečnikom radi enkodiranje pristigle vrednosti, a svako dohvatanje vrednosti radi dekodiranje sačuvane vrednosti. Ovim se izbegava smanjuje ponavljanje velikih podataka tako smanjujući potrebnu memoriju na disku. Uglavnom su pogodne primene nad kolonama sa statičkim i opisnim podacima koji se ponavljaju.
+
 \subsubsection{Enkodiranje po broju ponavljanja}
+
+Enkodiranje po broju ponavljanja (Run Length Encoding) je jednostavan mehanizam za kompresiju podataka pogodan za kolonski orijentisane baze podataka. Funkcioniše tako što kada se naiđe na vrednost koja se ponavlja, ne skladišti duplikate već sačuva tu vrednost jednom a dodatno kao meta informaciju prosledi koliko se ta vrednost ponavlja. Takav vid optimizacije najkorisnije je očigledno kada su vrednosti sortirane, a s obzirom da su vrednosti kolona u kolonski orijentisanim bazama jedna do druge to otvara prostor za ovaj vid kompresije podataka kako bi se umanjilo zauzeće prostora.
+
 \subsubsection{Delta enkoding}
-\subsection{BASE}
+Delta enkoding je mehanizam za optimizaciju prostora baze podataka koji se zasniva na čuvanju razlike između objekata a ne celih vrednosti. Primera za upotrebu ima dosta a jedan od najčešćih je slučaj datumskih kolona, gde će nam referentna vrednost biti neki konkretan datum, a vrednosti ostalih kolona će biti čuvane kao razlika u odnosu na njega, te je očigledna velika količina prostora koja se čuva u takvom slučaju korišćenjem ovog vida optimizacije.
+\subsection{BASE svojstva}
 \subsection{HBase}
+
 
 % ------------------------------------------------------------------------------
 \chapter{Slučajevi upotrebe}
@@ -192,6 +222,8 @@ Rezultati:
 
 \section{Primena u distribuiranom okruženju}
 \subsection{CAP teorema}
+
+\chapter{Zaključak}
 
 % ------------------------------------------------------------------------------
 % Literatura
