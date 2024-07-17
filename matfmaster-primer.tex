@@ -175,6 +175,17 @@ Enkodiranje po broju ponavljanja (Run Length Encoding) je jednostavan mehanizam 
 \subsubsection{Delta enkoding}
 Delta enkoding je mehanizam za optimizaciju prostora baze podataka koji se zasniva na čuvanju razlike između objekata a ne celih vrednosti. Primera za upotrebu ima dosta a jedan od najčešćih je slučaj datumskih kolona, gde će nam referentna vrednost biti neki konkretan datum, a vrednosti ostalih kolona će biti čuvane kao razlika u odnosu na njega, te je očigledna velika količina prostora koja se čuva u takvom slučaju korišćenjem ovog vida optimizacije.
 \subsection{BASE svojstva}
+BASE (Basic Availability, Soft state, Eventual consistency) je skup svojstava koje je definisao Eric Brewer , a koja su nastala usled zelje da se formalizuju svojstva koja u Big Data svetu garantuju da je baza pogodna za horizontalno skaliranje a ujedno daje vid konzistentnosti koji je neophodan. 
+
+Basically available  svojstvo kaze da ukoliko imamo klaster sa vise pojedicanih node-ova baze, problem sa jednim od njih nece spreciti da ostali node-ovi procesiraju zahteve i salju odgovore.
+
+Soft state -  svojstvo kaze da se stanje podataka moze menjati, cak i u trenucima kada nema spoljnih komunikacija sa bazom podataka. Ovo je posledica treceg svojstva.
+
+Eventual consistency garantuje da ce baza podataka u periodima kada nema spoljne komunikacije sa klijentima, postati konzistentna kroz neki vremenski period. 
+
+Kolonski orijentisan model nacelno ne mora da ispunjava BASE svojstva, ali to obicno jeste slucaj upravo zbog horizontalnog skaliranja koja ima tendenciju da ponudi.
+\pagebreak
+
 \subsection{HBase}
 
 
