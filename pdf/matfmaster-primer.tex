@@ -134,17 +134,7 @@ Cuvanje integritea relacionog modela predstavlja cuvanje preciznosti i tacnosti 
 Integritet entiteta nalaze da se u tabelu ne moze uneti red koji kao primarni kljuc ima nepostojecu vrednost. Integritet domena namece shemu po kojoj svaka kolona moze uzimati vrednost iz unapred dodeljenih skupova vrednosti. Integritet nepostojece vrednosti se govori o eventulnim kolonama cije vretnosti ne mogu kao vrednost imatu nepostojecu vrednost kako se ne bi narusila uspostavljena biznis logika. S bozirom da su asocijacije izmedju relacija determinisane postojanjem ranije pomenutih strani kljuceva u okviru tabele, oni igraju bitnu ulogu u ocuvanju referencijalnog integriteta modela. Referencijalni integritet nalaze da se svaki strani kljuc jedne tabele mora poklapati sa nekim od primarnih kljuceva uparene relacije ili u nekim slucajevima kao vrednost ima nepostojecu vrednost.
 \subsection{Normalizacija}
 Normalizacja predstavlja jasno definisan proces odlucivanja o tome koji atribut iu relaciji treba da budu grupisani kako bi se izbegla pojava redundantnih podataka. Redundanti podaci zauzimaju prostor na disku i otezavaju odrzavanje sistema. Normalizacija je unapredjivanje  logickog dizajna sistema tako da umanjuje dupliranje podataka kao i postizanje inkonzistentosti kroz invazivne operacije nad podacima, ali ne po cenu ocuvanja integriteta baze. Teorija o normalizaciji se zasniva na konceptima normalnih formi. Odredjenoj relaciji se dodeljuje odredjena normalna forma ukoliko zadovoljava pravila vezana za tu normalnu formu. Trenutno postoji 5 definisanih normalnih formi.
-\subsection{ACID}
 
-ACID (Atomicity, Consistency, Isolation, Durability) svojstva služe kao garancija tačnosti i konzistetnosti podataka prilikom konkurentnom pristupu. 
-
-Atomicity se može objasniti pravilom: Jedna transakcija se izvršava u celini ili se ne izvršava nijedan njen deo. U prevodu, dejstvo transakcije je nedeljivo. 
-
-Durability garantuje da će kompletirana transakcija u slučaju prekida rada sistema pre nego što su izmene reflektovane na disk, biti upamćena i izvršena nakon restarta sistema. Svaka izmena se upisjue u log fajl pre nego što je reflektovana na disk, kako bi se operacije mogle poništiti u slučaju poništavanja transakcije.
-
-Consistency se čuva od strane korisnika. Bitno je da korisnik koji pokreće transakciju vodi računa o tome da stanje podataka ostane u konzistentom stanju.
-
-Isolation svojstvo nalaže da se transakcije međusobno izolovane tako da izvršavanje jedne transakcije ne može uticati na izvršavanje druge. Ovo se obezbeđuje pomoću scheduler-a od strane samog sistema za upravljanje bazom podataka.
 
 \subsection{PostgreSQL}
 
@@ -167,14 +157,70 @@ Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleks
 \subsubsection{Enkodiranje zasnovano na recniku}
 
 Enkodiranje zasnovano na rečniku (Dictionary based encoding) jeste tehnika kompresije podataka koja se može primeniti na vrednosti jedne kolone. Najefikasnija je nad kolonama koje imaju mali skup mogućih vrednosti. Rade tako što se u memoriji sačuvaju sve moguće vrednosti te kolone i svakoj od njih se dodeli ključ. Veličina ključa je direktno zavisna od kardinalnosti skupa vrednosti te kolone. Svaki unos ili izemna vrednosti kolone u konsultaciji sa postojećim rečnikom radi enkodiranje pristigle vrednosti, a svako dohvatanje vrednosti radi dekodiranje sačuvane vrednosti. Ovim se izbegava smanjuje ponavljanje velikih podataka tako smanjujući potrebnu memoriju na disku. Uglavnom su pogodne primene nad kolonama sa statičkim i opisnim podacima koji se ponavljaju.
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{DictionaryEncoding.jpg}
+  \caption{Enkodiranje zasnovano na recniku}
+  \label{fig:grafikon}
+\end{figure}
+
 
 \subsubsection{Enkodiranje po broju ponavljanja}
 
 Enkodiranje po broju ponavljanja (Run Length Encoding) je jednostavan mehanizam za kompresiju podataka pogodan za kolonski orijentisane baze podataka. Funkcioniše tako što kada se naiđe na vrednost koja se ponavlja, ne skladišti duplikate već sačuva tu vrednost jednom a dodatno kao meta informaciju prosledi koliko se ta vrednost ponavlja. Takav vid optimizacije najkorisnije je očigledno kada su vrednosti sortirane, a s obzirom da su vrednosti kolona u kolonski orijentisanim bazama jedna do druge to otvara prostor za ovaj vid kompresije podataka kako bi se umanjilo zauzeće prostora.
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{run-length-encoding.jpg}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
 \subsubsection{Delta enkoding}
 Delta enkoding je mehanizam za optimizaciju prostora baze podataka koji se zasniva na čuvanju razlike između objekata a ne celih vrednosti. Primera za upotrebu ima dosta a jedan od najčešćih je slučaj datumskih kolona, gde će nam referentna vrednost biti neki konkretan datum, a vrednosti ostalih kolona će biti čuvane kao razlika u odnosu na njega, te je očigledna velika količina prostora koja se čuva u takvom slučaju korišćenjem ovog vida optimizacije.
-\subsection{BASE svojstva}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{delta-encoding.png}
+  \caption{Delta enkoding}
+  \label{fig:grafikon}
+\end{figure}
+
+\subsection{HBase}
+
+HBase je distribuirana kolonski orijentisana nerelaciona baza podataka  pisana u javi. Izvršava se nad HDFS (Hadoop Distributed File System) arhitekturom. Nastala je 2007 kao prototip BigTable baze koja je modelovana u okviru Google-ovog članka 2006 \cite{BigTable}. 
+
+Arhitektura HBase klastera sastoji se iz tri glavne komponente: HMaster, Region server, i HDFS.  Ove komponente je najbolje opisati kroz interfejse koje oni implementiraju. 
+
+HDFS je sloj nad kojim radi HBase arhitektura. Osnovna organizaciona jedinica podataka koju HBase upisuje na HDFS jeste HFile. HFile može biti podeljen na više blokova u okviru HDFS-a ali o tome se on ne brine. 
+
+Region server implementira HRegionRegionInterface, odnosno implementira servise koji se bave operacijama nad podacima i održavanjem i upravljanjem regiona. Jedan Region sadrži određeni skup podataka za neke ključeve koji su u određenom rasponu vrednosti.  Njega možemo zamisliti kao indeks za dohvatanje HFile-ova sa HDFS-a.  Svaka izmena koja treba da se izvrši na disku prvo se upisuje u WAL (Write ahead log), a nova izmenjena vrednost se upisuje u MemStore fajl. Kada se MemStore fajl upuni tek tada se izmene flush-uju u jedan HFile koji dalje ide na HDFS. 
+
+HMaster implementira HMasterInterface koji sadrži servise koji rade sa metainformacijama o tabelama, familijama kolona, kao i regiona. Uloga Mastera je da za svaki konkretan row id može da odredi koji region odnostno region server treba da bude pročitan kako bi se izvršila odgovarajuća operacija. Za postizanje navedene funkcionalnosti HMaster koristi Zookeeper \cite{BigTable} servis. Pored toga master servis ima pozadinske procese koji regulišu rad load balansera i sadržaj hbase:meta tabele.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{hbase-arhitektura.png}
+  \caption{HBase arhitektura}
+  \label{fig:grafikon}
+\end{figure}
+
+\pagebreak
+
+\section{Glavne razlike između relacionog i kolonski-orijentisanog modela}
+
+\subsection{ACID vs BASE}
+
+ACID (Atomicity, Consistency, Isolation, Durability) svojstva služe kao garancija tačnosti i konzistetnosti podataka prilikom konkurentnom pristupu. 
+
+Atomicity se može objasniti pravilom: Jedna transakcija se izvršava u celini ili se ne izvršava nijedan njen deo. U prevodu, dejstvo transakcije je nedeljivo. 
+
+Durability garantuje da će kompletirana transakcija u slučaju prekida rada sistema pre nego što su izmene reflektovane na disk, biti upamćena i izvršena nakon restarta sistema. Svaka izmena se upisjue u log fajl pre nego što je reflektovana na disk, kako bi se operacije mogle poništiti u slučaju poništavanja transakcije.
+
+Consistency se čuva od strane korisnika. Bitno je da korisnik koji pokreće transakciju vodi računa o tome da stanje podataka ostane u konzistentom stanju.
+
+Isolation svojstvo nalaže da se transakcije međusobno izolovane tako da izvršavanje jedne transakcije ne može uticati na izvršavanje druge. Ovo se obezbeđuje pomoću scheduler-a od strane samog sistema za upravljanje bazom podataka.
+
 BASE (Basic Availability, Soft state, Eventual consistency) je skup svojstava koje je definisao Eric Brewer , a koja su nastala usled zelje da se formalizuju svojstva koja u Big Data svetu garantuju da je baza pogodna za horizontalno skaliranje a ujedno daje vid konzistentnosti koji je neophodan. 
 
 Basically available  svojstvo kaze da ukoliko imamo klaster sa vise pojedicanih node-ova baze, problem sa jednim od njih nece spreciti da ostali node-ovi procesiraju zahteve i salju odgovore.
@@ -184,10 +230,16 @@ Soft state -  svojstvo kaze da se stanje podataka moze menjati, cak i u trenucim
 Eventual consistency garantuje da ce baza podataka u periodima kada nema spoljne komunikacije sa klijentima, postati konzistentna kroz neki vremenski period. 
 
 Kolonski orijentisan model nacelno ne mora da ispunjava BASE svojstva, ali to obicno jeste slucaj upravo zbog horizontalnog skaliranja koja ima tendenciju da ponudi.
-\pagebreak
 
-\subsection{HBase}
 
+\subsection{Skalabilnost}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{horizontal-vertical-scaling.jpg}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
 
 % ------------------------------------------------------------------------------
 \chapter{Slučajevi upotrebe}
@@ -207,7 +259,228 @@ vremenu, kategorije slucajeva upotrebe koji ce biti obuhvaceni su:
 \item Primena u distribuiranom okruzenju
 \end{enumerate}
 
-Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja iz GLAVE 3 treba uzeti u obzir da implementacija navedenih koncepata nije opsta za sve Relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
+\subsection{Platforma testiranja}
+
+Kao okruženje za izvršavanje eksperimenata korišćen je docker.  Oba predstavnika bice pokrenuta u okviru nezavisnih kontejnera na jednom host-u sa docker engine-om. Svaki test predstavlja jedan java program koji se izvršava na konkretnom kontejneru, kako bi se izbegao bilo kakav vid spoljne komunikacije i kako bi se stekla što preciznija slika na osnovu rezultata merenja.  
+
+Svaki test imaće određene parametrke koji se postavljaju pri pokretanju testa. Parametri su broj iteracija/transakcija koje će test izvršiti kao i broj konekcija(odnosno klijenata) koji će paralelno u zasebnim nitima obavljati svoj deo posla.
+
+Programi za OLAP i OLTP testiranje kreiraju se nezavisno s obzirom na kontekst (drugačiji model i test logika) u kojem se izvršavaju. Za OLTP i OLAP testiranje postoji po jedan maven artifakt kojeg će koristiti i HBase i Postgres jar-ovi koji predstavljaju kostur programa za testiranje. Svrha tog zajedničkog jar-a jeste da garantuje da će oba testa imati isti kostur, te da će se HBase i Postgres testovi razlikovati jedino po implementaciji  odgovarajućih utility funkcija. 
+
+
+S obzirom da je u OLAP testu obuhvaćen segment za merenje bulk load-a podataka iz odgovarajućih csv fajlova, taj segment je takođe uključen u kostur testiranja.
+
+Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja u nastavke treba uzeti u obzir da implementacija navedenih koncepata nije opsta za sve Relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
+
+
+Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja u nastavke treba uzeti u obzir da implementacija navedenih koncepata nije opsta za sve Relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
+
+
+\lstset{
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={docker-compose.yml},captionpos=t]
+services: 
+  postgres:
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgresdb
+    build:
+      context: .
+      dockerfile: ./Dockerfile_postgres
+  hbase-master:
+    image: blueskyareahm/hbase-base:2.1.3
+    command: master
+    ports:
+      - 16000:16000
+      - 16010:16010
+    volumes:
+
+  hbase-regionserver:
+    image: blueskyareahm/hbase-base:2.1.3
+    command: regionserver
+    ports:
+      - 16030:16030
+      - 16201:16201
+      - 16301:16301
+
+  zookeeper:
+    image: blueskyareahm/hbase-zookeeper:3.4.13
+    ports:
+      - 2181:2181
+\end{lstlisting}
+
+
+\lstset{
+  language=Java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray}
+}
+
+\begin{lstlisting}[title={OLTPBenchmarkExecutor.java},captionpos=t]
+default void executeOLTPWorkload
+    (BenchmarkUtility util, BenchmarkOLTPUtility oltpUtil, 
+     int transNum, int clNum)  {
+
+        List<Integer> transPerClientList = new ArrayList<>();
+        int transactionsToAssign = totalTransactions;
+        int transactionsPerClient = transactionsToAssign / clNum;
+
+        for(int i = 0; i<clNum;i++){
+            transPerClientList.add(transactionsPerClient);
+            transactionsToAssign-=transactionsPerClient;
+        }
+        if (transactionsToAssign > 0) {
+            int transactionForLastClient = transPerClientList.get(
+							clNum - 1);
+            transPerClientList.set(clNum - 1, 
+			transactionForLastClient + transactionsToAssign
+					  );
+        }
+
+        assert clNum==transPerClientList.size();
+
+        Thread[] threads = new Thread[clNum];
+        CountDownLatch latch = new CountDownLatch(numOfClients);
+        for(int i = 0;i<clNum;i++){
+            threads[i] = new Thread(
+				new BenchmarkSingleClientExecutor(
+					util,oltpUtil,
+					i*transPerClientList.get(i),
+					transPerClientList.get(i),
+					latch)
+			  );
+        }
+
+
+        long startTimestamp = System.currentTimeMillis();
+        for(int i = 0;i<clNum;i++){
+            threads[i].start();
+        }
+        latch.await();
+        long endTimestamp = System.currentTimeMillis();
+        System.err.println("Total benchmark duration: " + 
+		(endTimestamp-startTimestamp));
+    }
+\end{lstlisting}
+
+\lstset{
+  language=Java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red}
+}
+
+\begin{lstlisting}[title={OLAPBenchmarkExecutor.java},captionpos=t]
+default void executeBulkLoad
+	(BenchmarkUtility util,BenchmarkOLAPUtility olapUtil) {
+        long bulkLoadStart = System.currentTimeMillis();
+        olapUtility.bulkLoad(benchmarkUtility.connect());
+        long bulkLoadEnd = System.currentTimeMillis();
+        System.out.println("Bulk load duration: "+
+       	 	 (bulkLoadEnd-bulkLoadStart));
+    }
+
+default void executeOLAPWorkload
+    (BenchmarkUtility util, BenchmarkOLAPUtility olapUtil, 
+          int iterNum, int clNum)  {
+
+        List<Integer> itsPerClientList = new ArrayList<>();
+        int iterationsToAssign = iterNum;
+        int iterationsPerClient = iterationsToAssign / clNum;
+
+        for(int i = 0; i<clNum;i++){
+            itsPerClientList.add(iterationsPerClient);
+            iterationsToAssign-=iterationsPerClient;
+        }
+        if (iterationsToAssign > 0) {
+            int iterationsForLastClient = itsPerClientList.get(
+							clNum - 1);
+            itsPerClientList.set(clNum - 1, 
+			iterationsForLastClient + iterationsToAssign
+					  );
+        }
+
+        assert clNum==itsPerClientList.size();
+
+        Thread[] threads = new Thread[clNum];
+        CountDownLatch latch = new CountDownLatch(clNum);
+        for(int i = 0;i<clNum;i++){
+            threads[i] = new Thread(
+				new BenchmarkSingleClientExecutor(
+					util,olapUtil,
+					i*itsPerClientList.get(i),
+					itsPerClientList.get(i),
+					latch)
+			  );
+        }
+
+
+        long startTimestamp = System.currentTimeMillis();
+        for(int i = 0;i<clNum;i++){
+            threads[i].start();
+        }
+        latch.await();
+        long endTimestamp = System.currentTimeMillis();
+        System.err.println("Total benchmark duration: " + 
+		(endTimestamp-startTimestamp));
+    }
+\end{lstlisting}
+
+\subsection{Priprema okruženja}
+
+Priprema okruženja za sprovođenje eksperimenata podrazumeva build-ovanje  .jar fajlova za testiranje, pokretanje docker kontejnera , prebacivanje svih neophodnih resursa vezanih za kreiranje modela baze podataka i eventualnih resursa za bulk load vrednosti u tabele.
+
+
+\lstset{
+  language=bash,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red}
+}
+
+\begin{lstlisting}[title={prepareEnv.sh},captionpos=t]
+#!/bin/bash
+echo 'PREPARING ENVIRONMENT...';
+
+rm -f ./hbase_setup_model.jar
+rm -f ./benchmark_hbase.jar
+rm -f ./benchmark_postgres.jar
+
+export JAVA_HOME="$JAVA_8";
+mvn -f ./hbase_setup_model clean compile assembly:single;
+mvn -f ./benchmark_hbase clean compile assembly:single;
+
+export JAVA_HOME="$JAVA_17";
+mvn -f ./benchmark_postgres clean compile assembly:single;
+
+
+docker-compose -f docker-compose.yml up --build -d;
+docker exec -it hbase-master-1 sh -c "java -jar hbase_setup_model.jar";
+
+
+
+
+\end{lstlisting}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{deployment_diagram.png}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
+\pagebreak
+
 \section{Primena u online transakcionom procesiranju (OLTP)}
 
 Online transakciono procesiranje obuhvata kratke, jednostavne, uchestale promene  na relativno malom skupu podataka. Primer koji cemo koristiti jeste uopstena transakcija korisnika gde sa jednog racuna treba da se prebaci novac na drugi racun.
@@ -232,6 +505,9 @@ Specifikacija HBASE modela:
 Rezultati:
 
 \section{Primena u distribuiranom okruženju}
+\subsection{Skalabilnost}
+\subsubsection{Vertikalna skalabilnost}
+\subsubsection{Horizontalna skalabilnost}
 \subsection{CAP teorema}
 
 \chapter{Zaključak}
