@@ -101,18 +101,21 @@
 \chapter{Uvod}
 % ------------------------------------------------------------------------------
 
-Podaci su najstabilniji deo svakog sistema. Oni su reprezentacija cinjenica, koncepata i instrukcija u formalizovanom stanju spremnom za dalju interakciju, interpretaciju ili obradu od strane korisnika ili mašine. Iako kroz svoju istoriju racunatstvo vazi za oblast koja uvodi nove tehnologije i alate neverovatnom brzinom to  nije slucaj za svaku njenu granu. Postoje koncepti koji se kroz istoriju nisu menjali, ili su se slabo menjali i prosirivali. Primera za to ima puno, a to su uglavnom neki univerzanli funkcionalni principi koji se prozimaju kroz racunarske masine, kompilatore, operativne sisteme, sisteme za upravljanje podacima itd. Kada je rec o istoriji sistema za upravljanje podacima, ona se moze podeliti na 3 faze. Na period pre 1970. i Codd-ovog clanka u kojem govori o konceptima Relacionog modelovanja podataka.  Zatim na period od 1970 do ranih 2000ih i neprikosnovene vladavine relacionih sistema. Treca faza bi bila period nakon ranih 2000ih kada je doslo do razvoja novih tehnologija pod grupnim imenom "NoSQL"  koje se fokusiraju na poznate probleme standardnih relacionih sistema. Kao sto se da zakljuciti, vrlo rano u istoriji racunarstva naislo se na potrebu za standardizacijom mehanizama za obradu podataka.
+Podaci su najstabilniji deo svakog sistema. Oni su reprezentacija činjenica, koncepata jednog sistema kao i instrukcija u formalizovanom stanju spremnom za dalju interakciju, interpretaciju ili obradu od strane korisnika ili mašine. Iako kroz svoju istoriju računatstvo važi za oblast koja uvodi nove tehnologije i alate neverovatnom brzinom to  nije slučaj za svaku njenu granu. Postoje oblasti koje se kroz istoriju nisu menjali, ili su se slabo menjali i proširivali. Primera za to ima puno i oni su uglavnom usko vezani za funkcionalne principe koji se prožimaju kroz računarske mreže, kompilatore, operativne sisteme, sisteme za upravljanje podacima itd. 
 
-Pre 70ih rukovanje podacima svodilo se na cuvanje podataka na fajl sistemu operativnog sistema. Apolo sletanje na mesec desilo se u vreme kada nije postojao sistem koji rukuje vecom kolicinopm podataka, sto dodatno govori o velicini takovg poduhvata. Nakon 70ih na talasu Codd-ovog clanka kao i projekta "Sistem R" kao dokaz koncepta da je relacioni model o kojem je Codd pisao moguce implementirati, skoro svaki sistem sa trajnim cuvanjem podataka koristio je  relacioni model. Kao lideri komercijalnih proizvoda ovog tipa nametnuli su se IBM i Oracle sa svojim sistemima za upravljanje relacionih baza podataka.
+Kada je reč o istoriji sistema za upravljanje podacima, izdvojio bih tri glavne faze: vreme pre relacionih sistema, vreme neprikosnovene vladavine relacionih sistema i nastanak alternativa relacionim sistemima pod grupnim nazivom NoSQL.
 
-Ipak XXI vek doveo je znacajne alternative u oblasti cuvanja podataka informacionih sistema. Digitalizacija, a samim tim i potreba za obradom vece kolicine podataka, podstakla je nastanak novih tehnologija koje su sluzile da u novonastalom okruzenju omoguce da informacioni sistemi mogu da odgovore na zahteve modernog doba. Problemi te prirode obicno se stavljaju pod grupno ime "problemi velikih podataka" (BigData problems).
+Do 70ih i nastanka relacionih sistema za upravljanje podacima, rukovanje podacima izvodilo se kroz pisanje i čitanje sa fajl sistema operativnog sistema. Rukovanje većim količinama podataka nije bilo standardizovano ni na koji način već su se konvencije uvodile na nivou organizacija. Apolo sletanje na Mesec realizovano je koristeći ovakav vid rada sa podacima, što ovaj poduhvat čini utoliko neverovatnim. 
 
-Iako su pridosle tehnologije ucestvovale u resavanju tih problema, decenije vladavine  relacionih sistema za cuvanje podataka ostavile su dubok trag u praksama rada sa podacima,  i sa razlogom predstavljaju defakto standard i dan danas. 
-Sistematizovanje ogromne kolicine fizickog prostora na kojem se podaci mogu cuvati i kasnije koristiti, kao i fleksibilnost strukture podataka sa kojima se radi jesu glavni problemi na koje su se fokusirale tehnologije nastale u NoSQL pokretu. To sa sobom nosi umanjenje stabilnosti i oslanjanja na razvijen ekosistem koju neke organizacije  usled striktne biznis logike ne mogu priustiti. 
+S obzirom da je ovaj vid rada sa podacima imao mnogbrojne mane, među kojima je jedan od glavnih bio težak pristup podacima, javile su se potrebe za unapređenjem. Najuspešniji je bio Edgar F. Codd \footnote{Edgar Frank "Ted" Codd (19 Avugst 1923 – 18 April 2003) Američki računarski naučnik }  koji je 1970. godine objavio rad pod imenom "A Relational Model of Data for Large Shared Data Banks" kao rezultat istraživanja i sopstvenih teorija o organizaciji podataka.  Kao dokaz da je njegov model moguće implementirati pokrenut je System R, čiji je rezultat bio i pojava SQL-a (Structured Query Language) kao standardizovanog jezika za rad sa podacima. Nakon toga pojavili su se Oracle i IBM sa svojim komercijalnim proizvodima za upravljanje relacionih baza podataka. Naredni period obeležio je rad sa podacima koristecći relacioni model.  
 
-Kolonski orijentisane baze podataka su jedna vazna grupa nerelacionih baza, nastale kao plod BigQuery clanka iz 2004. godine. Njihova glavna odlika je da se podaci organizuju tako da srodni podaci treba da budu blizu jedni drugih kako bi se nad njima mogli primeniti razni optimizacioni algoritmi koji dovode do efikasnijeg skladistenja podataka.
+XXI vek doneo je sa sobom ubrzanu digitalizaciju, dostpunost interneta, samim tim pojavila se potreba za obradom veće količine podataka. Sve ovo je pokazalo pojedine slabosti dosadašnjih sistema zasnovane na relacionim modelima, koji nisu mogli u svim segmentima da odgovore na zahteve modernog doba. Ovi problemi obično su poznati pod gruonim imenom "problemi velikih podataka" (BigData problems). Došlo je do pojave niza novih modela i principa za čuvanje podataka, a svi pod grupnim imenom "NoSQL" (ili nerelacione) baze podataka.
+Sistematizovanje ogromne količine fizičkog prostora na disku na kojem se podaci mogu čuvati i kasnije koristiti, kao i fleksibilnost strukture podataka sa kojima se radi , jesu glavni aktuelni problemi tog vremena na koje su se fokusirale tehnologije nastale u NoSQL pokretu.
+Decenije vladavine  relacionih sistema za čuvanje podataka ostavile su dubok trag u praksama rada sa podacima, i sa razlogom predstavljaju defakto standard i dan danas, te je zaočekivati postojanje doze skepse pri korišćenju tehnologija nastalih u ovoj fazi. 
 
-Iz navedenog se naslucuje da nijedan od navedenih koncepata ne prednjaci po defaultu, zato je bitno postojanje materijala koji se bave analizom slucajeva upotrebe navedenih tehnologija. Pored teorijske analize koja se moze pronaci u relevantnim javnim dokumentacijama korisno je imati i konkretne implementacije benchmark-a ciji se rezultati mogu koristiti da se na osnovu  njih povuku paralele sa potrebama konkretnih realnih sistema.
+Kao važna grupa nerelacionih izdvajaju se kolonski-orijentisane baze podataka. One su uvele tada nekonvencionalne koncepte čuvanja podataka po kolonama. Dakle fizički na disku skladištile su se vrednosti jedne kolone jedna do druge, sa referencom na red kojem pripadaju. To sa sobom vuče razne mogućnosti za optimizaciju ali i novih pristupa modelovanja i organizacije podataka. Ovakav način skladištenja ispitavan je još davnih 70ih godina XX veka, međutim u ranim godinama XXI veka došlo je do obnove interesovanja u akademskim ali i industrijskim krugovima. 
+
+Nijedan od navedenih koncepata nije univerzalno rešenje, zato je bitno postojanje materijala koji se bave analizom slučajeva upotrebe tih tehnologija. Pored teorijske analize koja se može pronaći u relevantnim javnim dokumnetacijama korisno je imati i konkretne implementacije testova čiji se rezultati mogu iskoristiti kako bi se povukle paralele u skladu sa potrebama realnih  sistema. 
 
 Cilj rada .... iz prijave teme
 
@@ -269,9 +272,6 @@ Programi za OLAP i OLTP testiranje kreiraju se nezavisno s obzirom na kontekst (
 
 
 S obzirom da je u OLAP testu obuhvaćen segment za merenje bulk load-a podataka iz odgovarajućih csv fajlova, taj segment je takođe uključen u kostur testiranja.
-
-Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja u nastavke treba uzeti u obzir da implementacija navedenih koncepata nije opsta za sve Relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
-
 
 Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja u nastavke treba uzeti u obzir da implementacija navedenih koncepata nije opsta za sve Relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
 
@@ -439,7 +439,7 @@ default void executeOLAPWorkload
 
 \subsection{Priprema okruženja}
 
-Priprema okruženja za sprovođenje eksperimenata podrazumeva build-ovanje  .jar fajlova za testiranje, pokretanje docker kontejnera , prebacivanje svih neophodnih resursa vezanih za kreiranje modela baze podataka i eventualnih resursa za bulk load vrednosti u tabele.
+Priprema okruženja za sprovođenje eksperimenata podrazumeva build-ovanje  .jar fajlova za testiranje, pokretanje docker kontejnera , prebacivanje svih neophodnih resursa vezanih za kreiranje modela baze podataka i eventualnih resursa za bulk load vrednosti u tabele na odgovoarajuće docker kontejnere.
 
 
 \lstset{
