@@ -109,7 +109,7 @@ Do 70ih i nastanka relacionih sistema za upravljanje podacima, rukovanje podacim
 
 S obzirom da je ovaj vid rada sa podacima imao mnogbrojne mane, među kojima je jedan od glavnih bio težak pristup podacima, javile su se potrebe za unapređenjem. Najuspešniji je bio Edgar F. Codd \footnote{Edgar Frank "Ted" Codd (19 Avugst 1923 – 18 April 2003) Američki računarski naučnik }  koji je 1970. godine objavio rad pod imenom "A Relational Model of Data for Large Shared Data Banks" kao rezultat istraživanja i sopstvenih teorija o organizaciji podataka.  Kao dokaz da je njegov model moguće implementirati pokrenut je System R, čiji je rezultat bio i pojava SQL-a (Structured Query Language) kao standardizovanog jezika za rad sa podacima. Nakon toga pojavili su se Oracle i IBM sa svojim komercijalnim proizvodima za upravljanje relacionih baza podataka. Naredni period obeležio je rad sa podacima koristecći relacioni model.  
 
-XXI vek doneo je sa sobom ubrzanu digitalizaciju, dostpunost interneta, samim tim pojavila se potreba za obradom veće količine podataka. Sve ovo je pokazalo pojedine slabosti dosadašnjih sistema zasnovane na relacionim modelima, koji nisu mogli u svim segmentima da odgovore na zahteve modernog doba. Ovi problemi obično su poznati pod gruonim imenom "problemi velikih podataka" (BigData problems). Došlo je do pojave niza novih modela i principa za čuvanje podataka, a svi pod grupnim imenom "NoSQL" (ili nerelacione) baze podataka.
+XXI vek doneo je sa sobom ubrzanu digitalizaciju, povećanu dostpunost interneta, samim tim pojavila se potreba za obradom veće količine podataka. Sve ovo je pokazalo pojedine slabosti dosadašnjih sistema zasnovane na relacionim modelima, koji nisu mogli u svim segmentima da odgovore na zahteve modernog doba. Ovi problemi obično su poznati pod gruonim imenom "problemi velikih podataka" (BigData problems). Došlo je do pojave niza novih modela i principa za čuvanje podataka, a svi pod grupnim imenom "NoSQL" (ili nerelacione) baze podataka.
 Sistematizovanje ogromne količine fizičkog prostora na disku na kojem se podaci mogu čuvati i kasnije koristiti, kao i fleksibilnost strukture podataka sa kojima se radi , jesu glavni aktuelni problemi tog vremena na koje su se fokusirale tehnologije nastale u NoSQL pokretu.
 Decenije vladavine  relacionih sistema za čuvanje podataka ostavile su dubok trag u praksama rada sa podacima, i sa razlogom predstavljaju defakto standard i dan danas, te je zaočekivati postojanje doze skepse pri korišćenju tehnologija nastalih u ovoj fazi. 
 
@@ -117,27 +117,97 @@ Kao važna grupa nerelacionih izdvajaju se kolonski-orijentisane baze podataka. 
 
 Nijedan od navedenih koncepata nije univerzalno rešenje, zato je bitno postojanje materijala koji se bave analizom slučajeva upotrebe tih tehnologija. Pored teorijske analize koja se može pronaći u relevantnim javnim dokumnetacijama korisno je imati i konkretne implementacije testova čiji se rezultati mogu iskoristiti kako bi se povukle paralele u skladu sa potrebama realnih  sistema. 
 
-Cilj rada .... iz prijave teme
+Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolonski orijentisanih baza podataka. Rad će se sastojati iz teorijskog opsia navedenih tehnologija kao i opisa konkretnih predstavnika baza podataka koji će biti korišćeni. Na osnovu teorijskih izbora i istraživanja biće analizirani različiti slučajevi upotrebe. 
 
-\cite{PostgresHistory}
 
+\begin{figure}[!ht]
+  \vspace*{4cm}
+  \centering
+  \includegraphics[width=0.9\textwidth]{relational-column-oriented.png}
+  \caption{Kolonski orijentisan format}
+  \label{fig:grafikon}
+\end{figure}
 
 % ------------------------------------------------------------------------------
 \chapter{Modeli za upravljanje podacima}
 \label{chp:razrada}
 \section{Relacioni model}
 \subsection{Opšte karakteristike}
-Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i veze izmedju njih predstavlja kroz skup relacija. Iako kao fundamentalna ideja iza relacionog modela stoji tabelarni prikaz podataka, sto uvecava njegovu intuitivnost, korisno je imati na umu formalnu terminologiju koja se koristi u ovakvim sistemima. Svaki red tabele se naziva n-torka. Svaka kolona tabele se zove atribut. Presek reda i kolone je vrednosna celija.
+Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i veze izmedju njih predstavlja kroz skup relacija. Kao fundamentalna ideja iza relacionog modela stoji tabelarni prikaz podataka, sto uvecava njegovu intuitivnost. Da bi jedna tabela bila validna relacija u relacionom modelu ona mora ispunjavati sledeće uslove:
 
-Cesto se javlja dilema oko razlike izmedju tabele i relacije. Tabela je siri pojam, a da bi jedna tabela ujedno bila relacija mora ispuniti sledece uslove: presek kolone i vrste mora predstavljati jedinstvenu vrednost (datum), Sve vrednosne celije jedne kolone pripadaju istom tipu, Svaka kolona ima jedinostveno ime, ne postoje dva identicna reda jedne tabele.
+\begin{enumerate}
+\item[\textbullet] Presek kolone i vrste jedinstveno određuje vrednosnu ćeliju.
 
-S obzirom da u okviru jedne tabele ne mogu postojati dva identicna reda, jasno je da je pogodno imati nametnutu proceduru koja ne dozvoljava takvu pojavu. U slucaju relacionih modela to predstavlja superkljuc tabele. Superkljuc tabele je kolona ili skup kolona za koje se garantuje da ne mogu uzimati identicne vrednosti za vise redova jedne tabele. Minimalni skup kolona koji predstavlja superkljuc naziva se kljuc kandidat. Svaka tabela ima barem jedan kljuc kandidat za koji nijedna vrednost ne moze biti nepostojeca i taj kljuc kandidat se naziva primarni kljuc. Strani kljuc je kolona ili skup kolona cije vrednosti predstavljaju referencu na odredjeni red neke druge tabele. On igra veliku ulogu u ocuvanju integriteta baze podataka o cemu ce biti reci u nastavku.
+\item[\textbullet] Sve vrednosne ćelije jedne kolone pripadaju nekom zajedničkom skupu. 
+
+\item[\textbullet] Svaka kolona ima jedinstveno ime.
+
+\item[\textbullet] Ne postoje dve identične vrste jedne tabele. 
+\end{enumerate}
+
+Iako ovakva formalizacija relacije deluje intuitivno (usled istorijskog uticaja koji je relacioni model ostavio na vizualizaciju organizacije podataka) ona je neophodna radi definisanja složenijih pojmova. 
+
+\subsection{Koncept ključa relacionog modela}
+
+Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolona za koji važi da nikoja dva reda te relaciju nemaju identične vrednosti za svaku kolonu iz tog skupa. Takav skup se naziva \textit{superključ} relacije. Minimalan superključ naziva se \textit{ključ kandidat}. Svaka relacija može imati više ključeva kandidata, ali samo jedan od njih je  \textit{primarni ključ} koji mora imati definisanu vrednost za svaku njegovu kolonu.
+\textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. On igra veliku ulogu u očuvanju integriteta baze podataka o čemu ce biti reči u nastavku.
+
 \subsection{Integritet relacionog modela}
-Cuvanje integritea relacionog modela predstavlja cuvanje preciznosti i tacnosti podataka koji se cuvaju u bazi. Ono nudi mehanizme ocuvanja konzistentnosti podataka prilikom invazivnih operacija kao sto su dodavanje reda, izmena reda ili brisanje reda u tabeli. Postoji vise vrsta integriteta u relacionom modelu: integritet entiteta, integritet domena, integritet neposojece vrednosti i referencijalni integritet.
-Integritet entiteta nalaze da se u tabelu ne moze uneti red koji kao primarni kljuc ima nepostojecu vrednost. Integritet domena namece shemu po kojoj svaka kolona moze uzimati vrednost iz unapred dodeljenih skupova vrednosti. Integritet nepostojece vrednosti se govori o eventulnim kolonama cije vretnosti ne mogu kao vrednost imatu nepostojecu vrednost kako se ne bi narusila uspostavljena biznis logika. S bozirom da su asocijacije izmedju relacija determinisane postojanjem ranije pomenutih strani kljuceva u okviru tabele, oni igraju bitnu ulogu u ocuvanju referencijalnog integriteta modela. Referencijalni integritet nalaze da se svaki strani kljuc jedne tabele mora poklapati sa nekim od primarnih kljuceva uparene relacije ili u nekim slucajevima kao vrednost ima nepostojecu vrednost.
-\subsection{Normalizacija}
-Normalizacja predstavlja jasno definisan proces odlucivanja o tome koji atribut iu relaciji treba da budu grupisani kako bi se izbegla pojava redundantnih podataka. Redundanti podaci zauzimaju prostor na disku i otezavaju odrzavanje sistema. Normalizacija je unapredjivanje  logickog dizajna sistema tako da umanjuje dupliranje podataka kao i postizanje inkonzistentosti kroz invazivne operacije nad podacima, ali ne po cenu ocuvanja integriteta baze. Teorija o normalizaciji se zasniva na konceptima normalnih formi. Odredjenoj relaciji se dodeljuje odredjena normalna forma ukoliko zadovoljava pravila vezana za tu normalnu formu. Trenutno postoji 5 definisanih normalnih formi.
+Čuvanje integriteta relacionog modela predstavlja očuvanje vrednosti odnosno "istinitosti"  podataka koji se čuvaju u bazi. Ono nudi mehanizme očuvanja konzistentnosti podataka prilikom invazivnih operacija kao što su dodavanje reda, izmena reda ili brisanje reda u tabeli. Postoji vise vrsta integriteta u relacionom modelu: \textit{integritet entiteta}, \textit{integritet domena}, \textit{integritet neposojece vrednosti} i \textit{referencijalni integritet}.
 
+ \textit{Integritet entiteta} kaže da svaka vrsta jedne relacije predstavlja jedan entitet i da kao takva ne može u okviru primarnog ključa, koji taj entitet identifikuje, imati nedefinisanu ili nepostojeću vrednost.
+
+\textit{Integritet domena} nameće shemu po kojoj svaka kolona može uzimati vrednost iz unapred dodeljenih skupova vrednosti. 
+
+\textit{Integritet nepostojece vrednosti} govori o eventulnim kolonama cije vrednosti ne mogu kao vrednost imatu nepostojecu vrednost kako se ne bi narušila uspostavljena biznis logika. 
+
+\textit{Referencijalni integritet} nalaže da se svaki strani kljuc jedne tabele, ukoliko je definsan,  mora poklapati sa nekim od primarnih ključeva uparene relacije.
+
+\subsection{Normalizacija}
+
+Da bi se stanje u bazi očuvalo konzitentnim u relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoji jasno definisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces unapredđivanja logičkog dizajna baze tako da rešava problem redundantosti podataka naziva se normalizacija, ali ne po cenu očuvanja integriteta. Teorija o normalizaciji se zasniva nad konceptima normalnih formi iz matematičke logike. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se normana forma. Trenutno postoji 5 defnisanih normalnih formi. 
+
+Normalizacja predstavlja jasno definisan proces odlucivanja o tome koji atribut iu relaciji treba da budu grupisani kako bi se izbegla pojava redundantnih podataka. Redundanti podaci zauzimaju prostor na disku i otezavaju odrzavanje sistema. Normalizacija je unapredjivanje  logickog dizajna sistema tako da umanjuje dupliranje podataka kao i postizanje inkonzistentosti kroz invazivne operacije nad podacima, ali ne po cenu ocuvanja integriteta baze. Teorija o normalizaciji se zasniva na konceptima normalnih formi. Odredjenoj relaciji se dodeljuje odredjena normalna forma ukoliko zadovoljava pravila vezana za tu normalnu formu. Trenutno postoji 6 definisanih normalni formi: 
+
+\begin{enumerate}
+\item Prva normalna forma (1NF)
+	\begin{enumerate}
+	\item[\textbullet] Svaka relacija mora imati primarni ključ koja jedinstveno određuje svaku vrste.
+	\item[\textbullet] Svaka kolona mora saržati atomičnu (nedeljivu) vrednost.
+	\item[\textbullet] Sve vrednosti jedne kolone pripadaju nekom zajedničkom skupu.
+	\end{enumerate}
+
+\item Druga normalna forma (2NF)
+	\begin{enumerate}
+	\item[\textbullet] Relacija mora biti 1NF
+	\item[\textbullet] Sve vrednsti kolone koje ne pripadaju superključu relacije, direktno su određene celim primarnim ključem .
+	\end{enumerate}
+
+\item Treća normalna forma (3NF)
+	\begin{enumerate}
+	\item[\textbullet] Relacija mora biti 2NF
+	\item[\textbullet] Nijedna kolona van ključa kandidata nije jedinstveno određena drugim kolonama koje ne pripadaju  ključu kandidatu.
+	\end{enumerate}
+
+\item Boyce-Codd normalna forma (BCNF)
+	\begin{enumerate}
+	\item[\textbullet] Relacija mora biti 3NF.
+	\item[\textbullet] Svaka kolona koja ne pripada ključu mora biti jednistveno određena vrednostima superključa relacije.
+	\end{enumerate}
+
+\item Četvrta normalna forma (4NF)
+	\begin{enumerate}
+	\item[\textbullet] Relacija mora biti BCNF.
+	\item[\textbullet] Regulisanje zavisnostni među kolonama tako da nema ponavljanja podataka.
+	\end{enumerate}
+
+\item Peta normalna forma (5NF)
+	\begin{enumerate}
+	\item[\textbullet] Relacija mora biti 4NF.
+	\item[\textbullet] Reguliše zavisnosti između relacija tako da se izbegne potreba za komplikovanim upitima za dohvatanje podataka.
+	\end{enumerate}
+
+\end{enumerate}
 
 \subsection{PostgreSQL}
 
