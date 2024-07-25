@@ -150,7 +150,7 @@ Iako ovakva formalizacija relacije deluje intuitivno (usled istorijskog uticaja 
 \subsection{Koncept ključa relacionog modela}
 
 Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolona za koji važi da nikoja dva reda te relaciju nemaju identične vrednosti za svaku kolonu iz tog skupa. Takav skup se naziva \textit{superključ} relacije. Minimalan superključ naziva se \textit{ključ kandidat}. Svaka relacija može imati više ključeva kandidata, ali samo jedan od njih je  \textit{primarni ključ} koji mora imati definisanu vrednost za svaku njegovu kolonu.
-\textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. On igra veliku ulogu u očuvanju integriteta baze podataka o čemu ce biti reči u nastavku.
+\textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. Primarni i strani ključ igraju veliku ulogu u očuvanju integriteta baze podataka o čemu ce biti reči u nastavku.
 
 \subsection{Integritet relacionog modela}
 Čuvanje integriteta relacionog modela predstavlja očuvanje vrednosti odnosno "istinitosti"  podataka koji se čuvaju u bazi. Ono nudi mehanizme očuvanja konzistentnosti podataka prilikom invazivnih operacija kao što su dodavanje reda, izmena reda ili brisanje reda u tabeli. Postoji vise vrsta integriteta u relacionom modelu: \textit{integritet entiteta}, \textit{integritet domena}, \textit{integritet neposojece vrednosti} i \textit{referencijalni integritet}.
@@ -165,9 +165,7 @@ Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolon
 
 \subsection{Normalizacija}
 
-Da bi se stanje u bazi očuvalo konzitentnim u relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoji jasno definisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces unapredđivanja logičkog dizajna baze tako da rešava problem redundantosti podataka naziva se normalizacija, ali ne po cenu očuvanja integriteta. Teorija o normalizaciji se zasniva nad konceptima normalnih formi iz matematičke logike. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se normana forma. Trenutno postoji 5 defnisanih normalnih formi. 
-
-Normalizacja predstavlja jasno definisan proces odlucivanja o tome koji atribut iu relaciji treba da budu grupisani kako bi se izbegla pojava redundantnih podataka. Redundanti podaci zauzimaju prostor na disku i otezavaju odrzavanje sistema. Normalizacija je unapredjivanje  logickog dizajna sistema tako da umanjuje dupliranje podataka kao i postizanje inkonzistentosti kroz invazivne operacije nad podacima, ali ne po cenu ocuvanja integriteta baze. Teorija o normalizaciji se zasniva na konceptima normalnih formi. Odredjenoj relaciji se dodeljuje odredjena normalna forma ukoliko zadovoljava pravila vezana za tu normalnu formu. Trenutno postoji 6 definisanih normalni formi: 
+Da bi se stanje u bazi očuvalo konzitentnim u relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoji jasno definisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces unapredđivanja logičkog dizajna baze tako da rešava problem redundantosti podataka, ali ne po cenu očuvanja integriteta, naziva se normalizacija. Teorija o normalizaciji se zasniva nad konceptima normalnih formi iz matematičke logike. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se normana forma. Trenutno postoji 5 defnisanih normalnih formi. 
 
 \begin{enumerate}
 \item Prva normalna forma (1NF)
@@ -211,8 +209,11 @@ Normalizacja predstavlja jasno definisan proces odlucivanja o tome koji atribut 
 
 \subsection{PostgreSQL}
 
-PostgreSQL je trenutno jedan od nanaprednijih baza podataka otvorenog koda.  Nastao iz POSTGRES projekta, vođenog od strane
-Profesora Majkla Stonebraker-a. Prolazio je kroz dosta faza, od POSTGRES-a preko Postgres95 da bi 1996. godine dobio ime koje je i danas aktuelno a to je PostgreSQL kako bi naglasio vezu koju je uspostavio sa najnovijim mogućnostima SQL-a. \cite{PostgresHistory}
+
+PostgreSQL je objektno-relacioni sistem za upravljanje bazama podataka (ORDBMS) nastao kao potomak POSTGRES-a, proizvoda koji je nastao, a kasnije i razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: kompleksnih upita, okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih. Postgres nudi širok spektar proširenja od strane korisnika poput dodavanja novih tipova podataka, funkcija, operatora, agregagtnih funkcija itd. 
+
+PostgresSQL koristi server-klijent model funkcionisanja. Sastoji se iz serverskog i klijentskog dela procesa. Serverski deo rukuje fajlovima baze podataka, prihvata konekcije, izvršava konkretne operacije nad bazom. Klijentski deo predstavlja aplikaciju kojom korisnik može da komunicira i rukuje podacima na serverskom delu. Klijent i server komunkciraju preko TCP/IP protokola. Serverski deo može raditi sa više konekcija istovremeno tako što svaka klijentska konekcija radi kao zaseban proces.
+
 \section{Kolonski-orijentisani model}
 % ------------------------------------------------------------------------------
 \subsection{Opšte karakteristike}
