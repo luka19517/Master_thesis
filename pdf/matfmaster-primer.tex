@@ -120,14 +120,6 @@ Nijedan od navedenih koncepata nije univerzalno rešenje, zato je bitno postojan
 Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolonski orijentisanih baza podataka. Rad će se sastojati iz teorijskog opsia navedenih tehnologija kao i opisa konkretnih predstavnika baza podataka koji će biti korišćeni. Na osnovu teorijskih izbora i istraživanja biće analizirani različiti slučajevi upotrebe. 
 
 
-\begin{figure}[!ht]
-  \vspace*{4cm}
-  \centering
-  \includegraphics[width=0.9\textwidth]{relational-column-oriented.png}
-  \caption{Kolonski orijentisan format}
-  \label{fig:grafikon}
-\end{figure}
-
 % ------------------------------------------------------------------------------
 \chapter{Modeli za upravljanje podacima}
 \label{chp:razrada}
@@ -145,7 +137,7 @@ Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i vez
 \item[\textbullet] Ne postoje dve identične vrste jedne tabele. 
 \end{enumerate}
 
-Iako ovakva formalizacija relacije deluje intuitivno (usled istorijskog uticaja koji je relacioni model ostavio na vizualizaciju organizacije podataka) ona je neophodna radi definisanja složenijih pojmova. 
+Iako ovakva formalizacija relacije deluje intuitivno (usled istorijskog uticaja koji je relacioni model ostavio na vizualizaciju organizacije podataka) ona je neophodna za  definisanje složenijih pojmova. 
 
 \subsection{Koncept ključa relacionog modela}
 
@@ -153,7 +145,7 @@ Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolon
 \textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. Primarni i strani ključ igraju veliku ulogu u očuvanju integriteta baze podataka o čemu ce biti reči u nastavku.
 
 \subsection{Integritet relacionog modela}
-Čuvanje integriteta relacionog modela predstavlja očuvanje vrednosti odnosno "istinitosti"  podataka koji se čuvaju u bazi. Ono nudi mehanizme očuvanja konzistentnosti podataka prilikom invazivnih operacija kao što su dodavanje reda, izmena reda ili brisanje reda u tabeli. Postoji vise vrsta integriteta u relacionom modelu: \textit{integritet entiteta}, \textit{integritet domena}, \textit{integritet neposojece vrednosti} i \textit{referencijalni integritet}.
+Integritet relacionog modela predstavlja "istinitost"  podataka koji se čuvaju u bazi, što je njena i najveća vrednost. Čuvanje integriteta baze posebno je važno  prilikom invazivnih operacija kao što su dodavanje reda, izmena reda ili brisanje reda u tabeli. Postoji više vrsta integriteta u relacionom modelu: \textit{integritet entiteta}, \textit{integritet domena}, \textit{integritet neposojece vrednosti} i \textit{referencijalni integritet}.
 
  \textit{Integritet entiteta} kaže da svaka vrsta jedne relacije predstavlja jedan entitet i da kao takva ne može u okviru primarnog ključa, koji taj entitet identifikuje, imati nedefinisanu ili nepostojeću vrednost.
 
@@ -163,9 +155,124 @@ Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolon
 
 \textit{Referencijalni integritet} nalaže da se svaki strani kljuc jedne tabele, ukoliko je definsan,  mora poklapati sa nekim od primarnih ključeva uparene relacije.
 
-\subsection{Normalizacija}
+\subsection{PostgreSQL}
 
-Da bi se stanje u bazi očuvalo konzitentnim u relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoji jasno definisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces unapredđivanja logičkog dizajna baze tako da rešava problem redundantosti podataka, ali ne po cenu očuvanja integriteta, naziva se normalizacija. Teorija o normalizaciji se zasniva nad konceptima normalnih formi iz matematičke logike. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se normana forma. Trenutno postoji 5 defnisanih normalnih formi. 
+
+PostgreSQL je objektno-relacioni sistem za upravljanje bazama podatak nastao kao potomak POSTGRES-a, proizvoda koji je nastao, a kasnije i razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: kompleksnih upita, okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih. Postgres nudi širok spektar proširenja od strane korisnika poput dodavanja novih tipova podataka, funkcija, operatora, agregagtnih funkcija itd. 
+
+Kao takav, PostgreSQL je pogodan sistem za čuvanje najkompleksnijih podataka i veza između njih. Mogućnost kreiranja procedura na samoj bazi u integrisanoj SQL sintaksi, daje široke mogućnosti optimizacije aplikacija. 
+
+PostgresSQL koristi server-klijent model funkcionisanja. Sastoji se iz serverskog i klijentskog dela procesa. Serverski deo rukuje fajlovima baze podataka, prihvata konekcije, izvršava konkretne operacije nad bazom. Klijentski deo predstavlja aplikaciju kojom korisnik može da komunicira i rukuje podacima na serverskom delu. Klijent i server komunkciraju preko TCP/IP protokola. Serverski deo može raditi sa više konekcija istovremeno tako što svaka klijentska konekcija radi kao zaseban proces.
+
+Postgres iza sebe ima razvijenu društvenu zajednicu, pa samim tim ima dosta izvora i dokumentacije koje mogu olakšati učenje ovog sistema.  \cite{PostgreSQLUpAndRunning}
+
+\section{Kolonski-orijentisani model}
+% ------------------------------------------------------------------------------
+\subsection{Opšte karakteristike}
+\cite{ColumnarOriented}
+Susret sa Big Data problemima dovelo je do potreba za tabelama koje imaju ogroman broj kolona, i ogroman broj redova u okviru tih tabela. Jasno je da nam je za potrebe različitih analitika potreban različit skup kolona. Novonastali zahtevi ukazali su na problem kod postojećih  relacionih modela. Svaki upit nad tabelom podrazumevao je dohvatanje svih kolona jednog reda, gde bi se filtriranje nepotrebnih kolona izvršavalo nakon što su se sve kolone učitale u memoriju. Ovo je bila samo jedna od motivacija za implemetanciju sistema zasnovanih na kolonski orijentisanom modelu koji je dizajniran tako da ovakav problem izbegne i uz to donese i druga poboljšanja o kojima će biti reči u nastavku.
+
+Kao što mu ime govori kolonski orijentisan model podatke na disku skladišti po kolonama a ne po redovima kao što je to slučaj kod relacionh modela. U prevodu, sve vrednosti kolone svih redova skladište se jedna do druge, a na konkretnu vrednosnu ćeliju referiše se pomoću ključa konkretnog reda kao i kolone čiju vrednost želimo da pročitamo. Ovakav dizajn doveo je do toga da za dohvatanje određenog skupa kolona nema potrebe da čitamo sve vrednosti tog sloga, već je dovoljno da znamo konkretan ključ tog reda kao i imena kolona čije vrednosti želimo da pročitamo.
+
+Ovakav vid skladištenja sa sobom nosi veliki potencijal za primenu raznih algoritama za kompresiju podataka.  Kompresija nad sličnim podacima koji se nalaze na uzastopnim adresama u memoriji, omogućava izbegavanje čuvanja složenih meta informacija u okviru struktura koje se koriste za tu kompresiju što ovaj model čini posebno pogodnim za njihovu primenu.
+
+Nedostajanje unapred definisanog skupa kolona, ukida smisao čuvanja nepostojeće vrednosti (null) s obzirom da ukoliko  red nema vrednost neke kolone, nema potrebe za upisivanjem bilo koje vrednosi te kolone za taj red.
+
+Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleksibilnost sheme. To kao posledicu ima da eventualna promena strukture podataka neće bitno uticati na unapred definisanu shemu, kao ni iziskivati dodatnu migraciju podataka, kao sto bi to bio slucaj kod relacionog modela. Osim toga fleksibilnost sheme se ogleda i u tome sto je broj kolona jednog vektora neogranicen, sto daje dosta prostora za eksperimentisanje sa dizajnom baze. Primer toga kako ovakvo svojstvo modela može doprineti dostizanju prednosti pri analitičkom sistemu možete videti na slici SLIKA 1. 
+\begin{figure}[!ht]
+  \vspace*{4cm}
+  \centering
+  \includegraphics[width=0.9\textwidth]{relational-column-oriented.png}
+  \caption{Kolonski orijentisan format}
+  \label{fig:grafikon}
+\end{figure}
+
+\subsection{Popularni algoritmi kompresije kolonski orijentisanog modela}
+\cite{ColumnarOptimizations}
+\subsubsection{Enkodiranje zasnovano na rečniku}
+
+Enkodiranje zasnovano na rečniku (Dictionary based encoding) jeste tehnika kompresije podataka koja se može primeniti na vrednosti jedne kolone ili skupa kolona. Najefikasnija je nad kolonama koje imaju mali skup mogućih vrednosti. Rade tako što se u memoriji sačuvaju sve moguće vrednosti te kolone i svakoj od njih se dodeli ključ. Veličina ključa je direktno zavisna od kardinalnosti skupa vrednosti koje se mapiraju. Svaki unos ili izmena vrednosti kolone u konsultaciji sa postojećim rečnikom radi enkodiranje pristigle vrednosti, a svako dohvatanje vrednosti radi dekodiranje sačuvane vrednosti. Ovim se izbegava ponavljanje velikih podataka tako smanjujući potrebnu memoriju na disku. Uglavnom su pogodne primene nad kolonama sa statičkim i opisnim podacima koji se ponavljaju.
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{DictionaryEncoding.jpg}
+  \caption{Enkodiranje zasnovano na recniku}
+  \label{fig:grafikon}
+\end{figure}
+
+
+\subsubsection{Enkodiranje po broju ponavljanja}
+
+Enkodiranje po broju ponavljanja (Run Length Encoding) je jednostavan mehanizam za kompresiju podataka pogodan kompresiju kolona kod koje se vrednosti ponavljaju. Funkcioniše tako što kada se naiđe na vrednost koja se ponavlja, ne skladišti duplikate već sačuva tu vrednost jednom a dodatno kao meta informaciju prosledi koliko puta se ta vrednost ponavlja. Takav vid optimizacije najkorisnije je očigledno kada su vrednosti sortirane, a s obzirom da su vrednosti kolona u kolonski orijentisanim bazama jedna do druge to otvara prostor za ovaj vid kompresije podataka kako bi se umanjilo zauzeće prostora.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{run-length-encoding.jpg}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
+\subsubsection{Delta enkoding}
+Delta enkoding je mehanizam za optimizaciju prostora baze podataka koji se zasniva na čuvanju razlike između objekata a ne celih vrednosti. Primera za upotrebu ima dosta a jedan od najčešćih je slučaj datumskih kolona, gde će nam referentna vrednost biti neki konkretan datum, a vrednosti ostalih kolona će biti čuvane kao razlika u odnosu na njega. Kao što je rečeno pogodna je za datumske vrednosti ali postoje i drugi tipovi, kao što su numerički, kod kojih ovaj vid kompresije može doneti unapređenja u vidu slobodnog prostora na disku.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{delta-encoding.png}
+  \caption{Delta enkoding}
+  \label{fig:grafikon}
+\end{figure}
+
+\subsection{HBase}
+
+HBase je distribuirana kolonski orijentisana nerelaciona baza podataka  pisana u javi.  Nastala je 2007 kao prototip BigTable baze koja je modelovana u okviru Google-ovog članka 2006 \cite{BigTable}. 
+
+Model podataka koji HBase koristi podrazumeva da se kolone svakog reda grupisu u familije tzv familije kolona. Cilj je da kolone koje su po prirodi slične pripadaju istoj familiji kolona, kako bi se nad njima mogli primeniti algoritmi kompresije, s obizrom da će se kolone koje pripadaju jednog familije nalaziti u okviru jednog HFile fajl-a koji se sladišti na disku. 
+
+HBase ne podržava postojanje indeksa, međutim podrazumevano ponašanje je da su ključevi svih redova sortirani rastuće, tako da se koristi binarna pretraga za pretragu vredosnti po ključu reda kojem pripada. Ovo daje na važnosti strategiji pro dizajniranju ključa. Poželjno je da svaka pretraga ide direktno preko ključa ili njegovog prefiksa. 
+
+Vrednosnu ćeliju u HBase tabeli određuje ključ reda, ime kolone te vrednosne ćelije, kao i familija kojoj kolona pripada.
+
+HBase nije ACID baza podataka, ali garantuje konzistentnost u radu sa jednim redom.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{colFamily.png}
+  \caption{Hbase model}
+  \label{fig:grafikon}
+\end{figure}
+
+Arhitektura HBase klastera sastoji se iz dve glavne komponente:  master server i region server.  Ove komponente je najbolje opisati kroz interfejse koje oni implementiraju. 
+
+Region server implementira HRegionInterface, odnosno implementira servise koji se bave operacijama nad podacima i održavanjem i upravljanjem regiona. Jedan region čine podaci za redove u nekom rasponu vrednosti ključeva. Region server kreira i dohvata HFile fajlove koji se čuvaju na disku. HBase dozvoljava dva režima: samostalan i distribuirani režim.
+
+Samostalan režim HFile fajlove može čuvati na lokalnom fajl sistemu i korišćenje HDFS-a je opciono.
+
+U distribuiranom režimu sa druge strane neophodno je korišćenje HDFS-a za skladištenje. Region server možemo zamisliti kao indeks za dohvatanje HFile-ova sa sa diska.  Svaka izmena koja treba da se izvrši na disku prvo se upisuje u WAL (Write ahead log), a nova izmenjena vrednost se upisuje u MemStore fajl. Kada se MemStore fajl upuni tek tada se izmene flush-uju u jedan HFile koji dalje ide na HDFS. 
+
+HMaster implementira HMasterInterface koji sadrži servise koji rade sa metainformacijama o tabelama, familijama kolona, kao i regiona. Uloga Mastera je da za svaki konkretan row id može da odredi koji region odnostno region server treba da bude pročitan kako bi se izvršila odgovarajuća operacija. Za postizanje navedene funkcionalnosti HMaster koristi Zookeeper \cite{BigTable} servis. Pored toga master servis ima pozadinske procese koji regulišu rad load balansera i sadržaj hbase:meta tabele.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{hbase-standalone.png}
+  \caption{HBase standalone}
+  \label{fig:grafikon}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{hbase-distributed.png}
+  \caption{HBase distributed}
+  \label{fig:grafikon}
+\end{figure}
+
+
+\pagebreak
+
+\section{Glavne razlike između relacionog i kolonski-orijentisanog modela}
+
+
+\subsection{Normalizacija i denormalizacija}
+
+Da bi se stanje u bazi olakšalo čuvanje podataka konzitentnim u relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoji jasno definisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces unapredđivanja logičkog dizajna baze tako da rešava problem redundantosti podataka, ali ne po cenu očuvanja integriteta, naziva se normalizacija. Teorija o normalizaciji se zasniva nad konceptima normalnih formi iz matematičke logike. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se normana forma. Trenutno postoji 5 defnisanih normalnih formi. 
 
 \begin{enumerate}
 \item Prva normalna forma (1NF)
@@ -207,83 +314,47 @@ Da bi se stanje u bazi očuvalo konzitentnim u relacionim modelima često se rad
 
 \end{enumerate}
 
-\subsection{PostgreSQL}
+Modeli koji su bili podloženi normalizaciji obično raspolažu velikim brojem referencijalnih ključeva u tabelama koji predstavlaju referencu ka originalnim podacima iz matične tabele u kojoj se nalaze. Ukoliko želimo da pristupimo celom podatku iz neke tabele koja referiše na njega, podrazumeva se da ćemo pročitati celu tabelu na koju ta referenca pokazuje, što povećava broj operacija čitanja sa diska samim timmože uticati na performanse.
 
+Denormalizacija je strategija kod modela gde je neophodno ubrzati operacije čitanja podataka, odnosno umanjiti broj tabela kojima je neophodno pristupiti kako bi se neki skup podataka pročitao iz baze podataka.  
 
-PostgreSQL je objektno-relacioni sistem za upravljanje bazama podataka (ORDBMS) nastao kao potomak POSTGRES-a, proizvoda koji je nastao, a kasnije i razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: kompleksnih upita, okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih. Postgres nudi širok spektar proširenja od strane korisnika poput dodavanja novih tipova podataka, funkcija, operatora, agregagtnih funkcija itd. 
+Neke od tehnika denormalizacije su dodavanje redundantne kolone, horizontalna podelea tabele, vertikalna podela tabele, uvođenje izvedene kolone. 
+Pre join kolone  je  dodavanje kolone tabeli čija se referenca na vrednost te kolone često koristi. 
+Horizontalno deljenje tabele podrazumeva da se na osnovu prirode podataka jedna tabela podeli na više tabela tako da se čitanje svede samo na čitanje grupe redova. 
+Vertikalno deljenje podrazumeva da se tabela podeli grupisanjem kolona koje se često čitaju zajedno. 
+Uvođenje izvedene kolone predstavlja dodavanje kolone koja predstavlja vrednost neke agregatne funkcije, time se izbegava da se pri čitanju ta operacija izvršava, već se radi prosto čitanje.
 
-PostgresSQL koristi server-klijent model funkcionisanja. Sastoji se iz serverskog i klijentskog dela procesa. Serverski deo rukuje fajlovima baze podataka, prihvata konekcije, izvršava konkretne operacije nad bazom. Klijentski deo predstavlja aplikaciju kojom korisnik može da komunicira i rukuje podacima na serverskom delu. Klijent i server komunkciraju preko TCP/IP protokola. Serverski deo može raditi sa više konekcija istovremeno tako što svaka klijentska konekcija radi kao zaseban proces.
-
-\section{Kolonski-orijentisani model}
-% ------------------------------------------------------------------------------
-\subsection{Opšte karakteristike}
-\cite{ColumnarOriented}
-Susret sa Big Data problemima dovelo je do potreba za tabelama koje imaju ogroman broj kolona, i ogroman broj redova u okviru tih tabela. Jasno je da nam je za potrebe različitih analitika potreban različit skup kolona. Navedena problematika predstavlja jedan od uočenih problema relacionih modela, gde je samo izvršavanje upita podrazumevalo dohvatanje svih kolona jednog reda, gde bi se filtriranje nepotrebnih kolona izvršavalo nakon što su se sve kolone učitale u memoriju. Kolonski orijentisan model dizajniran je tako da ovakav problem izbegne i uz to donese i druga poboljšanja o kojima će biti reči u nastavku.
-
-Kolonski orijentisan model podatke tabele ne skladišti po redovima, već po kolonama. U prevodu, sve vrednosti kolone svih redova skladište se jedna do druge, a na konkretnu vrednosnu ćeliju referiše se pomoću ključa konkretnog reda kao i kolone čiju vrednost želimo da pročitamo. Ovakav dizajn doveo je do toga da za dohvatanje određenog skupa kolona nema potrebe da čitamo sve vrednosti tog sloga, već je dovoljno da znamo konkretan ključ tog reda kao i imena kolona čije vrednosti želimo da pročitamo.
-
-S obzriom na bliskost   podataka na disku, nameće se mogućnost kompresije podataka, a s obzirom da su ti slični podaci lokalizovani na disku nema potrebe za velikom količinom meta informacija o kompresiji, što ovaj model čini posebno pogodnim za njihovu primenu.
-
-Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleksibilnost sheme. To kao posledicu to da eventualna promena strukture podataka nece bitno uticati na unapred definisanu shemu, kao ni iziskivati migraciju podataka, kao sto bi to bio slucaj kod relacionog modela. Osim toga fleksibilnost sheme se ogleda i u tome sto je broj kolona jednog vektora neogranicen, sto daje dosta prostora za eksperimentisanje sa dizajnom baze. Primer toga kako ovakvo svojstvo modela može doprineti dostizanju prednosti pri analitičkom sistemu možete videti na slici SLIKA 1. 
-
-\subsection{Popularni primenjivi algoritmi kompresije}
-\cite{ColumnarOptimizations}
-\subsubsection{Enkodiranje zasnovano na recniku}
-
-Enkodiranje zasnovano na rečniku (Dictionary based encoding) jeste tehnika kompresije podataka koja se može primeniti na vrednosti jedne kolone. Najefikasnija je nad kolonama koje imaju mali skup mogućih vrednosti. Rade tako što se u memoriji sačuvaju sve moguće vrednosti te kolone i svakoj od njih se dodeli ključ. Veličina ključa je direktno zavisna od kardinalnosti skupa vrednosti te kolone. Svaki unos ili izemna vrednosti kolone u konsultaciji sa postojećim rečnikom radi enkodiranje pristigle vrednosti, a svako dohvatanje vrednosti radi dekodiranje sačuvane vrednosti. Ovim se izbegava smanjuje ponavljanje velikih podataka tako smanjujući potrebnu memoriju na disku. Uglavnom su pogodne primene nad kolonama sa statičkim i opisnim podacima koji se ponavljaju.
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.6\textwidth]{DictionaryEncoding.jpg}
-  \caption{Enkodiranje zasnovano na recniku}
-  \label{fig:grafikon}
-\end{figure}
-
-
-\subsubsection{Enkodiranje po broju ponavljanja}
-
-Enkodiranje po broju ponavljanja (Run Length Encoding) je jednostavan mehanizam za kompresiju podataka pogodan za kolonski orijentisane baze podataka. Funkcioniše tako što kada se naiđe na vrednost koja se ponavlja, ne skladišti duplikate već sačuva tu vrednost jednom a dodatno kao meta informaciju prosledi koliko se ta vrednost ponavlja. Takav vid optimizacije najkorisnije je očigledno kada su vrednosti sortirane, a s obzirom da su vrednosti kolona u kolonski orijentisanim bazama jedna do druge to otvara prostor za ovaj vid kompresije podataka kako bi se umanjilo zauzeće prostora.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.6\textwidth]{run-length-encoding.jpg}
-  \caption{Enkodiranje po broju ponavljanja}
+  \includegraphics[width=0.9\textwidth]{denormalizacija.png}
+  \caption{Pre join kolone}
   \label{fig:grafikon}
 \end{figure}
-
-\subsubsection{Delta enkoding}
-Delta enkoding je mehanizam za optimizaciju prostora baze podataka koji se zasniva na čuvanju razlike između objekata a ne celih vrednosti. Primera za upotrebu ima dosta a jedan od najčešćih je slučaj datumskih kolona, gde će nam referentna vrednost biti neki konkretan datum, a vrednosti ostalih kolona će biti čuvane kao razlika u odnosu na njega, te je očigledna velika količina prostora koja se čuva u takvom slučaju korišćenjem ovog vida optimizacije.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{delta-encoding.png}
-  \caption{Delta enkoding}
+  \includegraphics[width=0.9\textwidth]{denormalizacija2.png}
+  \caption{Horizontalna podela tabele}
   \label{fig:grafikon}
 \end{figure}
-
-\subsection{HBase}
-
-HBase je distribuirana kolonski orijentisana nerelaciona baza podataka  pisana u javi. Izvršava se nad HDFS (Hadoop Distributed File System) arhitekturom. Nastala je 2007 kao prototip BigTable baze koja je modelovana u okviru Google-ovog članka 2006 \cite{BigTable}. 
-
-Arhitektura HBase klastera sastoji se iz tri glavne komponente: HMaster, Region server, i HDFS.  Ove komponente je najbolje opisati kroz interfejse koje oni implementiraju. 
-
-HDFS je sloj nad kojim radi HBase arhitektura. Osnovna organizaciona jedinica podataka koju HBase upisuje na HDFS jeste HFile. HFile može biti podeljen na više blokova u okviru HDFS-a ali o tome se on ne brine. 
-
-Region server implementira HRegionRegionInterface, odnosno implementira servise koji se bave operacijama nad podacima i održavanjem i upravljanjem regiona. Jedan Region sadrži određeni skup podataka za neke ključeve koji su u određenom rasponu vrednosti.  Njega možemo zamisliti kao indeks za dohvatanje HFile-ova sa HDFS-a.  Svaka izmena koja treba da se izvrši na disku prvo se upisuje u WAL (Write ahead log), a nova izmenjena vrednost se upisuje u MemStore fajl. Kada se MemStore fajl upuni tek tada se izmene flush-uju u jedan HFile koji dalje ide na HDFS. 
-
-HMaster implementira HMasterInterface koji sadrži servise koji rade sa metainformacijama o tabelama, familijama kolona, kao i regiona. Uloga Mastera je da za svaki konkretan row id može da odredi koji region odnostno region server treba da bude pročitan kako bi se izvršila odgovarajuća operacija. Za postizanje navedene funkcionalnosti HMaster koristi Zookeeper \cite{BigTable} servis. Pored toga master servis ima pozadinske procese koji regulišu rad load balansera i sadržaj hbase:meta tabele.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.7\textwidth]{hbase-arhitektura.png}
-  \caption{HBase arhitektura}
+  \includegraphics[width=0.9\textwidth]{denormalizacija3.png}
+  \caption{Vertikalna podela tabele}
   \label{fig:grafikon}
 \end{figure}
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{denormalizacija4.png}
+  \caption{Uvođenje izvedene kolone}
+  \label{fig:grafikon}
+\end{figure}
 \pagebreak
 
-\section{Glavne razlike između relacionog i kolonski-orijentisanog modela}
-
-\subsection{ACID vs BASE}
+\subsection{ACID i BASE}
 
 ACID (Atomicity, Consistency, Isolation, Durability) svojstva služe kao garancija tačnosti i konzistetnosti podataka prilikom konkurentnom pristupu. 
 
