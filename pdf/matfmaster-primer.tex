@@ -194,7 +194,7 @@ Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleks
 Enkodiranje zasnovano na rečniku (Dictionary based encoding) jeste tehnika kompresije podataka koja se može primeniti na vrednosti jedne kolone ili skupa kolona. Najefikasnija je nad kolonama koje imaju mali skup mogućih vrednosti. Rade tako što se u memoriji sačuvaju sve moguće vrednosti te kolone i svakoj od njih se dodeli ključ. Veličina ključa je direktno zavisna od kardinalnosti skupa vrednosti koje se mapiraju. Svaki unos ili izmena vrednosti kolone u konsultaciji sa postojećim rečnikom radi enkodiranje pristigle vrednosti, a svako dohvatanje vrednosti radi dekodiranje sačuvane vrednosti. Ovim se izbegava ponavljanje velikih podataka tako smanjujući potrebnu memoriju na disku. Uglavnom su pogodne primene nad kolonama sa statičkim i opisnim podacima koji se ponavljaju.
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.6\textwidth]{DictionaryEncoding.jpg}
+  \includegraphics[width=0.9\textwidth]{DictionaryEncoding.jpg}
   \caption{Enkodiranje zasnovano na recniku}
   \label{fig:grafikon}
 \end{figure}
@@ -206,7 +206,7 @@ Enkodiranje po broju ponavljanja (Run Length Encoding) je jednostavan mehanizam 
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.6\textwidth]{run-length-encoding.jpg}
+  \includegraphics[width=0.9\textwidth]{run-length-encoding.jpg}
   \caption{Enkodiranje po broju ponavljanja}
   \label{fig:grafikon}
 \end{figure}
@@ -356,6 +356,7 @@ Uvođenje izvedene kolone predstavlja dodavanje kolone koja predstavlja vrednost
 
 \subsection{ACID i BASE}
 
+
 ACID (Atomicity, Consistency, Isolation, Durability) svojstva služe kao garancija tačnosti i konzistetnosti podataka prilikom konkurentnom pristupu. 
 
 Atomicity se može objasniti pravilom: Jedna transakcija se izvršava u celini ili se ne izvršava nijedan njen deo. U prevodu, dejstvo transakcije je nedeljivo. 
@@ -366,26 +367,36 @@ Consistency se čuva od strane korisnika. Bitno je da korisnik koji pokreće tra
 
 Isolation svojstvo nalaže da se transakcije međusobno izolovane tako da izvršavanje jedne transakcije ne može uticati na izvršavanje druge. Ovo se obezbeđuje pomoću scheduler-a od strane samog sistema za upravljanje bazom podataka.
 
-BASE (Basic Availability, Soft state, Eventual consistency) je skup svojstava koje je definisao Eric Brewer , a koja su nastala usled zelje da se formalizuju svojstva koja u Big Data svetu garantuju da je baza pogodna za horizontalno skaliranje a ujedno daje vid konzistentnosti koji je neophodan. 
+ACID svojstva obično su karakteristika relacionog modela.
 
-Basically available  svojstvo kaze da ukoliko imamo klaster sa vise pojedicanih node-ova baze, problem sa jednim od njih nece spreciti da ostali node-ovi procesiraju zahteve i salju odgovore.
+BASE sa druge strane je skup svojstava koje je definisao Eric Brewer , a koja su nastala usled zelje da se formalizuju svojstva koja u Big Data svetu garantuju da je baza pogodna za horizontalno skaliranje a ujedno daje vid konzistentnosti koji je neophodan. 
 
-Soft state -  svojstvo kaze da se stanje podataka moze menjati, cak i u trenucima kada nema spoljnih komunikacija sa bazom podataka. Ovo je posledica treceg svojstva.
+Suštinska rasoloživost  svojstvo kaze da ukoliko imamo klaster sa vise pojedinačnih skladišta baze, problem sa jednim od njih nece spreciti da ostala skladišta procesiraju zahteve i salju odgovore.
 
-Eventual consistency garantuje da ce baza podataka u periodima kada nema spoljne komunikacije sa klijentima, postati konzistentna kroz neki vremenski period. 
+Trenutno nekonzistento stanje -  svojstvo kaze da se stanje podataka moze menjati, cak i u trenucima kada nema spoljnih komunikacija sa bazom podataka.
 
-Kolonski orijentisan model nacelno ne mora da ispunjava BASE svojstva, ali to obicno jeste slucaj upravo zbog horizontalnog skaliranja koja ima tendenciju da ponudi.
+Konvergentna konzistencija garantuje da ce baza podataka u periodima kada nema spoljne komunikacije sa klijentima, postati konzistentna kroz neki vremenski period. 
 
+Kolonski orijentisan model načelno ne mora da ispunjava BASE svojstva, ali to obicno jeste slucaj upravo zbog horizontalnog skaliranja koja ima tendenciju da ponudi.
 
-\subsection{Skalabilnost}
+\subsubsection{CAP teorema}
+
+U teoriji sistema za čuvanje podataka, CAP teorema koju je definsiao Eric Brewer, navodi da baza podatka koja skladišti deljene (distribuirane podatke) ne može istovremeno ispunjavati konzistentnost, raspoloživost, toleranciju razdvojenosti.
+Tolerancija razdvojenosti je svojstvo koje se obično pordazumeva i njegovo odsustvo sistem čini ne prihvatljivim u praksi. Ovo navodi da se od relaciono modela načelno očekuje da u distribuiranom okruženju osim tolerancije razdvojenosti nudi i konzistentost, za razliku od kolonski orijentisane nerelacione baze koja konzistetnost ne garantuje (ali garantuje konvergentnu konzistenciju) pa samim tim fleksibilnije radi nad deljenim podacima.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.6\textwidth]{horizontal-vertical-scaling.jpg}
-  \caption{Enkodiranje po broju ponavljanja}
+  \includegraphics[width=0.9\textwidth]{cap.png}
+  \caption{CAP teorema}
   \label{fig:grafikon}
 \end{figure}
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{horizontal-vertical-scaling.jpg}
+  \caption{Vertikalna i horizontalna skalabilnost}
+  \label{fig:grafikon}
+\end{figure}
 % ------------------------------------------------------------------------------
 \chapter{Slučajevi upotrebe}
 % ------------------------------------------------------------------------------
