@@ -225,7 +225,7 @@ Delta enkoding je mehanizam za optimizaciju prostora baze podataka koji se zasni
 
 HBase je distribuirana kolonski orijentisana nerelaciona baza podataka  pisana u javi.  Nastala je 2007 kao prototip BigTable baze koja je modelovana u okviru Google-ovog članka 2006 \cite{BigTable}. 
 
-Model podataka koji HBase koristi podrazumeva da se kolone svakog reda grupisu u familije tzv familije kolona. Cilj je da kolone koje su po prirodi slične pripadaju istoj familiji kolona, kako bi se nad njima mogli primeniti algoritmi kompresije, s obizrom da će se kolone koje pripadaju jednog familije nalaziti u okviru jednog HFile fajl-a koji se sladišti na disku. 
+Model podataka koji HBase koristi podrazumeva da se svaka tabela sastoji iz familije kolona, a da svaka familija kolona sadrži određeni broj atributa nekog reda. Cilj je da atributi, odnosno kolone koje su po prirodi slične pripadaju istoj familiji kolona, kako bi se nad njima mogli primeniti algoritmi kompresije, s obizrom da će se kolone koje pripadaju jednog familije sladištiti blizu na disku. Hbase nudi fleksibilnost sheme, pa s toga da bismo neki podatak skladištili ne moramo unapred da definišemo skup kolona koji pripada nekoj tabeli , ali moramo definisati skup familija kolona te tabele kako bi bilo moguće odrediti pogodnu lokaciju skladištenja podatka.
 
 HBase ne podržava postojanje indeksa, međutim podrazumevano ponašanje je da su ključevi svih redova sortirani rastuće, tako da se koristi binarna pretraga za pretragu vredosnti po ključu reda kojem pripada. Ovo daje na važnosti strategiji pro dizajniranju ključa. Poželjno je da svaka pretraga ide direktno preko ključa ili njegovog prefiksa. 
 
@@ -401,11 +401,7 @@ Tolerancija razdvojenosti je svojstvo koje se obično pordazumeva i njegovo odsu
 \chapter{Slučajevi upotrebe}
 % ------------------------------------------------------------------------------
 \section{Opis i sadržaj eksperimenta}
-Analiza i uporedjivanje slucajeva upotrebe bice realizovani na osnovu teorijskih i prakticnih  izvora i istrazivanja. Svaki primer ce biti pracen eksperimentom koji ce se sastojati od izvrsavanja razlicitih vrsta postupaka. Kao platforma za realizaciju eksperimenata koriscen je host sa docker engine-om. Specifikacije Host-a data je na slici. Pokretanje svakog od eksperimenata je identicno. U okviru repozitorijuma nalazi se sav shell i java kod kao i uputstvo za pokretanje svakog od eksperimenta, zajedno sa deplojment dijagramom.
-
-Svakom eksperimentu dodeljen je precizno definisan kontekst radi uspostavljanja potpune kontrole okruzenja u kojem se eksperiment realizuje. U svrhu definisanja konteksta eksperimenata delom su iskoriscene poznate specifikacije za benchmark bazi podataka. Konkretno za slucaj OLTP okruzenja konsultovana je TPC-C specifikacija, za slucaj OLAP okruzenja konsultovana je TPC-H specifikacija. Distribuirao okruzenje je izuzeto.
-
-Analiza rezultata eksperimenta sprovodi se kroz vise faza. Prva faza je uporedjivanje slozenosti , sto arhitekturalne, sto shematske, realizacije konkretnog slucaja upotrebe kao i da li je konkretan slucaj upotrebe moguce realizovati sa postojecom tehnologijom. Druga faza je uporedjivanje efikasnosti, koja podrazumeva uporedjivanje vremena izvrsavanja programa.  Svaka od faza ce ukljucivati tekstualnu diskusiju, slike kao i druge graficke prikaze ukoliko su pogodni.
+Analiza i uporedjivanje slucajeva upotrebe bice realizovani na osnovu teorijskih i prakticnih  izvora i istrazivanja. Svaki primer ce biti pracen eksperimentom koji ce se sastojati od izvrsavanja razlicitih vrsta postupaka.
 
 Kako bi se postigao dovoljan dokaz koncepta (eng. proof of concept), ali i doslednost modernom
 vremenu, kategorije slucajeva upotrebe koji ce biti obuhvaceni su:
@@ -415,21 +411,40 @@ vremenu, kategorije slucajeva upotrebe koji ce biti obuhvaceni su:
 \item Primena u distribuiranom okruzenju
 \end{enumerate}
 
+Svakom slučaju upotrebe u okviru pripreme eksperimenata dodeljen je kontekst u skladu sa slučajem upotrebe koji se testira.  Kontekst predstavlja konkretan model podataka nad kojim se izvršavaju testovi.
+
+Pored definisanja konteksta, analiza slučaja upotrebe sadržaće opis java implementaicije testova nad predstavnicima, kao i analizu rezultata na kraju.
+
+Analiza rezultata eksperimenta sprovodi se kroz vise faza. Prva faza je uporedjivanje slozenosti realizacije konkretnog slucaja upotrebe kao i to da li je konkretan slucaj upotrebe moguce realizovati sa postojecom tehnologijom. Druga faza je uporedjivanje efikasnosti, koja podrazumeva uporedjivanje vremena izvrsavanja programa.  Svaka od faza ce ukljucivati tekstualnu diskusiju, slike kao i druge graficke prikaze ukoliko su pogodni.
+
 \subsection{Platforma testiranja}
 
-Kao okruženje za izvršavanje eksperimenata korišćen je docker.  Oba predstavnika bice pokrenuta u okviru nezavisnih kontejnera na jednom host-u sa docker engine-om. Svaki test predstavlja jedan java program koji se izvršava na konkretnom kontejneru, kako bi se izbegao bilo kakav vid spoljne komunikacije i kako bi se stekla što preciznija slika na osnovu rezultata merenja.  
-
-Svaki test imaće određene parametrke koji se postavljaju pri pokretanju testa. Parametri su broj iteracija/transakcija koje će test izvršiti kao i broj konekcija(odnosno klijenata) koji će paralelno u zasebnim nitima obavljati svoj deo posla.
-
-Programi za OLAP i OLTP testiranje kreiraju se nezavisno s obzirom na kontekst (drugačiji model i test logika) u kojem se izvršavaju. Za OLTP i OLAP testiranje postoji po jedan maven artifakt kojeg će koristiti i HBase i Postgres jar-ovi koji predstavljaju kostur programa za testiranje. Svrha tog zajedničkog jar-a jeste da garantuje da će oba testa imati isti kostur, te da će se HBase i Postgres testovi razlikovati jedino po implementaciji  odgovarajućih utility funkcija. 
+Kao okruženje za izvršavanje eksperimenata korišćen je docker.  Oba predstavnika bice pokrenuta u okviru nezavisnih kontejnera na jednom host-u sa docker engine-om. Svaki test predstavlja jedan java program koji se izvršava na konkretnom kontejneru, kako bi se smanjila potreba za evenutalnim saobraćajem kroz mrežu kako bi se tako stekla što objektivinija slika na osnovu rezultata merenja.
 
 
-S obzirom da je u OLAP testu obuhvaćen segment za merenje bulk load-a podataka iz odgovarajućih csv fajlova, taj segment je takođe uključen u kostur testiranja.
+Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja u nastavke treba uzeti u obzir da implementacija navedenih koncepata nije opšta za sve relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
 
-Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate merenja u nastavke treba uzeti u obzir da implementacija navedenih koncepata nije opsta za sve Relacione sisteme kao ni za sve kolonski orijentisane baze podataka.
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{deployment_diagram.png}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
+\pagebreak
+
+\section{Primena u online transakcionom procesiranju (OLTP)}
+
+Online transakciono procesiranje obično obuhvata kratke, jednostavne, učestale promene  na relativno malom skupu podataka. Njih odlikuje velik broj invazivnih operacija nad bazom ali i veliki broj čitanja individualnih redova po nekom skupu atributa. Da bismo simulirali ovakvo okruženje korišćen je primer online transakcija i prenosa sredstava sa jednog računa na drugi. Parametri testa će biti broj biznis transakcija koje treba izvršiti u tom konkretnom testu, kao i broj klijenata, odnoso konekcija ka bazi, koji će paralelno obavljati svoj deo posla u okviru ovog testa. Jedna biznis transakcija sastoji se iz kreiranja transakcije, izvršavanje transakcije, odnosno prenos sredstava sa jednog računa na drugi, i na kraju provera statusa transakcije. 
+
+
+\subsection{Modeli podataka}
+
+Specifikacije modela su u nastavku:
 
 \lstset{
+  language=sql,
   basicstyle=\footnotesize,
   keywordstyle=\color{red},
   backgroundcolor = \color{lightgray},
@@ -438,41 +453,74 @@ Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate me
   frame=single
 }
 
-\begin{lstlisting}[title={docker-compose.yml},captionpos=t]
-services: 
-  postgres:
-    container_name: postgres
-    ports:
-      - "5433:5432"
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgresdb
-    build:
-      context: .
-      dockerfile: ./Dockerfile_postgres
-  hbase-master:
-    image: blueskyareahm/hbase-base:2.1.3
-    command: master
-    ports:
-      - 16000:16000
-      - 16010:16010
-    volumes:
+\begin{lstlisting}[title={setup-postgres-model.sql},captionpos=t]
 
-  hbase-regionserver:
-    image: blueskyareahm/hbase-base:2.1.3
-    command: regionserver
-    ports:
-      - 16030:16030
-      - 16201:16201
-      - 16301:16301
+CREATE TABLE postgresdb.FXRATES (
+	CURRENCY_FROM  VARCHAR(50) NOT NULL,
+	CURRENCY_TO VARCHAR(50) NOT NULL,
+	RATE real NOT NULL,
+	PRIMARY KEY(CURRENCY_FROM,CURRENCY_TO)
+);
 
-  zookeeper:
-    image: blueskyareahm/hbase-zookeeper:3.4.13
-    ports:
-      - 2181:2181
+CREATE TABLE postgresdb.FXUSER (
+	ID  INTEGER PRIMARY KEY,
+	USERNAME VARCHAR (50) UNIQUE NOT NULL,
+	PASSWORD VARCHAR (50) NOT NULL,
+	START_BALANCECURRENCY VARCHAR (10) NOT NULL,
+	START_BALANCE real NOT NULL,
+	FIRSTNAME VARCHAR(100) NOT NULL,
+	LASTNAME VARCHAR(100) NOT NULL,
+	STREET VARCHAR(100) NOT NULL,
+	CITY VARCHAR(100) NOT NULL,
+	STATE VARCHAR(100) NOT NULL,
+	ZIP VARCHAR(50) NOT NULL,
+	PHONE VARCHAR(30) NOT NULL,
+	MOBILE VARCHAR(30) NOT NULL,
+	EMAIL VARCHAR(50) UNIQUE NOT NULL,
+	CREATED TIMESTAMP NOT NULL
+);
+
+CREATE TABLE postgresdb.FXACCOUNT (
+	ID  INTEGER PRIMARY KEY,
+	FXUSER INTEGER NOT NULL  REFERENCES postgresdb.FXUSER(ID),
+	CURRENCY_CODE VARCHAR(10) NOT NULL,
+	BALANCE real NOT NULL,
+	CREATED TIMESTAMP NOT NULL,
+	UNIQUE (FXUSER, CURRENCY_CODE)
+);
+
+CREATE TABLE postgresdb.FXTRANSACTION (
+	ID INTEGER PRIMARY KEY,
+	FXACCOUNT_FROM  INTEGER REFERENCES postgresdb.FXACCOUNT(ID),
+	FXACCOUNT_TO  INTEGER REFERENCES postgresdb.FXACCOUNT(ID),
+	AMOUNT NUMERIC(15,2) NOT NULL,
+	STATUS VARCHAR(50) NOT NULL,
+	ENTRY_DATE TIMESTAMP NOT NULL
+);
+
+
 \end{lstlisting}
 
+\lstset{
+  language=java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={setup-hbase-model.sh},captionpos=t]
+create fxrates, 'data';
+create fxuser, 'data';
+create fxaccount, 'data';
+create fxtransaction, 'data';
+\end{lstlisting}
+
+\subsection{Implementacija testa}
+
+U nastavku se nalazi java klasa zadužena za izvršavanje testova nad bazama:
 
 \lstset{
   language=Java,
@@ -528,72 +576,43 @@ default void executeOLTPWorkload
     }
 \end{lstlisting}
 
-\lstset{
-  language=Java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{red}
+
+
+\begin{lstlisting}[title={BenchmarkSIngleClientExecutor.java},captionpos=t]
+
+public class BenchmarkSingleClientExecutor implements Runnable {
+
+    private final CountDownLatch endSignal;
+    private final BenchmarkOLTPUtility oltpUtil;
+    private final int numOfT;
+    private final int startFrom;
+
+    private final Object connection;
+
+    @Override
+    public void run() {
+
+       try {
+         for (int i = this.start; i < this.start + this.numOfT; i++) {
+             ExecutePaymentInfo executePaymentInfo = 
+	        oltpUtil.createFXTransaction(connection);
+	     oltpUtil.executePayment(connection,executePaymentInfo);
+             oltpUtil.checkTransactionStatus(connection,fxT);
+          }
+          endSignal.countDown();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
 
-\begin{lstlisting}[title={OLAPBenchmarkExecutor.java},captionpos=t]
-default void executeBulkLoad
-	(BenchmarkUtility util,BenchmarkOLAPUtility olapUtil) {
-        long bulkLoadStart = System.currentTimeMillis();
-        olapUtility.bulkLoad(benchmarkUtility.connect());
-        long bulkLoadEnd = System.currentTimeMillis();
-        System.out.println("Bulk load duration: "+
-       	 	 (bulkLoadEnd-bulkLoadStart));
-    }
-
-default void executeOLAPWorkload
-    (BenchmarkUtility util, BenchmarkOLAPUtility olapUtil, 
-          int iterNum, int clNum)  {
-
-        List<Integer> itsPerClientList = new ArrayList<>();
-        int iterationsToAssign = iterNum;
-        int iterationsPerClient = iterationsToAssign / clNum;
-
-        for(int i = 0; i<clNum;i++){
-            itsPerClientList.add(iterationsPerClient);
-            iterationsToAssign-=iterationsPerClient;
-        }
-        if (iterationsToAssign > 0) {
-            int iterationsForLastClient = itsPerClientList.get(
-							clNum - 1);
-            itsPerClientList.set(clNum - 1, 
-			iterationsForLastClient + iterationsToAssign
-					  );
-        }
-
-        assert clNum==itsPerClientList.size();
-
-        Thread[] threads = new Thread[clNum];
-        CountDownLatch latch = new CountDownLatch(clNum);
-        for(int i = 0;i<clNum;i++){
-            threads[i] = new Thread(
-				new BenchmarkSingleClientExecutor(
-					util,olapUtil,
-					i*itsPerClientList.get(i),
-					itsPerClientList.get(i),
-					latch)
-			  );
-        }
-
-
-        long startTimestamp = System.currentTimeMillis();
-        for(int i = 0;i<clNum;i++){
-            threads[i].start();
-        }
-        latch.await();
-        long endTimestamp = System.currentTimeMillis();
-        System.err.println("Total benchmark duration: " + 
-		(endTimestamp-startTimestamp));
-    }
 \end{lstlisting}
+
+
 
 \subsection{Priprema okruženja}
 
-Priprema okruženja za sprovođenje eksperimenata podrazumeva build-ovanje  .jar fajlova za testiranje, pokretanje docker kontejnera , prebacivanje svih neophodnih resursa vezanih za kreiranje modela baze podataka i eventualnih resursa za bulk load vrednosti u tabele na odgovoarajuće docker kontejnere.
-
+Priprema okruženja predstavlja pokretanje Postgres i Hbase standalone docker kontejnera, kompilacija java testova, podmetanje testova u vidu jar fajlova pod odgovarajuce kontejnere.
 
 \lstset{
   language=bash,
@@ -620,29 +639,60 @@ mvn -f ./benchmark_postgres clean compile assembly:single;
 docker-compose -f docker-compose.yml up --build -d;
 docker exec -it hbase-master-1 sh -c "java -jar hbase_setup_model.jar";
 
-
-
-
 \end{lstlisting}
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.9\textwidth]{deployment_diagram.png}
-  \caption{Enkodiranje po broju ponavljanja}
-  \label{fig:grafikon}
-\end{figure}
+\lstset{
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
 
-\pagebreak
+\begin{lstlisting}[title={docker-compose.yml},captionpos=t]
+services: 
+  postgres:
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./setup_postgres_model.sql:/docker-entrypoint-initdb.d/create_script.sql
+      - ./benchmark_postgres.jar:/benchmark_postgres.jar
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgresdb
+    build:
+      context: .
+      dockerfile: ./Dockerfile_postgres
 
-\section{Primena u online transakcionom procesiranju (OLTP)}
+  hbase:
+    image: bde2020/hbase-standalone:1.0.0-hbase1.2.6
+    container_name: hbase
+    volumes:
+      - hbase_data:/hbase-data
+      - hbase_zookeeper_data:/zookeeper-data
+      - ./hbase_setup_model.jar:/hbase_setup_model.jar
+      - ./benchmark_hbase.jar:/benchmark_hbase.jar
+    ports:
+      - 16000:16000
+      - 16010:16010
+      - 16020:16020
+      - 16030:16030
+      - 2888:2888
+      - 3888:3888
+      - 2181:2181
+    env_file:
+      - ./standalone.env
 
-Online transakciono procesiranje obuhvata kratke, jednostavne, uchestale promene  na relativno malom skupu podataka. Primer koji cemo koristiti jeste uopstena transakcija korisnika gde sa jednog racuna treba da se prebaci novac na drugi racun.
+volumes:
+  hbase_data:
+  hbase_zookeeper_data:
+\end{lstlisting}
 
-Specifikacija PostgresSQL modela:
 
-Specifikacija HBASE modela:
-
-Rezultati:
+\subsection{Analiza rezultata}
 
 \section{Primena u online analitičkom procesiranju (OLAP)}
 
@@ -650,12 +700,326 @@ OLAP procesiranje sacinjeno je od skoro iskljucivo citanja podataka. Upiti koji 
 Primer koji cemo koristiti jeste uopsten primer odrzavanja trgovinskog lanca koji ima skup musterija, proizvoda, dobavljaca,  narudzbina. 
 Nas OLAP eksperiment ce se sastojati iz dohvatanja izvestaja o ukupnom kvanitetu, ceni nakon odbijanja poreza, prosecnom popustu za dati status stavke narudzbine.
 
+\subsection{Modeli podataka}
 
-Specifikacija Postgres modela:
 
-Specifikacija HBASE modela:
+\lstset{
+  language=sql,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
 
-Rezultati:
+\begin{lstlisting}[title={setup-postgres-model.sql},captionpos=t]
+
+
+CREATE TABLE postgresdb.PRODUCT (
+    ID  INTEGER NOT NULL PRIMARY KEY,
+    NAME VARCHAR(50) NOT NULL,
+    BRAND VARCHAR(50) NOT NULL,
+    TYPE VARCHAR(50) NOT NULL,
+    SIZE INTEGER NOT NULL,
+    CONTAINER VARCHAR(50) NOT NULL,
+    PRICE VARCHAR(50) NOT NULL,
+    COMMENT VARCHAR(50)
+);
+
+CREATE TABLE postgresdb.SUPPLIER (
+    ID  INTEGER PRIMARY KEY,
+    NAME VARCHAR(50) NOT NULL,
+    ADDRESS VARCHAR(200) NOT NULL,
+    PHONE VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE postgresdb.PRODUCTSUPPLIER (
+    ID INTEGER NOT NULL PRIMARY KEY,
+    PRODUCT INTEGER NOT NULL,
+    SUPPLIER INTEGER NOT NULL,
+    AVAILABLE INTEGER NOT NULL,
+    SUPPLY_COST REAL NOT NULL,
+    COMMENT VARCHAR(200),
+    CONSTRAINT fk_product
+    FOREIGN KEY(PRODUCT) REFERENCES  postgresdb.PRODUCT(ID),
+    CONSTRAINT fk_supplier
+    FOREIGN KEY(SUPPLIER) REFERENCES  postgresdb.SUPPLIER(ID)
+    
+);
+
+CREATE TABLE postgresdb.CUSTOMER(
+    ID INTEGER PRIMARY KEY,
+    NAME VARCHAR(50) NOT NULL,
+    ADDRESS VARCHAR(200) NOT NULL,
+    PHONE VARCHAR(50) NOT NULL,
+    COMMENT VARCHAR(200)
+);
+
+CREATE TABLE postgresdb.ORDER(
+    ID INTEGER PRIMARY KEY,
+    CUSTOMER INTEGER NOT NULL,
+    STATUS VARCHAR(20) NOT NULL,
+    TOTAL_PRICE REAL NOT NULL,
+    ENTRY_DATE DATE NOT NULL,
+    PRIORITY VARCHAR(20) NOT NULL,
+    COMMENT VARCHAR(200),
+    CONSTRAINT fk_customer
+    FOREIGN KEY(CUSTOMER) REFERENCES  postgresdb.CUSTOMER(ID)
+);
+
+CREATE TABLE postgresdb.ORDER_ITEM(
+    ORDER_ID INTEGER NOT NULL,
+    PRODUCT INTEGER NOT NULL,
+    SUPPLIER INTEGER NOT NULL, 
+    ORDER_NO INTEGER NOT NULL,
+    QUANTITY INTEGER NOT NULL,
+    BASE_PRICE REAL NOT NULL,
+    DISCOUNT REAL NOT NULL,
+    TAX REAL NOT NULL,
+    STATUS VARCHAR(20) NOT NULL,
+    SHIP_DATE DATE NOT NULL,
+    COMMIT_DATE DATE NOT NULL,
+    COMMENT VARCHAR(200),
+    PRIMARY KEY(ORDER_ID,PRODUCT,SUPPLIER),
+    CONSTRAINT fk_order
+    FOREIGN KEY(ORDER_ID) REFERENCES  postgresdb.ORDER(ID),
+    CONSTRAINT fk_product
+    FOREIGN KEY(PRODUCT) REFERENCES  postgresdb.PRODUCT(ID),
+    CONSTRAINT fk_supplier
+    FOREIGN KEY(SUPPLIER) REFERENCES  postgresdb.SUPPLIER(ID)
+);
+
+\end{lstlisting}
+
+
+\lstset{
+  language=java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={hbase-setup-model},captionpos=t]
+
+create product, 'data';
+create supplier, 'data';
+create productsupplier, 'data';
+create customer, 'data';
+create order, 'data';
+create orderitem, 'data','stats';
+
+\end{lstlisting}
+
+\subsection{Implementacija testa}
+
+
+\lstset{
+  language=java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={hbase-setup-model},captionpos=t]
+
+    default void executeBulkLoad(BenchmarkUtility benchmarkUtility,BenchmarkOLAPUtility olapUtility) throws Exception {
+        long bulkLoadStart = System.currentTimeMillis();
+        olapUtility.bulkLoad(benchmarkUtility.connect());
+        long bulkLoadEnd = System.currentTimeMillis();
+        System.out.println("Bulk load duration: "+(bulkLoadEnd-bulkLoadStart));
+    }
+    default void executeOLAPWorkload(BenchmarkUtility benchmarkUtility,BenchmarkOLAPUtility olapUtility,int totalIterations, int numOfClients) throws SQLException, IOException, InterruptedException {
+        List<Integer> iterationsPerClientList = new ArrayList<>();
+        int iterationsToAssign = totalIterations;
+        int iterationsPerClient = iterationsToAssign /numOfClients;
+        for (int i = 0 ; i<numOfClients;i++){
+            iterationsPerClientList.add(iterationsPerClient);
+            iterationsToAssign-=iterationsPerClient;
+        }
+
+        if(iterationsToAssign>0){
+            int iterationsForLastClient = iterationsPerClientList.get(numOfClients-1);
+            iterationsPerClientList.set(numOfClients-1,iterationsForLastClient+iterationsToAssign);
+        }
+
+        assert numOfClients==iterationsPerClientList.size();
+
+        Thread[] threads = new Thread[numOfClients];
+        CountDownLatch latch = new CountDownLatch(numOfClients);
+
+        for(int i=0;i<numOfClients;i++){
+            threads[i] = new Thread(new BenchmarkSingleClientExecutor(benchmarkUtility,olapUtility,i*iterationsPerClientList.get(i),iterationsPerClientList.get(i),latch));
+        }
+
+        long startTimestamp = System.currentTimeMillis();
+        for(int i = 0;i<numOfClients;i++){
+            threads[i].start();
+        }
+        latch.await();
+        long endTimestamp = System.currentTimeMillis();
+        System.err.println("Total benchmark duration: " + (endTimestamp-startTimestamp));
+    }
+\end{lstlisting}
+
+
+\lstset{
+  language=java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={hbase-setup-model},captionpos=t]
+
+public class BenchmarkSingleClientExecutor implements Runnable{
+
+    private final CountDownLatch endSignal;
+    private final BenchmarkOLAPUtility benchmarkOLAPUtility;
+    private final int numOfTransactions;
+    private final int startFrom;
+
+    private final Object connection;
+
+    @Override
+    public void run() {
+        try {
+            for (int i = this.startFrom; i < this.startFrom + this.numOfTransactions; i++) {
+                benchmarkOLAPUtility.executeQuery1(connection);
+                benchmarkOLAPUtility.executeQuery2(connection);
+                benchmarkOLAPUtility.executeQuery3(connection);
+            }
+            endSignal.countDown();
+        } catch (Throwable e) {
+            throw new IllegalStateException(e);
+        }
+    }
+}
+
+\end{lstlisting}
+
+\subsection{Priprema okruženja}
+
+\lstset{
+  language=java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={prepareEnv.sh},captionpos=t]
+#!/bin/bash
+echo 'PREPARING ENVIRONMENT...';
+rm -f ./olap_benchmark_postgres.jar
+rm -f ./olap_benchmark_hbase.jar
+rm -f ./productHB.csv;
+rm -f ./supplierHB.csv;
+rm -f ./productsupplierHB.csv;
+rm -f ./customerHB.csv;
+rm -f ./orderHB.csv;
+rm -f ./orderitemHB.csv;
+rm -f ./productPG.csv;
+rm -f ./supplierPG.csv;
+rm -f ./productsupplierPG.csv;
+rm -f ./customerPG.csv;
+rm -f ./orderPG.csv;
+rm -f ./orderitemPG.csv;
+
+
+echo 'PREPARING HBASE BENCHMARK JARS...';
+export JAVA_HOME="$JAVA_8";
+mvn -f ../../benchmarking/OLAP/olap_benchmark_hbase clean compile assembly:single;
+mvn -f ./hbase_model_utilities/hbase_setup_olap_model clean compile assembly:single;
+mvn -f ./hbase_bulk_load_setup clean compile assembly:single;
+cp ./hbase_model_utilities/hbase_setup_olap_model/target/hbase_setup_olap_model-1.0-SNAPSHOT-jar-with-dependencies.jar ./hbase_setup_olap_model.jar;
+cp ../../benchmarking/OLAP/olap_benchmark_hbase/target/olap_benchmark_hbase-1.0-SNAPSHOT-jar-with-dependencies.jar ./olap_benchmark_hbase.jar;
+
+
+echo 'PREPARING HBASE BULK LOAD RESOURCES..';
+java -jar ./hbase_bulk_load_setup/target/hbase_bulk_load_setup-1.0-SNAPSHOT-jar-with-dependencies.jar;
+
+
+echo 'PREPARING POSTGRES BENCHMARK JARS...';
+export JAVA_HOME="$JAVA_17";
+mvn -f ../../benchmarking/OLAP/olap_benchmark_postgres clean compile assembly:single;
+mvn -f ./postgres_bulk_load_setup clean compile assembly:single;
+cp ../../benchmarking/OLAP/olap_benchmark_postgres/target/olap_benchmark_postgres-1.0-SNAPSHOT-jar-with-dependencies.jar ./olap_benchmark_postgres.jar;
+
+echo 'PREPARING POSTGRES BULK LOAD RESOURCES..';
+java -jar ./postgres_bulk_load_setup/target/postgres_bulk_load_setup-1.0-SNAPSHOT-jar-with-dependencies.jar;
+
+docker-compose -f docker-compose.yml up --build -d;
+winpty docker exec -it olap-hbase-master-1 sh -c "java -jar hbase_setup_olap_model.jar";
+
+\end{lstlisting}
+
+
+\lstset{
+  language=java,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{red},
+  backgroundcolor = \color{lightgray},
+  numbers=left,
+  showstringspaces=false,
+  frame=single
+}
+
+\begin{lstlisting}[title={prepareEnv.sh},captionpos=t]
+
+services: 
+  postgres:
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./setup_postgres_model.sql:/docker-entrypoint-initdb.d/create_script.sql
+      - ./benchmark_postgres.jar:/benchmark_postgres.jar
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgresdb
+    build:
+      context: .
+      dockerfile: ./Dockerfile_postgres
+
+  hbase:
+    image: bde2020/hbase-standalone:1.0.0-hbase1.2.6
+    container_name: hbase
+    volumes:
+      - hbase_data:/hbase-data
+      - hbase_zookeeper_data:/zookeeper-data
+      - ./hbase_setup_model.jar:/hbase_setup_model.jar
+      - ./benchmark_hbase.jar:/benchmark_hbase.jar
+    ports:
+      - 16000:16000
+      - 16010:16010
+      - 16020:16020
+      - 16030:16030
+      - 2888:2888
+      - 3888:3888
+      - 2181:2181
+    env_file:
+      - ./standalone.env
+
+volumes:
+  hbase_data:
+  hbase_zookeeper_data:
+\end{lstlisting}
+
+
+\subsection{Analiza rezultata}
 
 \section{Primena u distribuiranom okruženju}
 \subsection{Skalabilnost}
