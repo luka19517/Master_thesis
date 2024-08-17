@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
 
         System.out.println("Enter number of transactions: ");
         Scanner transactionNumInput = new Scanner( System.in );
@@ -26,6 +26,18 @@ public class Main {
         System.out.println("Workload start");
         benchmarkExecutor.executeOLTPWorkload(benchmarkUtility,benchmarkOLTPUtility, numOfTransactions,numOfClients);
         System.out.println("Workload end");
+
+        System.out.println("Random access start");
+        benchmarkExecutor.executeRandomAccessTest(benchmarkUtility,benchmarkOLTPUtility, numOfTransactions);
+        System.out.println("Random access end");
+
+        System.out.println("Random access start");
+        benchmarkExecutor.executeRandomAccessTest2(benchmarkUtility,benchmarkOLTPUtility);
+        System.out.println("Random access end");
+
+        System.out.println("Random access start");
+        benchmarkExecutor.executeInsert(benchmarkUtility,benchmarkOLTPUtility);
+        System.out.println("Random access end");
 
         System.out.println("Close start");
         benchmarkUtility.close();

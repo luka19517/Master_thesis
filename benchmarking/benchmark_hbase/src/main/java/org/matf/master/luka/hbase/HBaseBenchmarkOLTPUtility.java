@@ -16,30 +16,24 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     public ExecutePaymentInfo createFXTransaction(Object connection, FXTransaction fxTransaction) throws IOException {
 
         //dohvatanje
-        Table fxAccount = ((Connection )connection).getTable(TableName.valueOf("fxaccounts"));
+        Table fxAccount = ((Connection) connection).getTable(TableName.valueOf("fxaccounts"));
 
-        Scan accountScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername() + fxTransaction.getFxAccount_from().getCurrency_code()));
-        accountScan.setMaxResultSize(1);
-        accountScan.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
-        ResultScanner accountScanResult = fxAccount.getScanner(accountScan);
-        BigDecimal availableBalance = null;
-        for (Result res : accountScanResult) {
-            availableBalance = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));
-            break;
-        }
-        accountScanResult.close();
+        //Long start = System.currentTimeMillis();
+        Get get = new Get(Bytes.toBytes(fxTransaction.getFxAccount_from().getFxUser().getUsername() + fxTransaction.getFxAccount_from().getCurrency_code()));
+        get.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
+        Result result = fxAccount.get(get);
+        BigDecimal availableBalance = Bytes.toBigDecimal(result.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));
+        //Long end = System.currentTimeMillis();
+        //System.out.println("First get: "+(end-start));
 
-        BigDecimal neededResources = null;
-        Table fxRates = ((Connection )connection).getTable(TableName.valueOf("fxrate"));
-
-        Scan neededResourcesScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code() + fxTransaction.getFxAccount_from().getCurrency_code()));
-        accountScan.setMaxResultSize(1);
-        neededResourcesScan.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rate"));
-        ResultScanner neededResourcesScanResult = fxRates.getScanner(neededResourcesScan);
-        for (Result res : neededResourcesScanResult) {
-            neededResources = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("info"), Bytes.toBytes("rate"))).multiply(fxTransaction.getAmount());
-        }
-        neededResourcesScanResult.close();
+        Table fxRates = ((Connection) connection).getTable(TableName.valueOf("fxrate"));
+        //start = System.currentTimeMillis();
+        Get fxRateGet = new Get(Bytes.toBytes(fxTransaction.getFxAccount_to().getCurrency_code() + fxTransaction.getFxAccount_from().getCurrency_code()));
+        get.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rate"));
+        Result fxRateResult = fxRates.get(fxRateGet);
+        BigDecimal neededResources = Bytes.toBigDecimal(fxRateResult.getValue(Bytes.toBytes("info"), Bytes.toBytes("rate"))).multiply(fxTransaction.getAmount());
+        //end = System.currentTimeMillis();
+        //System.out.println("Second get: "+(end-start));
 
         String transactionStatus = "NEW";
         assert neededResources != null;
@@ -47,15 +41,18 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
             transactionStatus = "BLOCKED";
         }
 
-        Table fxtransaction =((Connection )connection).getTable(TableName.valueOf("fxtransaction"));
+        Table fxtransaction = ((Connection) connection).getTable(TableName.valueOf("fxtransaction"));
 
+        //start = System.currentTimeMillis();
         Put put = new Put(Bytes.toBytes(fxTransaction.getId()));
-        put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("fxaccount_from"), Bytes.toBytes(fxTransaction.getFxAccount_from().getId()));
-        put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("fxaccount_to"), Bytes.toBytes(fxTransaction.getFxAccount_to().getId()));
-        put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("amount"), Bytes.toBytes(fxTransaction.getAmount()));
-        put.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"), Bytes.toBytes(transactionStatus));
-        put.addColumn(Bytes.toBytes("date"), Bytes.toBytes("entry_date"), Bytes.toBytes(System.currentTimeMillis()));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("fxaccount_from"), Bytes.toBytes(fxTransaction.getFxAccount_from().getId()));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("fxaccount_to"), Bytes.toBytes(fxTransaction.getFxAccount_to().getId()));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("amount"), Bytes.toBytes(fxTransaction.getAmount()));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("status"), Bytes.toBytes(transactionStatus));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("entry_date"), Bytes.toBytes(System.currentTimeMillis()));
         fxtransaction.put(put);
+        //end = System.currentTimeMillis();
+        //System.out.println("Insert: "+(end-start));
 
 
         return ExecutePaymentInfo.builder()
@@ -68,34 +65,19 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
     }
 
     @Override
-    public void executePayment(Object connection,ExecutePaymentInfo executePaymentInfo) throws IOException {
+    public void executePayment(Object connection, ExecutePaymentInfo executePaymentInfo) throws IOException {
 
-        Table fxAccount = ((Connection )connection).getTable(TableName.valueOf("fxaccounts"));
-
-        Scan fxAccountsFromScan = new Scan().withStartRow(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
-        fxAccountsFromScan.setMaxResultSize(1);
-        fxAccountsFromScan.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
-        ResultScanner fxAccountsFromScanResult = fxAccount.getScanner(fxAccountsFromScan);
-        BigDecimal fromBalance = null;
-
-        for (Result res : fxAccountsFromScanResult) {
-            fromBalance = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));
-            break;
-        }
-        fxAccountsFromScanResult.close();
-
-        Scan fxAccountsToScan = new Scan().withStartRow(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
-        fxAccountsToScan.setMaxResultSize(1);
-        fxAccountsToScan.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
-        ResultScanner fxAccountsToScanResult = fxAccount.getScanner(fxAccountsToScan);
-        BigDecimal toBalance = null;
+        Table fxAccount = ((Connection) connection).getTable(TableName.valueOf("fxaccounts"));
+        Get get = new Get(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
+        get.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
+        Result result = fxAccount.get(get);
+        BigDecimal fromBalance = Bytes.toBigDecimal(result.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));
 
 
-        for (Result res : fxAccountsToScanResult) {
-            toBalance = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));
-            break;
-        }
-        fxAccountsToScanResult.close();
+        Get getTo = new Get(Bytes.toBytes(executePaymentInfo.getAccountToHBaseKeyID()));
+        get.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
+        Result resultTo = fxAccount.get(getTo);
+        BigDecimal toBalance = Bytes.toBigDecimal(resultTo.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));;
 
         Put put = new Put(Bytes.toBytes(executePaymentInfo.getAccountFromHBaseKeyID()));
         assert fromBalance != null;
@@ -107,27 +89,63 @@ public class HBaseBenchmarkOLTPUtility implements BenchmarkOLTPUtility {
         put2.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"), Bytes.toBytes(toBalance.add(executePaymentInfo.getAmountToReceive())));
         fxAccount.put(put2);
 
-        Table fxTransaction = ((Connection )connection).getTable(TableName.valueOf("fxtransaction"));
+        Table fxTransaction = ((Connection) connection).getTable(TableName.valueOf("fxtransaction"));
         Put fxTransactionStatusUpdate = new Put(Bytes.toBytes(executePaymentInfo.getTransactionID()));
-        fxTransactionStatusUpdate.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"), Bytes.toBytes("PROCESSED"));
+        fxTransactionStatusUpdate.addColumn(Bytes.toBytes("data"), Bytes.toBytes("status"), Bytes.toBytes("PROCESSED"));
         fxTransaction.put(fxTransactionStatusUpdate);
 
     }
 
     @Override
-    public String checkTransactionStatus(Object connection , FXTransaction fxTransaction) throws IOException {
-        Table fxTransactions = ((Connection )connection).getTable(TableName.valueOf("fxtransaction"));
-        Scan fxTransactionsScan = new Scan().withStartRow(Bytes.toBytes(fxTransaction.getId()));
-        fxTransactionsScan.setMaxResultSize(1);
-        fxTransactionsScan.addColumn(Bytes.toBytes("status"), Bytes.toBytes("status"));
-        ResultScanner fxTransactionsScanResult = fxTransactions.getScanner(fxTransactionsScan);
-        String status = null;
-        for (Result res : fxTransactionsScanResult) {
-            status = Bytes.toString(res.getValue(Bytes.toBytes("status"), Bytes.toBytes("status")));
-            break;
-        }
+    public String checkTransactionStatus(Object connection, FXTransaction fxTransaction) throws IOException {
+        Table fxTransactions = ((Connection) connection).getTable(TableName.valueOf("fxtransaction"));
+
+        Get get = new Get(Bytes.toBytes(fxTransaction.getId()));
+        get.addColumn(Bytes.toBytes("data"), Bytes.toBytes("status"));
+        Result result = fxTransactions.get(get);
+        String status = Bytes.toString(result.getValue(Bytes.toBytes("data"), Bytes.toBytes("status")));
         return status;
 
+    }
+
+    @Override
+    public void executeRandomAccess(Object connection, int maxId) throws IOException {
+        Table fxtransaction = ((Connection) connection).getTable(TableName.valueOf("fxtransaction"));
+
+        Scan transactionScan = new Scan().withStartRow(Bytes.toBytes(maxId / 2));
+        transactionScan.setMaxResultSize(1);
+        transactionScan.addColumn(Bytes.toBytes("data"), Bytes.toBytes("amount"));
+
+        ResultScanner accountScanResult = fxtransaction.getScanner(transactionScan);
+        for (Result res : accountScanResult) {
+            //BigDecimal amount = Bytes.toBigDecimal(res.getValue(Bytes.toBytes("data"), Bytes.toBytes("amount")));
+            String status = Bytes.toString(res.getValue(Bytes.toBytes("data"), Bytes.toBytes("status")));
+            break;
+        }
+    }
+
+    @Override
+    public void executeRandomAccessWithoutIndex(Object connection) throws Exception {
+        Table fxAccount = ((Connection) connection).getTable(TableName.valueOf("fxaccounts"));
+
+        Get get = new Get(Bytes.toBytes("username_15000" + "EUR"));
+        get.addColumn(Bytes.toBytes("balance"), Bytes.toBytes("balance"));
+        Result result = fxAccount.get(get);
+
+        BigDecimal availableBalance = Bytes.toBigDecimal(result.getValue(Bytes.toBytes("balance"), Bytes.toBytes("balance")));
+
+    }
+
+    @Override
+    public void executeInsert(Object connection) throws IOException {
+        Table fxtransaction = ((Connection) connection).getTable(TableName.valueOf("fxtransaction"));
+        Put put = new Put(Bytes.toBytes(1000000));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("fxaccount_from"), Bytes.toBytes(250));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("fxaccount_to"), Bytes.toBytes(300));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("amount"), Bytes.toBytes(1000));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("status"), Bytes.toBytes("NEW"));
+        put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("entry_date"), Bytes.toBytes(System.currentTimeMillis()));
+        fxtransaction.put(put);
     }
 
     @Override

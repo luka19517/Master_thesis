@@ -17,7 +17,7 @@ public class Main {
 
         Configuration config = HBaseConfiguration.create();
         config.set("hbase.master", "localhost:16010");
-        config.set("hbase.zookeeper.quorum","zookeeper:2181");
+        config.set("hbase.zookeeper.quorum","localhost:2181");
         config.set("hbase.zookeeper.property.clientPort", "2181");
         Connection hbaseConnection = ConnectionFactory.createConnection(config);
 
@@ -122,9 +122,9 @@ public class Main {
 
 
         //------------------------------FXTRANSACTION-----------------------------
-        fxTransactionDescriptor.addFamily(new HColumnDescriptor("info"));
-        fxTransactionDescriptor.addFamily(new HColumnDescriptor("status"));
-        fxTransactionDescriptor.addFamily(new HColumnDescriptor("date"));
+        fxTransactionDescriptor.addFamily(new HColumnDescriptor("data"));
+//        fxTransactionDescriptor.addFamily(new HColumnDescriptor("data"));
+//        fxTransactionDescriptor.addFamily(new HColumnDescriptor("data"));
         admin.createTable(fxTransactionDescriptor);
 
 

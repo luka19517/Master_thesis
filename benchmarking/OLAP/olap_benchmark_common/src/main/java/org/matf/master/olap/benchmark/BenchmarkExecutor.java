@@ -14,7 +14,6 @@ public interface BenchmarkExecutor {
         long bulkLoadEnd = System.currentTimeMillis();
         System.out.println("Bulk load duration: "+(bulkLoadEnd-bulkLoadStart));
     }
-
     default void executeOLAPWorkload(BenchmarkUtility benchmarkUtility,BenchmarkOLAPUtility olapUtility,int totalIterations, int numOfClients) throws SQLException, IOException, InterruptedException {
         List<Integer> iterationsPerClientList = new ArrayList<>();
         int iterationsToAssign = totalIterations;

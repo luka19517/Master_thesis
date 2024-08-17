@@ -22,7 +22,7 @@ mv ./benchmark_postgres-1.0-SNAPSHOT-jar-with-dependencies.jar benchmark_postgre
 
 
 docker-compose -f docker-compose.yml up --build -d;
-#docker exec -it setup-hbase-master-1 sh -c "java -jar hbase_setup_model.jar";
+winpty docker exec -it hbase sh -c "java -jar hbase_setup_model.jar";
 
 
 

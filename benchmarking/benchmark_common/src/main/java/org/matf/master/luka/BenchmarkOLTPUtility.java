@@ -26,5 +26,9 @@ public interface BenchmarkOLTPUtility {
      */
     String checkTransactionStatus(Object connection, FXTransaction fxTransaction) throws SQLException, IOException;
 
+    void executeRandomAccess(Object object, int maxId) throws Exception;
+
+    void executeRandomAccessWithoutIndex(Object object) throws Exception;
+    void executeInsert(Object connection) throws Exception;
     void testConsistency(Object connection) throws SQLException;
 }

@@ -14,8 +14,8 @@ public class HBaseBenchmarkUtility implements BenchmarkUtility {
     @Override
     public Object connect() throws IOException {
         Configuration config = HBaseConfiguration.create();
-        config.set("hbase.master", "localhost:16010");
-        config.set("hbase.zookeeper.quorum", "zookeeper:2181");
+        config.set("hadoop.home.dir", "hdfs://localhost:9000");
+        config.set("hbase.zookeeper.quorum", "localhost:2181");
         config.set("hbase.zookeeper.property.clientPort", "2181");
         return ConnectionFactory.createConnection(config);
     }

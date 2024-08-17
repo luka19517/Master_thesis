@@ -26,16 +26,29 @@ public class BenchmarkSingleClientExecutor implements Runnable {
 
     @Override
     public void run() {
-
+        Long totalCreate = 0L;
+        Long totalExecute = 0L;
+        Long totalCheck = 0L;
         try {
             for (int i = this.startFrom; i < this.startFrom + this.numOfTransactions; i++) {
                 FXTransaction fxTransaction = DataOnDemandUtility.createFXTransaction(i);
+                Long start=System.currentTimeMillis();
                 ExecutePaymentInfo executePaymentInfo = this.benchmarkOLTPUtility.createFXTransaction(connection,fxTransaction);
+                Long end=System.currentTimeMillis();
+                totalCreate +=(end-start);
+                start = System.currentTimeMillis();
                 this.benchmarkOLTPUtility.executePayment(connection,executePaymentInfo);
-                //oltpWorkloadUtility.testConsistency();
+                end = System.currentTimeMillis();
+                totalExecute+=(end-start);
+                start = System.currentTimeMillis();
                 String status = benchmarkOLTPUtility.checkTransactionStatus(connection,fxTransaction);
+                end = System.currentTimeMillis();
+                totalCheck +=(end-start);
             }
             endSignal.countDown();
+            System.out.println("Create transaction: "+totalCreate);
+            System.out.println("Execute payment: "+totalExecute);
+            System.out.println("Execute payment: "+totalCheck);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

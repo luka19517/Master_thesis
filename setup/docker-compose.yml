@@ -14,25 +14,26 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile_postgres
-  hbase-master:
-    image: blueskyareahm/hbase-base:2.1.3
-    command: master
+
+  hbase:
+    image: bde2020/hbase-standalone:1.0.0-hbase1.2.6
+    container_name: hbase
+    volumes:
+      - hbase_data:/hbase-data
+      - hbase_zookeeper_data:/zookeeper-data
+      - ./hbase_setup_model.jar:/hbase_setup_model.jar
+      - ./benchmark_hbase.jar:/benchmark_hbase.jar
     ports:
       - 16000:16000
       - 16010:16010
-    volumes:
-      - ./hbase_setup_model.jar:/hbase_setup_model.jar
-      - ./benchmark_hbase.jar:/benchmark_hbase.jar
-
-  hbase-regionserver:
-    image: blueskyareahm/hbase-base:2.1.3
-    command: regionserver
-    ports:
+      - 16020:16020
       - 16030:16030
-      - 16201:16201
-      - 16301:16301
-
-  zookeeper:
-    image: blueskyareahm/hbase-zookeeper:3.4.13
-    ports:
+      - 2888:2888
+      - 3888:3888
       - 2181:2181
+    env_file:
+      - ./standalone.env
+
+volumes:
+  hbase_data:
+  hbase_zookeeper_data:

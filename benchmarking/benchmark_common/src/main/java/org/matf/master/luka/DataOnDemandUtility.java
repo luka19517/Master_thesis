@@ -13,7 +13,7 @@ public class DataOnDemandUtility {
     }
 
     private static FXAccount generateFXAccountWithID(long id) {
-        return FXAccount.builder().id(id).currency_code(getCurrencyCode(id)).fxUser(generateFxUserWithUsername(id)).build();
+        return FXAccount.builder().id(id).currency_code(getCurrencyCode(id)).fxUser(generateFxUserWithUsername(id%30000)).build();
     }
 
     private static FXUser generateFxUserWithUsername(long id){

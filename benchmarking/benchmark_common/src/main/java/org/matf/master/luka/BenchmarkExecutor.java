@@ -1,10 +1,6 @@
 package org.matf.master.luka;
 
-import org.matf.master.luka.model.ExecutePaymentInfo;
-import org.matf.master.luka.model.FXTransaction;
-
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +8,26 @@ import java.util.concurrent.CountDownLatch;
 
 public interface BenchmarkExecutor{
 
+    default void executeRandomAccessTest(BenchmarkUtility benchmarkUtility,BenchmarkOLTPUtility oltpWorkloadUtility, int maxId) throws Exception {
+        Long randomAccessTestStart = System.currentTimeMillis();
+        oltpWorkloadUtility.executeRandomAccess(benchmarkUtility.connect(),maxId);
+        Long randomAccessTestEnd = System.currentTimeMillis();
+        System.out.println("Time for random access: "+(randomAccessTestEnd-randomAccessTestStart));
+    }
+
+    default void executeRandomAccessTest2(BenchmarkUtility benchmarkUtility,BenchmarkOLTPUtility oltpWorkloadUtility) throws Exception {
+        Long randomAccessTestStart = System.currentTimeMillis();
+        oltpWorkloadUtility.executeRandomAccessWithoutIndex(benchmarkUtility.connect());
+        Long randomAccessTestEnd = System.currentTimeMillis();
+        System.out.println("Time for random access 2: "+(randomAccessTestEnd-randomAccessTestStart));
+    }
+
+    default void executeInsert(BenchmarkUtility benchmarkUtility,BenchmarkOLTPUtility oltpWorkloadUtility) throws Exception {
+        Long randomAccessTestStart = System.currentTimeMillis();
+        oltpWorkloadUtility.executeInsert(benchmarkUtility.connect());
+        Long randomAccessTestEnd = System.currentTimeMillis();
+        System.out.println("Time for insert: "+(randomAccessTestEnd-randomAccessTestStart));
+    }
 
     default void executeOLTPWorkload(BenchmarkUtility benchmarkUtility, BenchmarkOLTPUtility oltpWorkloadUtility, int totalTransactions, int numOfClients) throws SQLException, IOException, InterruptedException {
 
