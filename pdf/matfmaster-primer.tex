@@ -39,6 +39,7 @@
 % Pomoćni paket koji generiše nasumičan tekst u kojem se javljaju sva slova
 % azbuke (nema potrebe koristiti ovo u pravim disertacijama)
 \usepackage{pangrami}
+\usepackage[x11names]{xcolor}
 
 % Paket koji obezbeđuje ispravni prikaz ćiriličkih italik slova kada
 % se koristi pdflatex. Zakomentarisati ako na sistemu koji koristite ovaj
@@ -436,18 +437,33 @@ Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase,  za rezultate me
 
 \section{Primena u online transakcionom procesiranju (OLTP)}
 
-Online transakciono procesiranje obično obuhvata kratke, jednostavne, učestale promene  na relativno malom skupu podataka. Njih odlikuje velik broj invazivnih operacija nad bazom ali i veliki broj čitanja individualnih redova po nekom skupu atributa. Da bismo simulirali ovakvo okruženje korišćen je primer online transakcija i prenosa sredstava sa jednog računa na drugi. Parametri testa će biti broj biznis transakcija koje treba izvršiti u tom konkretnom testu, kao i broj klijenata, odnoso konekcija ka bazi, koji će paralelno obavljati svoj deo posla u okviru ovog testa. Jedna biznis transakcija sastoji se iz kreiranja transakcije, izvršavanje transakcije, odnosno prenos sredstava sa jednog računa na drugi, i na kraju provera statusa transakcije. 
+Online transakciono procesiranje obično obuhvata kratke, učestale invazivne opearcije na relativno malom skupu podataka. Njih odlikuje velik broj izmena podataka ali i veliki broj čitanja individualnih redova po nekom skupu atributa. Da bismo simulirali ovakvo okruženje korišćen je primer online transakcija i prenosa sredstava sa jednog računa na drugi. Parametri testa će biti broj biznis transakcija koje treba izvršiti u tom konkretnom testu, kao i broj klijenata, odnoso konekcija ka bazi, koji će paralelno obavljati svoj deo posla u okviru ovog testa. Jedna biznis transakcija sastoji se iz kreiranja transakcije, izvršavanje transakcije, odnosno prenos sredstava sa jednog računa na drugi, i na kraju provera statusa transakcije. 
 
 
-\subsection{Modeli podataka}
+\subsection{Opis modela}
 
-Specifikacije modela su u nastavku:
+Model koji ćemo koristiti sastojaće se iz 4 tabele:
+
+\begin{enumerate}
+\item[\textbullet] \textbf{fxrates}: {
+	Sadrži informacije o kursu valutnih parova
+}
+\item[\textbullet] \textbf{fxuser}:{
+	Podaci o korisnicima
+}
+\item[\textbullet] \textbf{fxaccount}:{
+	Podaci o računima korisnika.
+}
+\item[\textbullet] \textbf{fxtransaction}:{
+	Transakcije prenosa sredstava
+}
+\end{enumerate}
 
 \lstset{
   language=sql,
   basicstyle=\footnotesize,
-  keywordstyle=\color{red},
-  backgroundcolor = \color{lightgray},
+  keywordstyle=\color{black},
+  backgroundcolor = \color{LemonChiffon1},
   numbers=left,
   showstringspaces=false,
   frame=single
@@ -455,47 +471,47 @@ Specifikacije modela su u nastavku:
 
 \begin{lstlisting}[title={setup-postgres-model.sql},captionpos=t]
 
-CREATE TABLE postgresdb.FXRATES (
-	CURRENCY_FROM  VARCHAR(50) NOT NULL,
-	CURRENCY_TO VARCHAR(50) NOT NULL,
-	RATE real NOT NULL,
-	PRIMARY KEY(CURRENCY_FROM,CURRENCY_TO)
+create table postgresdb.fxrates (
+	currency_from  varchar(50) not null,
+	currency_to varchar(50) not null,
+	rate real not null,
+	primary key(currency_from,currency_to)
 );
 
-CREATE TABLE postgresdb.FXUSER (
-	ID  INTEGER PRIMARY KEY,
-	USERNAME VARCHAR (50) UNIQUE NOT NULL,
-	PASSWORD VARCHAR (50) NOT NULL,
-	START_BALANCECURRENCY VARCHAR (10) NOT NULL,
-	START_BALANCE real NOT NULL,
-	FIRSTNAME VARCHAR(100) NOT NULL,
-	LASTNAME VARCHAR(100) NOT NULL,
-	STREET VARCHAR(100) NOT NULL,
-	CITY VARCHAR(100) NOT NULL,
-	STATE VARCHAR(100) NOT NULL,
-	ZIP VARCHAR(50) NOT NULL,
-	PHONE VARCHAR(30) NOT NULL,
-	MOBILE VARCHAR(30) NOT NULL,
-	EMAIL VARCHAR(50) UNIQUE NOT NULL,
-	CREATED TIMESTAMP NOT NULL
+create table postgresdb.fxuser (
+	id  integer primary key,
+	username varchar (50) unique not null,
+	password varchar (50) not null,
+	start_balancecurrency varchar (10) not null,
+	start_balance real not null,
+	firstname varchar(100) not null,
+	lastname varchar(100) not null,
+	street varchar(100) not null,
+	city varchar(100) not null,
+	state varchar(100) not null,
+	zip varchar(50) not null,
+	phone varchar(30) not null,
+	mobile varchar(30) not null,
+	email varchar(50) unique not null,
+	created timestamp not null
 );
 
-CREATE TABLE postgresdb.FXACCOUNT (
-	ID  INTEGER PRIMARY KEY,
-	FXUSER INTEGER NOT NULL  REFERENCES postgresdb.FXUSER(ID),
-	CURRENCY_CODE VARCHAR(10) NOT NULL,
-	BALANCE real NOT NULL,
-	CREATED TIMESTAMP NOT NULL,
-	UNIQUE (FXUSER, CURRENCY_CODE)
+create table postgresdb.fxaccount (
+	id  integer primary key,
+	fxuser integer not null  references postgresdb.fxuser(id),
+	currency_code varchar(10) not null,
+	balance real not null,
+	created timestamp not null,
+	unique (fxuser, currency_code)
 );
 
-CREATE TABLE postgresdb.FXTRANSACTION (
-	ID INTEGER PRIMARY KEY,
-	FXACCOUNT_FROM  INTEGER REFERENCES postgresdb.FXACCOUNT(ID),
-	FXACCOUNT_TO  INTEGER REFERENCES postgresdb.FXACCOUNT(ID),
-	AMOUNT NUMERIC(15,2) NOT NULL,
-	STATUS VARCHAR(50) NOT NULL,
-	ENTRY_DATE TIMESTAMP NOT NULL
+create table postgresdb.fxtransaction (
+	id integer primary key,
+	fxaccount_from  integer references postgresdb.fxaccount(id),
+	fxaccount_to  integer references postgresdb.fxaccount(id),
+	amount numeric(15,2) not null,
+	status varchar(50) not null,
+	entry_date timestamp not null
 );
 
 
@@ -504,8 +520,8 @@ CREATE TABLE postgresdb.FXTRANSACTION (
 \lstset{
   language=java,
   basicstyle=\footnotesize,
-  keywordstyle=\color{red},
-  backgroundcolor = \color{lightgray},
+  keywordstyle=\color{black},
+  backgroundcolor = \color{LemonChiffon1},
   numbers=left,
   showstringspaces=false,
   frame=single
@@ -520,65 +536,23 @@ create fxtransaction, 'data';
 
 \subsection{Implementacija testa}
 
-U nastavku se nalazi java klasa zadužena za izvršavanje testova nad bazama:
+Implementacija testovsa podrazumeva da ćemo imati dva parametra pri pokretanju: broj biznis transakcija koje će biti obrađene, broj klijenata koji će paralelno izvršavati svoj deo posla. Svakom klijentu će biti dodeljen određeni broj transakcija koje treba da obradi. Svaka biznis transakcija sastoji se iz kreiranja transakcije (\textbf{createFXTransaction}), izvršavanja uplate(\textbf{executePayment}), provere statusa transakcije(\textbf{checkTransactionStatus}). 
+
+CreateFXTransaction prvo pročita balans naloga sa kojeg treba preneti sredstva, nakon toga čita odgovarajući kurs, ukoliko ima dovoljno sredstava da računu, u tabelu sa transakcijama upisuje transakciju u statusu NEW.
+
+ExecutePayment prvo pročita stanje sa naloga koji učestvuju u transakciji, menja im balans u skladu sa transakcijom, nakon toga transakciji menja status.
+
+CheckTransactionStatus za odgovarajucu transakciju čita status.
+
 
 \lstset{
   language=Java,
   basicstyle=\footnotesize,
-  keywordstyle=\color{red},
-  backgroundcolor = \color{lightgray}
+  keywordstyle=\color{black},
+  backgroundcolor = \color{LemonChiffon1}
 }
 
-\begin{lstlisting}[title={OLTPBenchmarkExecutor.java},captionpos=t]
-default void executeOLTPWorkload
-    (BenchmarkUtility util, BenchmarkOLTPUtility oltpUtil, 
-     int transNum, int clNum)  {
-
-        List<Integer> transPerClientList = new ArrayList<>();
-        int transactionsToAssign = totalTransactions;
-        int transactionsPerClient = transactionsToAssign / clNum;
-
-        for(int i = 0; i<clNum;i++){
-            transPerClientList.add(transactionsPerClient);
-            transactionsToAssign-=transactionsPerClient;
-        }
-        if (transactionsToAssign > 0) {
-            int transactionForLastClient = transPerClientList.get(
-							clNum - 1);
-            transPerClientList.set(clNum - 1, 
-			transactionForLastClient + transactionsToAssign
-					  );
-        }
-
-        assert clNum==transPerClientList.size();
-
-        Thread[] threads = new Thread[clNum];
-        CountDownLatch latch = new CountDownLatch(numOfClients);
-        for(int i = 0;i<clNum;i++){
-            threads[i] = new Thread(
-				new BenchmarkSingleClientExecutor(
-					util,oltpUtil,
-					i*transPerClientList.get(i),
-					transPerClientList.get(i),
-					latch)
-			  );
-        }
-
-
-        long startTimestamp = System.currentTimeMillis();
-        for(int i = 0;i<clNum;i++){
-            threads[i].start();
-        }
-        latch.await();
-        long endTimestamp = System.currentTimeMillis();
-        System.err.println("Total benchmark duration: " + 
-		(endTimestamp-startTimestamp));
-    }
-\end{lstlisting}
-
-
-
-\begin{lstlisting}[title={BenchmarkSIngleClientExecutor.java},captionpos=t]
+\begin{lstlisting}[title={BenchmarkSingleClientExecutor.java},captionpos=t]
 
 public class BenchmarkSingleClientExecutor implements Runnable {
 
@@ -595,9 +569,9 @@ public class BenchmarkSingleClientExecutor implements Runnable {
        try {
          for (int i = this.start; i < this.start + this.numOfT; i++) {
              ExecutePaymentInfo executePaymentInfo = 
-	        oltpUtil.createFXTransaction(connection);
-	     oltpUtil.executePayment(connection,executePaymentInfo);
-             oltpUtil.checkTransactionStatus(connection,fxT);
+	    oltpUtil.createFXTransaction(connection);
+	    oltpUtil.executePayment(,executePaymentInfo);
+            oltpUtil.checkTransactionStatus(fxT);
           }
           endSignal.countDown();
         } catch (Exception e) {
@@ -612,12 +586,14 @@ public class BenchmarkSingleClientExecutor implements Runnable {
 
 \subsection{Priprema okruženja}
 
-Priprema okruženja predstavlja pokretanje Postgres i Hbase standalone docker kontejnera, kompilacija java testova, podmetanje testova u vidu jar fajlova pod odgovarajuce kontejnere.
+S obzirom da se testovi izvršavaju na posebnim docker kontejnerima, neophodno je da napravimo slike i pokrenemo kontejnere i koristeći docker alat. Pored toga, neophodno je da kompajliramo java testove koristeći maven alat i prosledimo ih odgovarajućim  kontejnerima. Za pokretanje docker kontejnera korišćen je docker-compose alat čiji konfiguracijoni yml fajl možete videti na slici (2).
+
 
 \lstset{
   language=bash,
   basicstyle=\footnotesize,
-  keywordstyle=\color{red}
+  keywordstyle=\color{black},
+  backgroundcolor = \color{LemonChiffon1}
 }
 
 \begin{lstlisting}[title={prepareEnv.sh},captionpos=t]
@@ -643,8 +619,8 @@ docker exec -it hbase-master-1 sh -c "java -jar hbase_setup_model.jar";
 
 \lstset{
   basicstyle=\footnotesize,
-  keywordstyle=\color{red},
-  backgroundcolor = \color{lightgray},
+  keywordstyle=\color{black},
+  backgroundcolor = \color{LemonChiffon1},
   numbers=left,
   showstringspaces=false,
   frame=single
@@ -657,7 +633,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./setup_postgres_model.sql:/docker-entrypoint-initdb.d/create_script.sql
+      - ./setup_model.sql:/docker-entrypoint-initdb.d/create_script.sql
       - ./benchmark_postgres.jar:/benchmark_postgres.jar
     environment:
       - POSTGRES_PASSWORD=postgres
@@ -694,6 +670,26 @@ volumes:
 
 \subsection{Analiza rezultata}
 
+Kada se radi o OLTP okruženju, važno je naglasiti da HBase ne garantuje konzistentost nad svim podacima kakvu nudi Postgres. HBase ipak garantuje neki vid konzistentosti, tj konzistentost nad jednim redom tabele. To dovodi do zaključka da ukoliko je neophodno implementirati transakciju koja uključuje rad sa podacima više tabela ili više redova jedne tabele, ukoliko koristimo HBase moramo na aplikativnom sloju voditi računa o očuvanju  eventualne konzistetnosti. Postgres sa druge strane kao ACID baza sama garantuje da izmene neke transakcije koje se rade nad nekim skupom podataka neće biti vidljive za druge klijente dok se ta transakcija ne komituje.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{oltp-vizualization.png}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
+Merenje efikasnosti predstavnika u OLTP okružuenju uključivalo je pokretanje testova u više iteracija. Svaki test je podrazumevao 5 klijenata koji paralelno obaljaju svoj deo posla, a pokrenuti su testovi za obradu 100, 1000, 10000,50000,100000 transakcija , i rezultati ukupnih izvršavanja možete videti na grafiku **. Primećuje se da sa porastom podataka koji se nalaze u tabeli sa čijim se podacima radi, Postgres ima određena usporanjea relativno gledano u odnosu na HBase. Konkretno kada se pogleda vreme delova biznis transakcije odvojeno, primećuje se da HBase u testovima sa 50000 i 100 000 iteracija prednost stiče u createFXTransaction delu cele biznis transakcije. Taj deo biznis transakcije sadrži 2 operacije i čitanja i jednu operaciju INSERT-a u bazu podataka(slika 2). Tendencija merenja ukazuje da bi sa porastom broja podataka (na milione i desetine miliona redova) HBase bolje snalazio kada govorimo o samoj brzini izvršavanja, međutim za testiranje takvog okruženja neophodno je koristiti računar koji je sposoban da sprovede tako zahtevan test.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{createFxTransaction-vizualization.png}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
+\pagebreak
+
 \section{Primena u online analitičkom procesiranju (OLAP)}
 
 OLAP procesiranje sacinjeno je od skoro iskljucivo citanja podataka. Upiti koji se koriste obicno imaju parametre, imaju visok nivo kompleksnosti i visok procenat podataka kojima pristupa.
@@ -707,7 +703,7 @@ Nas OLAP eksperiment ce se sastojati iz dohvatanja izvestaja o ukupnom kvanitetu
   language=sql,
   basicstyle=\footnotesize,
   keywordstyle=\color{red},
-  backgroundcolor = \color{lightgray},
+  backgroundcolor = \color{LemonChiffon1},
   numbers=left,
   showstringspaces=false,
   frame=single
@@ -1021,10 +1017,21 @@ volumes:
 
 \subsection{Analiza rezultata}
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{oltp-vizualization.png}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{oltp-vizualization.png}
+  \caption{Enkodiranje po broju ponavljanja}
+  \label{fig:grafikon}
+\end{figure}
+
 \section{Primena u distribuiranom okruženju}
-\subsection{Skalabilnost}
-\subsubsection{Vertikalna skalabilnost}
-\subsubsection{Horizontalna skalabilnost}
 \subsection{CAP teorema}
 
 \chapter{Zaključak}
