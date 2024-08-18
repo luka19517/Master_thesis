@@ -175,29 +175,141 @@ public class Main {
             row.add(commitDate);
             String comment = "comment_"+i;
             row.add(comment);
-            String q01072024 = retrieveQuantityForQ01072024(i);
-            row.add(q01072024);
-            String q02072024 = retrieveQuantityForQ02072024(i);
-            row.add(q02072024);
-            String q03072024 = retrieveQuantityForQ03072024(i);
-            row.add(q03072024);
-            String q04072024 = retrieveQuantityForQ04072024(i);
-            row.add(q04072024);
-            String q05072024 = retrieveQuantityForQ05072024(i);
-            row.add(q05072024);
-            String q06072024 = retrieveQuantityForQ06072024(i);
-            row.add(q06072024);
-            String q07072024 = retrieveQuantityForQ07072024(i);
-            row.add(q07072024);
             orderItemLines.add(convertToCSVRow(row));
         }
 
         String orderItemContent = convertToCSV(orderItemLines);
 
         File orderItemCsvOutputFile = new File("orderitemHB.csv");
-
         PrintWriter orderItemOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(orderItemCsvOutputFile.toPath())), bufferSize), true);
         orderItemOut.println(orderItemContent);
+
+
+
+        List<String> orderItemStatsLines = new ArrayList<>();
+        for(int i=0;i<20;i++){
+            List<String> row = new ArrayList<>();
+            row.add("status_"+i);
+            row.add("status_"+i);
+            String quantitySumOn01072024 = ""+256;
+            row.add(quantitySumOn01072024);
+            String basePrice01072024 = ""+2521;
+            row.add(basePrice01072024);
+            String sumDiscountPrice01072024 = ""+1456;
+            row.add(sumDiscountPrice01072024);
+            String sumChargePrice01072024 = ""+1521;
+            row.add(sumChargePrice01072024);
+            String avgQuantity01072024 = ""+251.5;
+            row.add(avgQuantity01072024);
+            String avgPrice01072024 = ""+154.5;
+            row.add(avgPrice01072024);
+            String avgDiscount01072024 = ""+0.5;
+            row.add(avgDiscount01072024);
+
+            String quantitySumOn02072024 = ""+221;
+            row.add(quantitySumOn02072024);
+            String basePrice02072024 = ""+2521;
+            row.add(basePrice02072024);
+            String sumDiscountPrice02072024 = ""+1456;
+            row.add(sumDiscountPrice02072024);
+            String sumChargePrice02072024 = ""+1521;
+            row.add(sumChargePrice02072024);
+            String avgQuantity02072024 = ""+251.5;
+            row.add(avgQuantity02072024);
+            String avgPrice02072024 = ""+154.5;
+            row.add(avgPrice02072024);
+            String avgDiscount02072024 = ""+0.5;
+            row.add(avgDiscount02072024);
+
+
+
+            String quantitySumOn03072024 = ""+237;
+            row.add(quantitySumOn03072024);
+            String basePrice03072024 = ""+2521;
+            row.add(basePrice03072024);
+            String sumDiscountPrice03072024 = ""+1456;
+            row.add(sumDiscountPrice03072024);
+            String sumChargePrice03072024 = ""+1521;
+            row.add(sumChargePrice03072024);
+            String avgQuantity03072024 = ""+251.5;
+            row.add(avgQuantity03072024);
+            String avgPrice03072024 = ""+154.5;
+            row.add(avgPrice03072024);
+            String avgDiscount03072024 = ""+0.5;
+            row.add(avgDiscount03072024);
+
+
+
+            String quantitySumOn04072024 = ""+321;
+            row.add(quantitySumOn04072024);
+            String basePrice04072024 = ""+2521;
+            row.add(basePrice04072024);
+            String sumDiscountPrice04072024 = ""+1456;
+            row.add(sumDiscountPrice04072024);
+            String sumChargePrice04072024 = ""+1521;
+            row.add(sumChargePrice04072024);
+            String avgQuantity04072024 = ""+251.5;
+            row.add(avgQuantity04072024);
+            String avgPrice04072024 = ""+154.5;
+            row.add(avgPrice04072024);
+            String avgDiscount04072024 = ""+0.5;
+            row.add(avgDiscount04072024);
+
+
+            String quantitySumOn05072024 = ""+275;
+            row.add(quantitySumOn05072024);
+            String basePrice05072024 = ""+2521;
+            row.add(basePrice05072024);
+            String sumDiscountPrice05072024 = ""+1456;
+            row.add(sumDiscountPrice05072024);
+            String sumChargePrice05072024 = ""+1521;
+            row.add(sumChargePrice05072024);
+            String avgQuantity05072024 = ""+251.5;
+            row.add(avgQuantity05072024);
+            String avgPrice05072024 = ""+154.5;
+            row.add(avgPrice05072024);
+            String avgDiscount05072024 = ""+0.5;
+            row.add(avgDiscount05072024);
+
+
+            String quantitySumOn06072024 = ""+124;
+            row.add(quantitySumOn06072024);
+            String basePrice06072024 = ""+2521;
+            row.add(basePrice06072024);
+            String sumDiscountPrice06072024 = ""+1456;
+            row.add(sumDiscountPrice06072024);
+            String sumChargePrice06072024 = ""+1521;
+            row.add(sumChargePrice06072024);
+            String avgQuantity06072024 = ""+251.5;
+            row.add(avgQuantity06072024);
+            String avgPrice06072024 = ""+154.5;
+            row.add(avgPrice06072024);
+            String avgDiscount06072024 = ""+0.5;
+            row.add(avgDiscount06072024);
+
+            String quantitySumOn07072024 = ""+222;
+            row.add(quantitySumOn07072024);
+            String basePrice07072024 = ""+2521;
+            row.add(basePrice07072024);
+            String sumDiscountPrice07072024 = ""+1456;
+            row.add(sumDiscountPrice07072024);
+            String sumChargePrice07072024 = ""+1521;
+            row.add(sumChargePrice07072024);
+            String avgQuantity07072024 = ""+251.5;
+            row.add(avgQuantity07072024);
+            String avgPrice07072024 = ""+154.5;
+            row.add(avgPrice07072024);
+            String avgDiscount07072024 = ""+0.5;
+            row.add(avgDiscount07072024);
+
+            orderItemStatsLines.add(convertToCSVRow(row));
+        }
+
+        String orderItemStatsContent = convertToCSV(orderItemStatsLines);
+
+        File orderItemStatsCsvOutputFile = new File("orderitemStatsHB.csv");
+        PrintWriter orderItemStatsOut =  new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(orderItemStatsCsvOutputFile.toPath())), bufferSize), true);
+        orderItemStatsOut.println(orderItemStatsContent);
     }
 
     private static String retrieveQuantityForQ01072024(int seed){

@@ -18,7 +18,7 @@ public class Main {
 
         Configuration config = HBaseConfiguration.create();
         config.set("hbase.master", "localhost:16010");
-        config.set("hbase.zookeeper.quorum","zookeeper:2181");
+        config.set("hbase.zookeeper.quorum","localhost:2181");
         config.set("hbase.zookeeper.property.clientPort", "2181");
         Connection hbaseConnection = ConnectionFactory.createConnection(config);
 
@@ -29,6 +29,7 @@ public class Main {
         TableName customerTable = TableName.valueOf("customer");
         TableName orderTable = TableName.valueOf("order");
         TableName orderItemTable = TableName.valueOf("orderitem");
+        TableName orderItemStatsTable = TableName.valueOf("orderitemstats");
 
 
         HTableDescriptor productDescriptor = new HTableDescriptor(productTable);
@@ -37,6 +38,7 @@ public class Main {
         HTableDescriptor customerDescriptor = new HTableDescriptor(customerTable);
         HTableDescriptor orderDescriptor = new HTableDescriptor(orderTable);
         HTableDescriptor orderItemDescriptor = new HTableDescriptor(orderItemTable);
+        HTableDescriptor orderItemStatsDescriptor = new HTableDescriptor(orderItemStatsTable);
 
         //------------------------------PRODUCT-----------------------------
 
@@ -63,8 +65,12 @@ public class Main {
 
         //------------------------------ORDER_ITEM-----------------------------
         orderItemDescriptor.addFamily(new HColumnDescriptor("data"));
-        orderItemDescriptor.addFamily(new HColumnDescriptor("stats"));
         admin.createTable(orderItemDescriptor);
+
+        //------------------------------ORDER_ITEM_STATS-----------------------------
+        orderItemStatsDescriptor.addFamily(new HColumnDescriptor("data"));
+        orderItemStatsDescriptor.addFamily(new HColumnDescriptor("stats"));
+        admin.createTable(orderItemStatsDescriptor);
 
     }
 }

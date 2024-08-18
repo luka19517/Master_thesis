@@ -12,9 +12,8 @@ public class HBaseBenchmarkUtility implements BenchmarkUtility {
     public Object connect() throws IOException {
         Configuration config = HBaseConfiguration.create();
         config.set("hbase.master", "localhost:16010");
-        config.set("hbase.zookeeper.quorum", "zookeeper:2181");
+        config.set("hbase.zookeeper.quorum", "localhost:2181");
         config.set("hbase.zookeeper.property.clientPort", "2181");
-        config.set("hbase.regionserver.port", "16030");
         return ConnectionFactory.createConnection(config);
     }
 }

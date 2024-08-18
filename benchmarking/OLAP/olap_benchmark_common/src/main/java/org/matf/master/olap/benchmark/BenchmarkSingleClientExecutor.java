@@ -27,8 +27,6 @@ public class BenchmarkSingleClientExecutor implements Runnable{
         try {
             for (int i = this.startFrom; i < this.startFrom + this.numOfTransactions; i++) {
                 benchmarkOLAPUtility.executeQuery1(connection);
-                benchmarkOLAPUtility.executeQuery2(connection);
-                benchmarkOLAPUtility.executeQuery3(connection);
             }
             endSignal.countDown();
         } catch (Throwable e) {

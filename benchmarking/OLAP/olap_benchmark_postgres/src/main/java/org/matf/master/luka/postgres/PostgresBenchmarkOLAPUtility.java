@@ -59,16 +59,10 @@ public class PostgresBenchmarkOLAPUtility implements BenchmarkOLAPUtility {
                     avg(OI.DISCOUNT) as avg_disc,
                     count(*) as count_order
                from
-                    postgresdb.ORDER_ITEM OI,
-                    postgresdb.ORDER O,
-                    postgresdb.PRODUCT P,
-                    postgresdb.SUPPLIER S
+                    postgresdb.ORDER_ITEM OI
                where
-                    O.ID = OI.ORDER_ID AND
-                    P.ID = OI.PRODUCT AND
-                    S.ID = OI.SUPPLIER AND
-                    OI.SHIP_DATE >= TO_DATE(?,'DD.MM.YYYY') AND
-                    O.STATUS = ?
+                    OI.SHIP_DATE = TO_DATE(?,'DD.MM.YYYY') AND
+                    OI.STATUS = ?
                group by
                     OI.STATUS
                order by
@@ -78,12 +72,28 @@ public class PostgresBenchmarkOLAPUtility implements BenchmarkOLAPUtility {
         query1PreparedStatement.setString(1,"07.07.2024");
         query1PreparedStatement.setString(2,"status_1");
         ResultSet result =  query1PreparedStatement.executeQuery();
-        while (result.next()) {
-            int totalQuantity = result.getInt("sum_qty");
-            String status = result.getString("status");
-            System.out.println("Sum for "+status+": "+totalQuantity);
-        }
+//        while (result.next()) {
+//            BigDecimal totalQuantity = result.getBigDecimal("sum_qty");
+//            BigDecimal sum_base_price = result.getBigDecimal("sum_base_price");
+//            BigDecimal sum_disc_price = result.getBigDecimal("sum_disc_price");
+//            BigDecimal sum_charge = result.getBigDecimal("sum_disc_price");
+//            BigDecimal avg_qty = result.getBigDecimal("sum_disc_price");
+//            BigDecimal avg_price = result.getBigDecimal("sum_disc_price");
+//            BigDecimal avg_disc = result.getBigDecimal("sum_disc_price");
+//            System.out.println("quantitySumOn status1: "+totalQuantity);
+//            System.out.println("basePrice status1: "+sum_base_price);
+//            System.out.println("sumDiscountPrice status1: "+sum_disc_price);
+//            System.out.println("sumChargePrice status1: "+sum_charge);
+//            System.out.println("avgQuantity status1: "+avg_qty);
+//            System.out.println("avgPrice status1: "+avg_price);
+//            System.out.println("avgDiscount status1: "+avg_disc);
+//        }
 
+    }
+
+    @Override
+    public void executeOLAPQueryFaster(Object o) throws Throwable {
+        System.out.println("Postgres does not support optimized OLAP execution");
     }
 
     @Override

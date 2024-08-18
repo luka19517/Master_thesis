@@ -8,6 +8,7 @@ rm -f ./productsupplierHB.csv;
 rm -f ./customerHB.csv;
 rm -f ./orderHB.csv;
 rm -f ./orderitemHB.csv;
+rm -f ./orderitemStatsHB.csv;
 rm -f ./productPG.csv;
 rm -f ./supplierPG.csv;
 rm -f ./productsupplierPG.csv;
@@ -39,7 +40,7 @@ echo 'PREPARING POSTGRES BULK LOAD RESOURCES..';
 java -jar ./postgres_bulk_load_setup/target/postgres_bulk_load_setup-1.0-SNAPSHOT-jar-with-dependencies.jar;
 
 docker-compose -f docker-compose.yml up --build -d;
-winpty docker exec -it olap-hbase-master-1 sh -c "java -jar hbase_setup_olap_model.jar";
+winpty docker exec -it hbase sh -c "java -jar hbase_setup_olap_model.jar";
 
 
 
