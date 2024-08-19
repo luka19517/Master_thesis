@@ -60,11 +60,11 @@
 % Godina u kojoj je teza predana komisiji
 \godina{2024}
 % Ime i afilijacija mentora (u odabranom pismu)
-\mentor{др Saša \textsc{Malkov}, vandredni profesor\\ Универзитет у Београду, Математички факултет}
+\mentor{др Saša \textsc{Malkov}, vanredni profesor\\ Универзитет у Београду, Математички факултет}
 % Ime i afilijacija prvog člana komisije (u odabranom pismu)
-\komisijaA{др Ана \textsc{Анић}, ванредни професор\\ University of Disneyland, Недођија}
+\komisijaA{dr Nenad \textsc{Mitić}, redovni profesor\\ Универзитет у Београду, Математички факултет}
 % Ime i afilijacija drugog člana komisije (u odabranom pismu)
-\komisijaB{др Лаза \textsc{Лазић}, доцент\\ Универзитет у Београду, Математички факултет}
+\komisijaB{dr Ivana \textsc{Tanasijević}, доцент\\ Универзитет у Београду, Математички факултет}
 % Ime i afilijacija trećeg člana komisije (opciono)
 % \komisijaC{}
 % Ime i afilijacija četvrtog člana komisije (opciono)
@@ -123,11 +123,11 @@ Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolon
 
 
 % ------------------------------------------------------------------------------
-\chapter{Modeli za upravljanje podacima}
+\chapter{Modeli podataka}
 \label{chp:razrada}
 \section{Relacioni model}
 \subsection{Opšte karakteristike}
-Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i veze izmedju njih predstavlja kroz skup relacija. Kao fundamentalna ideja iza relacionog modela stoji tabelarni prikaz podataka, sto uvecava njegovu intuitivnost. Da bi jedna tabela bila validna relacija u relacionom modelu ona mora ispunjavati sledeće uslove:
+Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i veze izmedju njih predstavlja kroz skup relacija koje predstaljaju skupove torki. Da bi jedan skup torki ili vrsta bila validna relacija u relacionom modelu, ona mora ispunjavati sledeće uslove:
 
 \begin{enumerate}
 \item[\textbullet] Presek kolone i vrste jedinstveno određuje vrednosnu ćeliju.
@@ -139,28 +139,31 @@ Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i vez
 \item[\textbullet] Ne postoje dve identične vrste jedne tabele. 
 \end{enumerate}
 
-Iako ovakva formalizacija relacije deluje intuitivno (usled istorijskog uticaja koji je relacioni model ostavio na vizualizaciju organizacije podataka) ona je neophodna za  definisanje složenijih pojmova. 
+Iako ovakva formalizacija relacije jeste intuitivna (usled istorijskog uticaja koji je relacioni model ostavio na ideju organizacije podataka) ona je neophodna za  definisanje složenijih pojmova. 
 
 \subsection{Koncept ključa relacionog modela}
 
-Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolona za koji važi da nikoja dva reda te relaciju nemaju identične vrednosti za svaku kolonu iz tog skupa. Takav skup se naziva \textit{superključ} relacije. Minimalan superključ naziva se \textit{ključ kandidat}. Svaka relacija može imati više ključeva kandidata, ali samo jedan od njih je  \textit{primarni ključ} koji mora imati definisanu vrednost za svaku njegovu kolonu.
-\textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. Primarni i strani ključ igraju veliku ulogu u očuvanju integriteta baze podataka o čemu ce biti reči u nastavku.
+Usled jedinstvenosti svake vrste relacije, jasno je da mora postojati skup kolona za koji važi da nikoja dva reda te relacije nemaju identične vrednosti za svaku kolonu iz tog skupa. Takav skup se naziva \textit{natključ} relacije. Svaki minimalan natključ naziva se \textit{ključ kandidat}. Svaka relacija može imati više ključeva kandidata, a jedan on njih se bira za  \textit{primarni ključ} koji mora imati definisanu vrednost za svaku njegovu kolonu.
+\textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. On uzima vrednost primarnog ključa torke na koju referiše. 
+
+Primarni i strani ključ igraju veliku ulogu u očuvanju integriteta baze podataka o čemu će biti reči u nastavku.
 
 \subsection{Integritet relacionog modela}
-Integritet relacionog modela predstavlja "istinitost"  podataka koji se čuvaju u bazi, što je njena i najveća vrednost. Čuvanje integriteta baze posebno je važno  prilikom invazivnih operacija kao što su dodavanje reda, izmena reda ili brisanje reda u tabeli. Postoji više vrsta integriteta u relacionom modelu: \textit{integritet entiteta}, \textit{integritet domena}, \textit{integritet neposojece vrednosti} i \textit{referencijalni integritet}.
 
- \textit{Integritet entiteta} kaže da svaka vrsta jedne relacije predstavlja jedan entitet i da kao takva ne može u okviru primarnog ključa, koji taj entitet identifikuje, imati nedefinisanu ili nepostojeću vrednost.
+Integritet relacionog modela predstavljaju uslovi koje podaci treba da zadovolje kako bi stanje u bazi ostalo konzistentno \cite{URBP} . On se drugačije naziva i "unutrašnja konzistentost" s obzirom da predstavlja aspekte koji mogu da se provere bez konsultovanja domena (npr. ne može se proveriti da li je ime studenta u tabeli ispravno bez konsultovanja domena, ali može se garantovati da će neophodni podaci biti prisutni, uzimati vrednosti iz predviđenog skupa vrednosti i sl.) . Provera integriteta se izvršava implicitno ili eksplicitno prilikom svakog ažuriranja baze podataka. Postoji više vrsta integriteta u relacionom modelu:  \textit{integritet entiteta}, \textit{integritet domena}, \textit{integritet neposojece vrednosti} i \textit{referencijalni integritet}.
 
-\textit{Integritet domena} nameće shemu po kojoj svaka kolona može uzimati vrednost iz unapred dodeljenih skupova vrednosti. 
+ \textit{Integritet entiteta} kaže da svaka torka mora imati definisan primarni ključ bez nedostajućih vrednosti.
 
-\textit{Integritet nepostojece vrednosti} govori o eventulnim kolonama cije vrednosti ne mogu kao vrednost imatu nepostojecu vrednost kako se ne bi narušila uspostavljena biznis logika. 
+\textit{Integritet domena} predstavlja uslov da za svaku kolonu postoji unapred poznati skup vrednosti koje ona može uzimati.
 
-\textit{Referencijalni integritet} nalaže da se svaki strani kljuc jedne tabele, ukoliko je definsan,  mora poklapati sa nekim od primarnih ključeva uparene relacije.
+\textit{Integritet nepostojece vrednosti} dodeljuje se kolonama koje  ne smeju uzimati nedostajuću vrednost.
+
+\textit{Referencijalni integritet} nalaže da za svaki strani ključ relacije mora postojati torka u tabeli na koju referiše čiji se primarni ključ poklapa sa njim.
 
 \subsection{PostgreSQL}
 
 
-PostgreSQL je objektno-relacioni sistem za upravljanje bazama podatak nastao kao potomak POSTGRES-a, proizvoda koji je nastao, a kasnije i razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: kompleksnih upita, okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih. Postgres nudi širok spektar proširenja od strane korisnika poput dodavanja novih tipova podataka, funkcija, operatora, agregagtnih funkcija itd. 
+PostgreSQL je objektno-relacioni sistem za upravljanje bazama podataka jeste potomak POSTGRES-a, proizvoda koji je nastao, a kasnije i bio razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: kompleksnih upita, okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih. Postgres nudi širok spektar proširenja od strane korisnika poput dodavanja novih tipova podataka, funkcija, operatora, agregagtnih funkcija itd. 
 
 Kao takav, PostgreSQL je pogodan sistem za čuvanje najkompleksnijih podataka i veza između njih. Mogućnost kreiranja procedura na samoj bazi u integrisanoj SQL sintaksi, daje široke mogućnosti optimizacije aplikacija. 
 
@@ -180,7 +183,7 @@ Ovakav vid skladištenja sa sobom nosi veliki potencijal za primenu raznih algor
 
 Nedostajanje unapred definisanog skupa kolona, ukida smisao čuvanja nepostojeće vrednosti (null) s obzirom da ukoliko  red nema vrednost neke kolone, nema potrebe za upisivanjem bilo koje vrednosi te kolone za taj red.
 
-Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleksibilnost sheme. To kao posledicu ima da eventualna promena strukture podataka neće bitno uticati na unapred definisanu shemu, kao ni iziskivati dodatnu migraciju podataka, kao sto bi to bio slucaj kod relacionog modela. Osim toga fleksibilnost sheme se ogleda i u tome sto je broj kolona jednog vektora neogranicen, sto daje dosta prostora za eksperimentisanje sa dizajnom baze. Primer toga kako ovakvo svojstvo modela može doprineti dostizanju prednosti pri analitičkom sistemu možete videti na slici SLIKA 1. 
+Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleksibilnost sheme. To kao posledicu ima da eventualna promena strukture podataka neće bitno uticati na unapred definisanu shemu, kao ni iziskivati dodatnu migraciju podataka, kao sto bi to bio slucaj kod relacionog modela. Osim toga fleksibilnost sheme se ogleda i u tome sto je broj kolona jednog reda neograničen, što daje dosta prostora za eksperimentisanje sa dizajnom baze. Primer toga, biće naveden u okviru analize OLAP slučaja upotrebe. 
 \begin{figure}[!ht]
   \vspace*{4cm}
   \centering
@@ -229,11 +232,16 @@ HBase je distribuirana kolonski orijentisana nerelaciona baza podataka  pisana u
 
 Model podataka koji HBase koristi podrazumeva da se svaka tabela sastoji iz familije kolona, a da svaka familija kolona sadrži određeni broj atributa nekog reda. Cilj je da atributi, odnosno kolone koje su po prirodi slične pripadaju istoj familiji kolona, kako bi se nad njima mogli primeniti algoritmi kompresije, s obizrom da će se kolone koje pripadaju jednog familije sladištiti blizu na disku. Hbase nudi fleksibilnost sheme, pa s toga da bismo neki podatak skladištili ne moramo unapred da definišemo skup kolona koji pripada nekoj tabeli , ali moramo definisati skup familija kolona te tabele kako bi bilo moguće odrediti pogodnu lokaciju skladištenja podatka.
 
-HBase ne podržava postojanje indeksa, međutim podrazumevano ponašanje je da su ključevi svih redova sortirani rastuće, tako da se koristi binarna pretraga za pretragu vredosnti po ključu reda kojem pripada. Ovo daje na važnosti strategiji pro dizajniranju ključa. Poželjno je da svaka pretraga ide direktno preko ključa ili njegovog prefiksa. 
+HBase ne podržava postojanje indeksa, međutim podrazumevano ponašanje je da su ključevi svih redova sortirani rastuće, tako da se koristi binarna pretraga za pretragu vredosnti po ključu reda kojem pripada. Ovo daje na važnosti strategiji pri dizajniranju ključa. Poželjno je da svaka pretraga ide direktno preko ključa ili njegovog prefiksa. 
 
 Vrednosnu ćeliju u HBase tabeli određuje ključ reda, ime kolone te vrednosne ćelije, kao i familija kojoj kolona pripada.
 
-HBase nije ACID baza podataka, ali garantuje konzistentnost u radu sa jednim redom.
+HBase nije ACID baza podataka, ali nudi sledeće garancije: 
+
+\begin{enumerate}
+\item[\textbullet] Atomičnost pri radu sa jednim redom tabele, odnosno svaka izmena reda će ili u potpunosti uspeti, ili u potpunosti propasti.
+\item[\textbullet] Svako čitanje reda iz tabele vratiće stanje reda koje je bilo aktuelno najranije u trenutku kada je čitanje započeto. 
+\end{enumerate}
 
 \begin{figure}[!ht]
   \centering
@@ -242,7 +250,7 @@ HBase nije ACID baza podataka, ali garantuje konzistentnost u radu sa jednim red
   \label{fig:grafikon}
 \end{figure}
 
-Arhitektura HBase klastera sastoji se iz dve glavne komponente:  master server i region server.  Ove komponente je najbolje opisati kroz interfejse koje oni implementiraju. 
+Arhitektura HBase klastera sastoji se iz dve glavne komponente:  master server i region server. 
 
 Region server implementira HRegionInterface, odnosno implementira servise koji se bave operacijama nad podacima i održavanjem i upravljanjem regiona. Jedan region čine podaci za redove u nekom rasponu vrednosti ključeva. Region server kreira i dohvata HFile fajlove koji se čuvaju na disku. HBase dozvoljava dva režima: samostalan i distribuirani režim.
 
@@ -274,63 +282,23 @@ HMaster implementira HMasterInterface koji sadrži servise koji rade sa metainfo
 
 \subsection{Normalizacija i denormalizacija}
 
-Da bi se stanje u bazi olakšalo čuvanje podataka konzitentnim u relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoji jasno definisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces unapredđivanja logičkog dizajna baze tako da rešava problem redundantosti podataka, ali ne po cenu očuvanja integriteta, naziva se normalizacija. Teorija o normalizaciji se zasniva nad konceptima normalnih formi iz matematičke logike. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se normana forma. Trenutno postoji 5 defnisanih normalnih formi. 
+U relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u podacima. Redudantni podaci zauzimaju višak prostora na disku i otežavaju kasnije održavanje sistema. Kako bi se izbegla redudantnost postoje jasno formulisani postupci koji nam pomažu da organizujemo podatke tako da redudantnost umanjimo. Proces izmene logičkog modela baze podataka tako da rešava problem redundantosti podataka, ali ne po cenu očuvanja integriteta, naziva se normalizacija. U zavisnosti od toga koja pravila zadovoljava određena relacija, dodeljuje joj se odgovarajuća normalna forma. Neke od formulisanih normalnih formi relacionog modela su: 1. normalna forma, 2. normalna forma, 3. normalna froma, normalna forma elementarnog ključa, Bojs-Kodova normalna forma, 4. normalna forma, normalna forma esencijalnih torki, normalna forma bez redundansi, normalna forma superključeva, 5. normalna forma, normalna forma domena i ključa.
 
-\begin{enumerate}
-\item Prva normalna forma (1NF)
-	\begin{enumerate}
-	\item[\textbullet] Svaka relacija mora imati primarni ključ koja jedinstveno određuje svaku vrste.
-	\item[\textbullet] Svaka kolona mora saržati atomičnu (nedeljivu) vrednost.
-	\item[\textbullet] Sve vrednosti jedne kolone pripadaju nekom zajedničkom skupu.
-	\end{enumerate}
+Modeli koji su bili podloženi normalizaciji obično raspolažu velikim brojem stranih ključeva u tabelama koji predstavlaju referencu ka originalnim podacima iz matične tabele u kojoj se nalaze. Ukoliko želimo da pristupimo celom podatku iz neke tabele koja referiše na njega, podrazumeva se da ćemo pročitati celu tabelu na koju taj strani ključ pokazuje, što povećava broj operacija čitanja sa diska, pa samim tim može uticati na performanse.
 
-\item Druga normalna forma (2NF)
-	\begin{enumerate}
-	\item[\textbullet] Relacija mora biti 1NF
-	\item[\textbullet] Sve vrednsti kolone koje ne pripadaju superključu relacije, direktno su određene celim primarnim ključem .
-	\end{enumerate}
+Denormalizacija je strategija koja se koristi kod modela kod kojih je neophodno ubrzati operacije čitanja podataka, odnosno umanjiti broj tabela kojima je neophodno pristupiti kako bi se neki skup podataka pročitao iz baze podataka.  
 
-\item Treća normalna forma (3NF)
-	\begin{enumerate}
-	\item[\textbullet] Relacija mora biti 2NF
-	\item[\textbullet] Nijedna kolona van ključa kandidata nije jedinstveno određena drugim kolonama koje ne pripadaju  ključu kandidatu.
-	\end{enumerate}
-
-\item Boyce-Codd normalna forma (BCNF)
-	\begin{enumerate}
-	\item[\textbullet] Relacija mora biti 3NF.
-	\item[\textbullet] Svaka kolona koja ne pripada ključu mora biti jednistveno određena vrednostima superključa relacije.
-	\end{enumerate}
-
-\item Četvrta normalna forma (4NF)
-	\begin{enumerate}
-	\item[\textbullet] Relacija mora biti BCNF.
-	\item[\textbullet] Regulisanje zavisnostni među kolonama tako da nema ponavljanja podataka.
-	\end{enumerate}
-
-\item Peta normalna forma (5NF)
-	\begin{enumerate}
-	\item[\textbullet] Relacija mora biti 4NF.
-	\item[\textbullet] Reguliše zavisnosti između relacija tako da se izbegne potreba za komplikovanim upitima za dohvatanje podataka.
-	\end{enumerate}
-
-\end{enumerate}
-
-Modeli koji su bili podloženi normalizaciji obično raspolažu velikim brojem referencijalnih ključeva u tabelama koji predstavlaju referencu ka originalnim podacima iz matične tabele u kojoj se nalaze. Ukoliko želimo da pristupimo celom podatku iz neke tabele koja referiše na njega, podrazumeva se da ćemo pročitati celu tabelu na koju ta referenca pokazuje, što povećava broj operacija čitanja sa diska samim timmože uticati na performanse.
-
-Denormalizacija je strategija kod modela gde je neophodno ubrzati operacije čitanja podataka, odnosno umanjiti broj tabela kojima je neophodno pristupiti kako bi se neki skup podataka pročitao iz baze podataka.  
-
-Neke od tehnika denormalizacije su dodavanje redundantne kolone, horizontalna podelea tabele, vertikalna podela tabele, uvođenje izvedene kolone. 
-Pre join kolone  je  dodavanje kolone tabeli čija se referenca na vrednost te kolone često koristi. 
+Neke od tehnika denormalizacije su dodavanje redundantne kolone, horizontalna podela tabele, vertikalna podela tabele, uvođenje izvedene kolone. 
+Spajanje kolone je dodavanje kolone kojoj bi se često pristupalo preko stranog ključa.
 Horizontalno deljenje tabele podrazumeva da se na osnovu prirode podataka jedna tabela podeli na više tabela tako da se čitanje svede samo na čitanje grupe redova. 
 Vertikalno deljenje podrazumeva da se tabela podeli grupisanjem kolona koje se često čitaju zajedno. 
-Uvođenje izvedene kolone predstavlja dodavanje kolone koja predstavlja vrednost neke agregatne funkcije, time se izbegava da se pri čitanju ta operacija izvršava, već se radi prosto čitanje.
+Uvođenje izvedene kolone predstavlja dodavanje kolone koja predstavlja vrednost neke agregatne funkcije. Time se izbegava da se pri svakom čitanju ta operacija izvršava, već se pri ažuriranju stanja ta vrednost ažurira, da bi se rezultat kasnije mogao samo pročitati.
 
 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.9\textwidth]{denormalizacija.png}
-  \caption{Pre join kolone}
+  \caption{Spajanje kolone}
   \label{fig:grafikon}
 \end{figure}
 
@@ -358,33 +326,37 @@ Uvođenje izvedene kolone predstavlja dodavanje kolone koja predstavlja vrednost
 
 \subsection{ACID i BASE}
 
+Transakcija je logička jedinica posla pri radu sa podacima \cite{URBP}. Kod relacionih modela jednu transakciju karakteriše: atomičnost, konzistentost, izolovanost, trajnost (ACID).
 
-ACID (Atomicity, Consistency, Isolation, Durability) svojstva služe kao garancija tačnosti i konzistetnosti podataka prilikom konkurentnom pristupu. 
+Atomičnost transakcije se može objasniti pravilom: Jedna transakcija se izvršava u celini ili se ne izvršava nijedan njen deo, odnosno dejstvo transakcije je nedeljivo. 
 
-Atomicity se može objasniti pravilom: Jedna transakcija se izvršava u celini ili se ne izvršava nijedan njen deo. U prevodu, dejstvo transakcije je nedeljivo. 
+Konzistentost transakcije kaže da dejstvo transakcije ne može ostaviti takvo stanje da narušava integritet baze podataka.
 
-Durability garantuje da će kompletirana transakcija u slučaju prekida rada sistema pre nego što su izmene reflektovane na disk, biti upamćena i izvršena nakon restarta sistema. Svaka izmena se upisjue u log fajl pre nego što je reflektovana na disk, kako bi se operacije mogle poništiti u slučaju poništavanja transakcije.
+Izolovanost transakcije čini da transakcije ne mogu uticati međusobno jedna na drugu, odnosno, kada se jedna transakcija pokrene, pa sve dok se ne završi, za nju, izmena neke druge transakcije neće biti vidljiva.
 
-Consistency se čuva od strane korisnika. Bitno je da korisnik koji pokreće transakciju vodi računa o tome da stanje podataka ostane u konzistentom stanju.
+Trajnost garantuje da će kompletirana transakcija u slučaju prekida rada sistema pre nego što su izmene reflektovane na disk, biti upamćena i izvršena nakon restarta sistema. Svaka izmena se upisjue u log fajl pre nego što je reflektovana na disk, kako bi se operacije mogle poništiti u slučaju poništavanja transakcije.
 
-Isolation svojstvo nalaže da se transakcije međusobno izolovane tako da izvršavanje jedne transakcije ne može uticati na izvršavanje druge. Ovo se obezbeđuje pomoću scheduler-a od strane samog sistema za upravljanje bazom podataka.
+Ova svojstva obično karakterišu transakcije u relacionom modelu, kada konzistentost baze ima nešto veći prioritet od brzine i dostupnosti. Kod kolonski orijentisanih baza podataka, posebno u distribuiranom režimu, dostupnost i brzina često imaju veći prioritet od stalne konzistentosti. Kod njih se koristi alternativni pristup karakterizacije transakcije - BASE. BASE transakcije zadovoljavaju sledeća svojstva: suštinska rasoloživost , trenutno nekonzistetno stanje i konvergentna konzistentnost.
 
-ACID svojstva obično su karakteristika relacionog modela.
+Suštinska rasoloživost  garantuje maksimalnu dostupnost čitanja i pisanja, ali bez garancije konzistentosti.
 
-BASE sa druge strane je skup svojstava koje je definisao Eric Brewer , a koja su nastala usled zelje da se formalizuju svojstva koja u Big Data svetu garantuju da je baza pogodna za horizontalno skaliranje a ujedno daje vid konzistentnosti koji je neophodan. 
+Meko stanje daje mogućnost da se stanje baze podataka menja čak i kada nijedna transakcija nije u toku, i to u periodu postizanja konzistetnosti.
 
-Suštinska rasoloživost  svojstvo kaze da ukoliko imamo klaster sa vise pojedinačnih skladišta baze, problem sa jednim od njih nece spreciti da ostala skladišta procesiraju zahteve i salju odgovore.
-
-Trenutno nekonzistento stanje -  svojstvo kaze da se stanje podataka moze menjati, cak i u trenucima kada nema spoljnih komunikacija sa bazom podataka.
-
-Konvergentna konzistencija garantuje da ce baza podataka u periodima kada nema spoljne komunikacije sa klijentima, postati konzistentna kroz neki vremenski period. 
-
-Kolonski orijentisan model načelno ne mora da ispunjava BASE svojstva, ali to obicno jeste slucaj upravo zbog horizontalnog skaliranja koja ima tendenciju da ponudi.
+Konvergentna konzistencija garantuje da će baza podataka u slučaju da nema novih upisa, postati konzistentna kroz neki vremenski period. 
 
 \subsubsection{CAP teorema}
 
-U teoriji sistema za čuvanje podataka, CAP teorema koju je definsiao Eric Brewer, navodi da baza podatka koja skladišti deljene (distribuirane podatke) ne može istovremeno ispunjavati konzistentnost, raspoloživost, toleranciju razdvojenosti, slika 2.12.
-Tolerancija razdvojenosti je svojstvo koje se obično pordazumeva i njegovo odsustvo sistem čini ne prihvatljivim u praksi. Ovo navodi da se od relaciono modela načelno očekuje da u distribuiranom okruženju osim tolerancije razdvojenosti nudi i konzistentost, za razliku od kolonski orijentisane nerelacione baze koja konzistetnost ne garantuje (ali garantuje konvergentnu konzistenciju) pa samim tim fleksibilnije radi nad deljenim podacima.
+Kvalitet distribuiranih baza podataka ogleda se kroz tri svojstva: Konzistentost, raspoloživost i toleranciju razdvojenosti.
+
+Konzistenost u ovom kontekstu razlikuje se od konzistentosti transakcije. U kontekstu distribuiranih sistema, konzistetnost je svojstvo baze podataka, koje garantuje da će odgovor koji se šalje sa bilo kog čvora klastera (ukoliko odgovora ima) biti konzistentan .
+
+Raspoloživost je svojstvo koje garantuje da će baza uvek vratiti neki odgovor.
+
+Tolerancija razdvojenosti garantuje da će u slučaju delimičniih otkaza unutar klastera, sistem i dalje vraćati ispravne odgovore.
+
+CAP teorema koju je formulisao Eric Brewer  \footnote{Eric Allen Brewer profesor računarskih nauka na Univerzitetu Kalifornija, Berkli}, navodi da distribuirana baza podatka ne može istovremeno ispunjavati sva tri svojstva, slika 2.12.
+
+Obzirom da je konzistentost i dostupnost u praksi skoro nemoguće dostići, distribuirane baze podataka organizuju se u skladu sa tim da li veći prioritet daju dostupnosti, ili stalnoj konzistentosi. Priroda sistema koji koriste relacioni model obično je takva da  prioritizuju konzistetnost, pa se od relacionog modela načelno očekuje da u distribuiranom okruženju osim konzistetnost nudi i toleranciju razdvojenosti, za razliku od kolonski orijentisane nerelacione baze koja konzistetnost ne garantuje (garantuje konvergentnu konzistenciju), ali uz toleranciju razdvojenosti nudi stalnu dostupnost.
 
 \begin{figure}[!ht]
   \centering
@@ -394,7 +366,7 @@ Tolerancija razdvojenosti je svojstvo koje se obično pordazumeva i njegovo odsu
 \end{figure}
 
 % ------------------------------------------------------------------------------
-\chapter{Slučajevi upotrebe}
+\chapter{Analiza slučajeva upotrebe}
 % ------------------------------------------------------------------------------
 \section{Opis i sadržaj eksperimenta}
 Analiza i upoređivanje slucajeva upotrebe bice realizovani na osnovu teorijskih i prakticnih  izvora i istrazivanja. Svaki primer ce biti pracen eksperimentom koji ce se sastojati od izvrsavanja razlicitih vrsta postupaka.
@@ -1160,13 +1132,15 @@ Uticaj denormalizacije modela na performanse mogu se videti na slici 3.5.
   \label{fig:grafikon}
 \end{figure}
 
-Ovakav pristup prilikom kreiranja modela, omogućila nam je fleksibilnost sheme koju HBase nudi, ali i nepostojanje limita broja kolona. 
+Ovakav pristup prilikom kreiranja modela, omogućila nam je fleksibilnost sheme koju HBase nudi, kao i nepostojanje limita broja kolona. 
 
 \pagebreak
 
 
 \section{Primena u distribuiranom okruženju}
-\subsection{CAP teorema}
+
+
+Distribuirano okruženje odlikuje 
 
 \chapter{Zaključak}
 
