@@ -43,3 +43,5 @@ setup/OLAP/hbase_setup_olap_model.jar
 setup/OLAP/olap_benchmark_postgres.jar
 setup/OLAP/olap_benchmark_hbase.jar
 setup/OLAP/olap_benchmark_postgres.jar
+setup/OLAP/orderitemStatsHB.csv
+setup/OLAP/orderitemStatsHB.csv
