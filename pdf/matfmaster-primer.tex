@@ -40,6 +40,8 @@
 % azbuke (nema potrebe koristiti ovo u pravim disertacijama)
 \usepackage{pangrami}
 \usepackage[x11names]{xcolor}
+%\usepackage{roboto}
+\usepackage{courier}
 \usepackage{numprint}
 
 % Paket koji obezbeđuje ispravni prikaz ćiriličkih italik slova kada
@@ -192,45 +194,44 @@ Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleks
 
 \subsection{Popularni algoritmi kompresije kolonski orijentisanog modela}
 
-Neke od najpoznatijih algoritama kompresije koje kolonski orijentisan model koristi i koji će biti opisani u nastavku jesu: enkodiranje zasnovano na rečniku, enkodiranje po broju ponavljanja i delta enkoding. Važno je napomenuti da relacioni modeli imaju svoje mehanizme kompresije podataka koji u ovom radu nisu analizirani.
+Neke od najpoznatijih algoritama kompresije koje kolonski orijentisan model koristi i koji će biti opisani u nastavku jesu: enkodiranje zasnovano na rečniku, enkodiranje po broju ponavljanja i delta enkoding. \footnote{Važno je napomenuti da relacioni modeli imaju svoje mehanizme kompresije podataka koji u ovom radu nisu analizirani.}
 
-Enkodiranje zasnovano na rečniku (engl. \textit{Dictionary based encoding}), slika 2.2., funkcioniše tako što se napravi mapa vrednosti koja sadrži svaku vrednost kolone koja je prisutna na disku. Kao vrednost kolone tada se ne upisuje konkretna vrednost, već ključ iz rečnika koji je mapiran na tu vrednost. Veličina ključa je srazmerna veličini mape, te je ovaj vid kompresije najpogodniji za kolone koje imaju mali broj vrednosti koje se ponavljaju.
+Enkodiranje zasnovano na rečniku (engl. \textit{Dictionary based encoding}), slika 2.2., funkcioniše tako što se napravi mapa vrednosti koja sadrži svaku vrednost kolone koja je prisutna među podacima. Kao vrednost kolone tada se ne upisuje konkretna vrednost, već ključ iz rečnika koji je mapiran na tu vrednost. Veličina ključa je srazmerna veličini mape, te je ovaj vid kompresije najpogodniji za kolone koje imaju mali broj vrednosti koje se ponavljaju.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{DictionaryEncoding.jpg}
+  \includegraphics[width=0.9\textwidth]{DictionaryEncoding.png}
   \caption{Enkodiranje zasnovano na rečniku}
   \label{fig:grafikon}
 \end{figure}
 
 
-Enkodiranje po broju ponavljanja  (engl. \textit{Run Length Encoding}) , slika 2.3., funkcioniše tako što se uz svaku vrednost koja se ponavlja čuva i broj ponavljanja te vrednosti. Na taj način se izbegava pojava duplikata na uzastopnim adresama u memoriji. Ovaj vid kompresije najpogodniji je za kolone koje su sortirane.
+Enkodiranje po broju ponavljanja  (engl. \textit{Run Length Encoding}) , slika 2.3., funkcioniše tako što se uz svaku vrednost koja se ponavlja čuva i broj ponavljanja te vrednosti. Na taj način se izbegava pojava duplikata na uzastopnim adresama u memoriji. Ovaj vid kompresije najpogodniji je za kolone koje su sortirane i imaju ponavljajuće vrednosti.
 \pagebreak
-
 
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{run-length-encoding.jpg}
+  \includegraphics[width=0.9\textwidth]{run-length-encoding.png}
   \caption{Enkodiranje po broju ponavljanja}
   \label{fig:grafikon}
 \end{figure}
 
 
-Delta enkoding, algoritam kompresije, slika 2.4. funkcioniše tako što se u kolonama ne čuvaju same vrednosti već razlike između uzastopnih vrednosti. Očigledan primer primene ove kompresije je datumska kolona koja za vrednosti uzima uzastupne datume. U tom slučaju  je dovoljno da izaberemo neki referentni datum i da za ostale kolone čuvamo razliku u odnosu na taj datum.
+Delta enkodiranje algoritam kompresije, slika 2.4. funkcioniše tako što se u kolonama ne čuvaju same vrednosti već razlike između uzastopnih vrednosti. Očigledan primer primene ove kompresije je datumska kolona koja za vrednosti uzima uzastupne datume. U tom slučaju  je dovoljno da izaberemo neki referentni datum i da za ostale kolone čuvamo razliku u odnosu na taj datum.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{delta-encoding.png}
-  \caption{Delta enkoding}
+  \includegraphics[width=1\textwidth]{delta-encoding.png}
+  \caption{Delta enkodiranje}
   \label{fig:grafikon}
 \end{figure}
 
 \subsection{HBase}
 
-HBase je distribuirana kolonski orijentisana nerelaciona baza podataka nastala 2007. godine kao prototip \textit{BigTable} baze koja je modelovana u okviru Google-ovog članka 2006 \cite{BigTable}. 
+HBase je kolonski orijentisana nerelaciona baza podataka nastala 2007. godine kao prototip \textit{BigTable} baze koja je modelovana u okviru Google-ovog članka iz 2006.godine\cite{BigTable}. 
 
-Model podataka koji HBase koristi podrazumeva da se svaka tabela sastoji iz familije kolona, a da svaka familija kolona sadrži određeni skup kolona.  S obzirom da će se kolone koje pripadaju jednoj familiji sladištiti blizu na disku, cilj je da atributi, odnosno kolone koje su po prirodi slične pripadaju istoj familiji kolona, kako bi se nad njima mogli primeniti algoritmi kompresije. Hbase nudi fleksibilnost strukture podataka, što znači da da bismo neki podatak skladištili ne moramo unapred da definišemo skup kolona koji pripada nekoj tabeli , ali moramo definisati skup familija kolona te tabele.
+Model podataka koji HBase podrazumeva da se svaka tabela sastoji iz familije kolona, a da svaka familija kolona sadrži određeni skup kolona.  S obzirom da će se kolone koje pripadaju jednoj familiji sladištiti blizu na disku, cilj je da atributi, odnosno kolone koje su po prirodi slične pripadaju istoj familiji kolona, kako bi se nad njima mogli primeniti algoritmi kompresije. Hbase nudi fleksibilnost strukture podataka, što znači da da bismo neki podatak skladištili ne moramo unapred da definišemo skup kolona koji pripada nekoj tabeli , ali moramo definisati skup familija kolona te tabele.
 
 HBase ne podržava indekse, ali su ključevi svih redova sortirani rastuće, tako da se koristi binarna pretraga za pretragu vrednosti po ključu reda kojem pripada. Ovakvo ponašanje daje na važnosti dizajniranju ključa kako bi svako čitanje podataka išlo preko ključa ili njegovog prefiksa. 
 
@@ -245,7 +246,7 @@ HBase nije ACID baza podataka, ali nudi sledeće garancije \cite{hbaseACID}:
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.7\textwidth]{colFamily.png}
+  \includegraphics[width=0.6\textwidth]{colFamily.png}
   \caption{Hbase model}
   \label{fig:grafikon}
 \end{figure}
@@ -271,7 +272,7 @@ Sa druge strane distribuiranom režimu neophodno je korišćenje HDFS-a za sklad
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{hbase-distributed.png}
+  \includegraphics[width=1\textwidth]{hbase-distributed.png}
   \caption{HBase distributed}
   \label{fig:grafikon}
 \end{figure}
@@ -296,7 +297,7 @@ Spajanje kolone, slika 2.8. je dodavanje kolone kojoj bi se često pristupalo pr
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{denormalizacija.png}
+  \includegraphics[width=0.7\textwidth]{denormalizacija.png}
   \caption{Spajanje kolone}
   \label{fig:grafikon}
 \end{figure}
@@ -372,31 +373,72 @@ Obzirom da je konzistentost i dostupnost u praksi skoro nemoguće dostići, dist
   \label{fig:grafikon}
 \end{figure}
 
-% ------------------------------------------------------------------------------
-\chapter{Analiza slučajeva upotrebe}
-% ------------------------------------------------------------------------------
-\section{Opis i sadržaj eksperimenta}
-Analiza i upoređivanje slučajeva upotrebe biće realizovani na osnovu teorijskih i praktičnih  izvora i istraživanja. Svaki primer će biti praćen eksperimentom koji će se sastojati od izvršavanja različitih vrsta postupaka.
+\chapter{Slučajevi upotrebe}
 
-U radu će biti analizirani sledeći slučajevi upotrebe:
+Kako bi se postigao dovoljan dokaz koncepta (engl. \textit{proof of concept}) kreirano je više scenarija koji na različit način pristupaju radu sa podacima. Scenariji, odnosno slučajevi upotrebe koji su testirani u ovom radu jesu: 
 \begin{enumerate}
 \item Onlajn transakciono procesiranje (OLTP)
-\item Onlajn analiticko procesiranje (OLAP)
-\item Primena u distribuiranom okruženju
+\item Onlajn analitičko procesiranje (OLAP)
+\item Distribuirano okruženje
 \end{enumerate}
 
-Svakom slučaju upotrebe u okviru pripreme eksperimenata dodeljen je model podataka nad kojim se izvršavaju testovi.
 
-Pored definisanja konteksta, analiza slučaja upotrebe sadržaće opis implementacije testova nad predstavnicima, uputstvo za pripremu okruženja kao i analizu rezultata.
+\section{Onlajn transakciono procesiranje (OLTP)}
+Onlajn transakciono procesiranje predstavlja procesiranje podataka koje se sastoji iz velikog broja transakcija koje se mogu paralelno izvršavati.  Svaka pojedinačna transakcija obično deluje na manjem broju podataka i obično uključuje njihovu izmenu, a kada se radi čitanje podataka, ono je obično po ključu \cite{oltp}. Kod ovakvog vida procesiranja, gde su izmene podataka česte, čuvanje integriteta podataka prilikom tih upisa je prioritet, pa je često sastavni deo finanskijskih sistema, sistema za rezervacije i sl.
+Konkretan scenario koji će u radu simulirati OLTP okruženje je prebacivanje sredstava sa jednog računa na drugi. Svako prebacivanje novca predstavljaće jednu poslovnu transakciju koja se sastoji iz više transakcija baze podataka. Definicija poslovne transakcije koja se koristi za testiranje delom je preuzeta iz TPC-C specifikacije \cite{tpcc}. 
 
-Analiza rezultata eksperimenta će pored prikaza rezultata samih merenja, obuhvatiti i upoređivanje složenosti realizacije konkretnog slučaja upotrebe, kao i eventualna unapređenja i primedbe koje treba imati u vidu kada se radi sa datim tehnologijama. 
+Jedna poslovna transakcija sastoji se iz tri transakcije baze podataka: kreiranje transfera sredstava (\textit{createFXTransaction}), izvršavanje uplate (\textit{executePayment}) i provera statusa transfera (\textit{checkTransactionStatus}).
 
-\subsection{Platforma testiranja}
+CreateFXTransaction sastoji se iz provere sredstava na računu korisnika i unosa novog transfera u tabelu.
 
-Za predstavnike baza podataka čiji se modeli upoređuju i analiziraju izabrani su HBase i Postgres \footnote{Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase, rezultati dobijeni u nastavku su rezultati poređenja konkretnih predstavnika, i nisu opšti za sve relacione i kolonski orijenisane nerelacione baze podataka.}.  Kao okruženje za izvršavanje eksperimenata korišćen je docker.Oba  predstavnika biće pokrenuta u okviru nezavisnih kontejnera na jednom računaru sa instaliranim docker-om. Svaki test predstavlja jedan java program koji se izvršava na konkretnom kontejneru, kako bi se smanjila potreba za evenutalnim saobraćajem kroz mrežu, a time i stekla što objektivnija slika na osnovu rezultata merenja. Dijagram sa opisom strukture platforme dat je na slici 3.1.
+ExecutePayment radi ažuriranje računa korisnika i menja status transfera
+
+CheckTransaction dohvata status transfera.
+
+\section{Onlajn analitičko procesiranje (OLAP)}
+
+Onlajn analitičko procesiranje sačinjeno je od velikog broja čitanja podataka i manjeg broja izmena podataka (koje su obično masivne - \textit{bulk}). Upiti koji se koriste obično imaju parametre, visok nivo kompleksnosti i visok procenat podataka kojima pristupaju. OLAP je obično sastavni deo sistema koji nude podršku za donošenje poslovnih odluka, generisanje složenih izveštaja kao i bilo koji vid korišćenja velike količine podataka koristeći složene upite i operacije. Scenario koji se simulira u ovom radu u svrhu testiranja, jeste primer funkcionisanja trgovinskog lanca sa skupom svojih mušterija, proizvoda, dobavljača i narudžbina. Korišćen model delom je preuzet iz TPC-H specifikacije \cite{tpch}. Test će se sastojati iz paralelnog izvršavanja složenog upita koji iz tabele sa stavkama narudžbina izvlači vrednosti agregatnih funkcija određenih kolona grupisanih po statusu. Parametri upita su dan slanja narudžbine i status po kojima filtriramo rezultat.
+
+
+\section{Distribuirano okruženje}
+
+Distribuirani sistemi su sistemi kod kojih se podaci nalaze na više povezanih jedinica, odnosno čvorova kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnost sistema u slučaju problema.  Dva načina distribuiranja podataka su: \textbf{replikacija} i \textbf{particionisanje}. 
+
+
+Particionisanje distribuira podatke tako što se veliki skupovi podataka podele na manje celine i čuvaju na različitim čvorovima. 
+
+Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. Kako bi svaka replika bila ažurna neophodno je da se vaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave}, slika 3.1. (postoje i alternative: \textit{multi-master} model i \textit{masterless} model, ali usled njihove složenosti oni se koriste samo u nekim specifičnim slučajevima). Po tom modelu jedna od replika izabrana je da bude master replika, i svaka izmena podataka mora ići kroz nju, a onda ona izmenu propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može raditi sa bilo kog čvora. 
+
+Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmena dođe do master čvora, on pre nego što klijentu vrati odgovor da je izmena uspešno sačuvana, sačeka da mu svaki zavisni čvor potvrdi da je izmena uspešno upisana kod njega. Sinhrona replikacija je karakteristična za sisteme koji garantuju da će klijent pri čitanju podatka sa bilo koje replike imati ažurno stanje, međutim, cena toga je umanjena dostupnost, s obzirom da ukoliko neki od zavisnih čvorova postane nedostupan, ne može master čvoru potvrditi da je izmena upisana na njega, pa samim tim ni master ne može klijentu potvrditi da je izmena uspešno upisana. Kod asinhrone replikacije, kada izmena podataka dođe do mastera, i on tu izmenu propagira ka ostalim zavisnim čvorovima, master ne čeka nikakav odgovor od zavisnih čvorova, već ukoliko je izmena uspešno upisana na njega on klijentu vraća potvrdu o sačuvanoj izmeni. Asinhrona replikacija obično nudi bolje performanse i veću dostupnost servisa, po cenu toga da čitanje sa neke od replika mogu vraćati zastarele podatke.
+
+Kako relacione baze podataka daju prioritet konzistentosti (CP iz CAP teoreme) najčešće se kod njih koristi sinhrona replikacija, dok je kod modela kojima je dostupnost (AP iz CAP teoreme) prioritet, asinhrona replikacija model po kojem se podaci distribuiraju.
 
 
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{master-slave.png}
+  \caption{Master-slave replikacija}
+  \label{fig:grafikon}
+\end{figure}
+
+\pagebreak
+Replikacija i particionisanje obično idu zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 3.1. 
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{replica-partition.png}
+  \caption{Replikacija i particionisanje}
+  \label{fig:grafikon}
+\end{figure}
+
+Primer koji će biti analiziran jeste rad jednostavnog distribuiranog DNS servera\footnote{Usled složenosti implementacije distribuiranog PostgreSQL sistema, za distribuirano okruženje primer je dat samo za HBase, a upoređivanje je dato na osnovu teorijskih istraživanja}.
+
+\chapter{Merenje performansi po modelima}
+
+\section{Opis platforme za testiranje}
+
+Za predstavnike baza podataka izabrani su HBase (kao predstavnik kolonski orijentisane nerelacione baze podataka) i PostgreSQL (kao predstavnik relacione baze podataka) \footnote{Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase, rezultati dobijeni u nastavku su rezultati poređenja konkretnih predstavnika, i nisu opšti za sve relacione i kolonski orijenisane nerelacione baze podataka.}.  Kao okruženje za izvršavanje testova  korišćen je \textit{docker}. Serveri oba predstavnika biće pokrenuti kao nezavisni kontejneri. 
 
 \begin{figure}[!ht]
   \centering
@@ -405,35 +447,31 @@ Za predstavnike baza podataka čiji se modeli upoređuju i analiziraju izabrani 
   \label{fig:grafikon}
 \end{figure}
 
-\pagebreak
 
-\section{Primena u online transakcionom procesiranju (OLTP)}
+\section{Merenje performansi u OLTP okruženju}
 
-Onlajn transakciono procesiranje obuhvata kratke, učestale invazivne operacije na relativno malom skupu podataka. Da bismo simulirali ovakvo okruženje korišćen je primer onlajn transakcija i prenosa sredstava sa jednog računa na drugi. Parametri testa će biti broj biznis transakcija koje treba izvršiti, kao i broj klijenata, odnoso konekcija ka bazi, koji će paralelno obavljati svoj deo posla u okviru ovog testa. Jedna biznis transakcija sastoji se iz kreiranja transakcije, izvršavanja transakcije, odnosno prenos sredstava sa jednog računa na drugi, i na kraju provera statusa transakcije. 
+Model baze podataka za testiranje u OLTP okruženju koji se koristu u radu, sastoji se iz četiri tabele:
 
-
-\subsection{Opis modela}
-
-Model koji ćemo koristiti sastojaće se iz 4 tabele:
 
 \begin{enumerate}
 \item[\textbullet] \textbf{fxrates}: {
-	Sadrži informacije o kursu valutnih parova
+	Sadrži informacije o kursu valutnih parova. Sadrži 16 redova.
 }
 \item[\textbullet] \textbf{fxuser}:{
-	Podaci o korisnicima
+	Podaci o korisnicima. Sadrži  \numprint{30000} redova.
 }
 \item[\textbullet] \textbf{fxaccount}:{
-	Podaci o računima korisnika.
+	Podaci o računima korisnika. Sadrži  \numprint{120000} redova.
 }
 \item[\textbullet] \textbf{fxtransaction}:{
-	Transakcije prenosa sredstava
+	Sadrži informacije o transferima, odnosno transakcijama sredstava.
 }
 \end{enumerate}
 
+
 \lstset{
   language=sql,
-  basicstyle=\footnotesize,
+  basicstyle=\footnotesize\ttfamily,
   keywordstyle=\color{black},
   backgroundcolor = \color{LemonChiffon1},
   numbers=left,
@@ -486,18 +524,7 @@ create table postgresdb.fxtransaction (
 	entry_date timestamp not null
 );
 
-
 \end{lstlisting}
-
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
 
 \begin{lstlisting}[title={setup-hbase-model.sh},captionpos=t]
 create fxrates, 'data';
@@ -506,18 +533,12 @@ create fxaccount, 'data';
 create fxtransaction, 'data';
 \end{lstlisting}
 
-\subsection{Implementacija testa}
+Kao što je ranije spomenuto, poslovna transakcija koja se testira jeste prebacivanje sredstava sa jednog računa na drugi.  Ona se sastoji iz tri dela: kreiranje transfera sredstava (\textit{createFxTransaction}), izvršavanja uplate(\textit{executePayment}) i provera 
+statusa transfera (\textit{checkTransactionStatus});
 
-Implementacija testa podrazumeva da ćemo imati dva parametra pri pokretanju: broj biznis transakcija koje će biti obrađene i broj klijenata koji će paralelno izvršavati svoj deo posla. Svakom klijentu će biti dodeljen određeni broj biznis transakcija koje treba da obradi. Svaka biznis transakcija sastoji se iz kreiranja transakcije (\textbf{createFXTransaction}), izvršavanja uplate (\textbf{executePayment}), provere statusa transakcije (\textbf{checkTransactionStatus}). 
+CreateFXTransaction prvo pročita stanje naloga sa kojeg treba preneti sredstva, nakon toga čita kurs odgovarajućeg valutnog para i ukoliko ima dovoljno sredstava na računu, u tabelu sa transferima upisuje transfer u statusu \textit{NEW}.
 
-CreateFXTransaction prvo pročita stanje naloga sa kojeg treba preneti sredstva, nakon toga čita odgovarajući kurs, a ukoliko ima dovoljno sredstava na računu u tabelu sa transakcijama upisuje transakciju u statusu NEW.
-
-\lstset{
-  language=sql,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1}
-}
+\pagebreak
 
 \begin{lstlisting}[title={CreateFXTransaction},captionpos=t]
 
@@ -532,19 +553,9 @@ where fr.currency_to = ? and fr.currency_from = ?;
 insert into fxtransaction
 (id,fxaccount_from, fxaccount_to, amount, status, entry_date)
 values(?,?,?,?,?,?)
-
 \end{lstlisting}
 
-ExecutePayment prvo pročita stanje sa naloga koji učestvuju u transakciji, menja im balans u skladu sa transakcijom, nakon toga transakciji menja status.
-
-
-
-\lstset{
-  language=sql,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1}
-}
+ExecutePayment prvo pročita stanja sa naloga koji učestvuju u transferu, menja im balans i nakon toga transferu menja status.
 
 \begin{lstlisting}[title={ExecutePayment},captionpos=t]
 
@@ -570,14 +581,8 @@ where id = ?
 
 \end{lstlisting}
 
-CheckTransactionStatus za odgovarajucu transakciju čita status.
+CheckTransactionStatus za odgovarajuću transakciju čita status po primarnom ključu.
 
-\lstset{
-  language=sql,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1}
-}
 
 \begin{lstlisting}[title={CheckTransactionStatus},captionpos=t]
 select status
@@ -586,89 +591,83 @@ where id = ?
 \end{lstlisting}
 
 
-Svaki klijent u zasebnoj niti obrađuje njemu dodeljen broj biznis transakcija, a svaka od njih se sastoji iz gore navedenih delova.
+Test ima podršku za paralelno izvršavanje poslovnih transakcija. Parametri testa su \textbf{broj klijenata} (\textit{numOfClients}) i \textbf{broj poslovnih transakcija koje treba izvršiti} (\textit{totalTransactions}). Oba parametra postavljaju se prilikom pokretanja testa, kroz standardni ulaz. Politika dodeljivanja poslovnih transakcija svakom od klijenata je da se ukupan broj poslovnih transakcija ravnomerno podeli svim klijentima, a eventualni ostatak pri podeli dodeljuje se nekom od njih.
 
-\lstset{
-  language=Java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1}
+\begin{lstlisting}[title={Implementacija politike podele posla klijentima},captionpos=t]
+List<Integer> transClientList = new ArrayList<>();
+int transToAssign = totalTransactions;
+int transPerClient = transToAssign / numOfClients;
+
+for(int i = 0; i<numOfClients;i++){	
+   transClientList.add(transPerClient);
+   transToAssign-=transPerClient;
 }
+if (transToAssign > 0) {
+   int transForLast = transPerClientList.get(numOfClients - 1);
+   transClientList.set(numOfClients - 1, transForLast + transToAssign);
+}
+
+assert numOfClients==transClientList.size();
+Thread[] threads = new Thread[numOfClients];
+for(int i = 0;i<numOfClients;i++){
+   threads[i] = new Thread(
+      new BenchmarkSingleClientExecutor(
+         i*transClientList.get(i),transClientList.get(i)
+         )
+      );
+ }
+\end{lstlisting}
+
+
+Nakon što se klijentu dodeli skup poslovnih transakcija koje treba da obradi, on krene da izvršava sve tri faze svake poslovne transakcije koja mu je dodeljena. Svaki transfer koji učestvuje u poslovnoj transakciji generisan je na osnovu rednog broja poslovne transakcije koju klijent procesira. To je garancija da se ne može desiti da se isti transfer obrađuje više puta, kao i to da dva klijenta ne mogu obrađivati isti transfer.
 
 \begin{lstlisting}[title={BenchmarkSingleClientExecutor.java},captionpos=t]
 
 public class BenchmarkSingleClientExecutor implements Runnable {
 
-    private final CountDownLatch endSignal;
-    private final BenchmarkOLTPUtility oltpUtil;
-    private final int numOfT;
-    private final int startFrom;
+private final CountDownLatch endSignal;
+private final BenchmarkOLTPUtility oltpUtil;
+private final int numOfT;
+private final int startFrom;
 
-    private final Object connection;
+private final Object connection;
 
-    @Override
-    public void run() {
+@Override
+public void run() {
 
-       try {
-         for (int i = this.start; i < this.start + this.numOfT; i++) {
-             ExecutePaymentInfo executePaymentInfo = 
-	    oltpUtil.createFXTransaction(connection);
-	    oltpUtil.executePayment(,executePaymentInfo);
-            oltpUtil.checkTransactionStatus(fxT);
-          }
-          endSignal.countDown();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+try {
+   for (int i = this.start; i < this.start + this.numOfT; i++) {
+     FXTransaction fxTransaction = DataGenerator.seedTransacton(i);
+     ExecutePaymentInfo executePaymentInfo = 
+         oltpUtil.createFXTransaction(connection);
+     oltpUtil.executePayment(,executePaymentInfo);
+     oltpUtil.checkTransactionStatus(fxT);
     }
+    endSignal.countDown();
+} catch (Exception e) {
+     throw new IllegalStateException(e);
+ }
 }
-
+}
 \end{lstlisting}
 
+Priprema okruženja za testiranje podrazumeva kompilaciju java testova, pokretanje docker kontejnera i prebacivanje kompiliranih testova na odgovarajuće kontejnere. Dodatan korak za HBase jeste da se na HBase kontejneru kreira struktura baze podataka. Skripta u nastavku sadrži sve neophodne komande za pokretanje okruženja.
 
+\pagebreak
 
-\subsection{Priprema okruženja}
-
-S obzirom da se testovi izvršavaju na posebnim docker kontejnerima, potrebno  je da napravimo docker slike i pokrenemo kontejnere koristeći docker alat. Pored toga, neophodno je da kompajliramo java testove koristeći maven i nakon toga  prosledimo  odgovarajućim  kontejnerima.
-
-\lstset{
-  language=bash,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1}
-}
-
-\begin{lstlisting}[title={prepareEnv.sh},captionpos=t]
+\begin{lstlisting}[title={prepare-env.sh},captionpos=t]
 #!/bin/bash
 echo 'PREPARING ENVIRONMENT...';
-
-rm -f ./hbase_setup_model.jar
-rm -f ./benchmark_hbase.jar
-rm -f ./benchmark_postgres.jar
 
 export JAVA_HOME="$JAVA_8";
 mvn -f ./hbase_setup_model clean compile assembly:single;
 mvn -f ./benchmark_hbase clean compile assembly:single;
-
 export JAVA_HOME="$JAVA_17";
 mvn -f ./benchmark_postgres clean compile assembly:single;
 
-
 docker-compose -f docker-compose.yml up --build -d;
 docker exec -it hbase-master-1 sh -c "java -jar hbase_setup_model.jar";
-
 \end{lstlisting}
-
- Za pokretanje docker kontejnera korišćen je docker-compose sa sledećim sadržajem:
-
-\lstset{
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
 
 \begin{lstlisting}[title={docker-compose.yml},captionpos=t]
 services: 
@@ -709,10 +708,7 @@ volumes:
   hbase_zookeeper_data:
 \end{lstlisting}
 
-
-\subsection{Analiza rezultata}
-
-Kada se radi o OLTP okruženju, važno je naglasiti da HBase ne garantuje konzistentost nad svim podacima kakvu nudi Postgres. HBase ipak garantuje neki vid konzistentosti, tj konzistentost nad jednim redom tabele. To dovodi do zaključka da ukoliko je neophodno implementirati transakciju koja uključuje rad sa podacima više tabela ili više redova jedne tabele, ukoliko koristimo HBase moramo na aplikativnom sloju voditi računa o očuvanju  eventualne konzistetnosti. Postgres sa druge strane kao ACID baza sama garantuje da izmene neke transakcije koje se rade nad nekim skupom podataka neće biti vidljive za druge klijente dok se ta transakcija ne komituje, pa samim tim i konzistento stanje podataka.
+Rezultati merenja prikazani u nastavku nastali kao rezultat pokretanja testova sa \numprint{100}, \numprint{1000}, \numprint{10000}, \numprint{50000}, \numprint{100000} poslovnih transakcija i pet klijenata koji te poslovne transakcije paralelno obrađuju.
 
 \begin{figure}[!ht]
   \centering
@@ -728,57 +724,49 @@ Kada se radi o OLTP okruženju, važno je naglasiti da HBase ne garantuje konzis
   \label{fig:grafikon}
 \end{figure}
 
-Merenje efikasnosti predstavnika u OLTP okruženju uključivalo je pokretanje testova u više iteracija. Svaki test je podrazumevao 5 klijenata koji paralelno obaljaju svoj deo posla, a pokrenuti su testovi za obradu \numprint{100},\numprint{1000}, \numprint{10000},\numprint{50000},\numprint{100000} biznis transakcija, a rezultati merenja prikazani su na slici 3.2. Primećuje se da sa porastom podataka koji se nalaze u tabeli sa čijim se podacima radi, Postgres ima određena usporenja, relativno gledano u odnosu na HBase. Konkretno kada se pogleda vreme delova biznis transakcije odvojeno, primećuje se da HBase u testovima sa \numprint{50000} i \numprint{100000} iteracija prednost stiče u createFXTransaction delu cele biznis transakcije, što se može videti na slici 3.3. 
+\pagebreak 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{oltp-vizualization.png}
+  \caption{Rezultati merenja u OLTP okruženju}
+  \label{fig:grafikon}
+\end{figure}
 
-Tendencija merenja ukazuje da bi sa porastom broja podataka (na milione i desetine miliona redova) HBase davao bolje rezultate u odnosu na Postgres, međutim za testiranje takvog okruženja neophodno je koristiti računar koji je sposoban da sprovede tako zahtevan test.
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{createFxTransaction-vizualization.png}
+  \caption{Rezultati merenja createFXTransaction dela biznis transakcije}
+  \label{fig:grafikon}
+\end{figure}
 
+\pagebreak
 
-\section{Primena u online analitičkom procesiranju (OLAP)}
+\section{Merenje performansi u OLAP okruženju}
 
-OLAP okruženje sačinjeno je od velikog broja čitanja podataka i vrlo malog broja izmena podataka.. Upiti koji se koriste obično imaju parametre, visok nivo kompleksnosti i visok procenat podataka kojima pristupaju.
-Primer koji emo koristiti jeste uopšten primer održavanja trgovinskog lanca koji ima skup mušterija, proizvoda, dobavljača,  narudžbina. 
-Ovaj OLAP eksperiment će se sastojati iz dohvatanja izveštaja iz tabele koja sadrži stavke narudžbina. Taj izveštaj će sadržati rezultate agregiranih operacija nad kolonama, a parametri će biti status i datum slanja stavke.
-
-\subsection{Modeli podataka}
-
-Model koji ćemo koristiti sastojaće se iz sledećih tabela:
+Model baze podataka koji se koristi za testiranje u OLAP okruženju  sastoji se iz sledećih tabela:
 
 \begin{enumerate}
 \item[\textbullet] \textbf{product}: {
-	Sadrži informacije o proizvodima. Predviđeno je da sadrži 3000000 redova.
+	Sadrži informacije o proizvodima. Sadrži \numprint{3000000} redova.
 }
 \item[\textbullet] \textbf{supplier}:{
-	Podaci o dovaljačima. Predviđeno je da sadrži 1000000 redova.
+	Podaci o dovaljačima. Sadrži  \numprint{1000000} redova.
 }
 \item[\textbullet] \textbf{productsupplier}:{
-	Vezna tabela između dobavljača i proizvoda. Predviđeno je da sadrži 5000000 redova.
+	Vezna tabela između dobavljača i proizvoda. Sadrži  \numprint{5000000} redova.
 }
 \item[\textbullet] \textbf{customer}:{
-	Informacije o mušterijama. Predviđeno je da sadrži 1500000 redova.
+	Informacije o mušterijama. Sadrži  \numprint{1500000} redova.
 }
 \item[\textbullet] \textbf{order}:{
-	Informacije o narudžbinama. Predviđeno je da sadrži 1500000 redova.
+	Informacije o narudžbinama. Sadrži  \numprint{1500000} redova.
 }
 \item[\textbullet] \textbf{orderitem}:{
-	Informacije o pojedinim stavkama narudžbine. Predviđeno je da sadrži 6000000 redova.
+	Informacije o pojedinim stavkama narudžbine. Sadrži  \numprint{6000000} redova.
 }
-
 \end{enumerate}
 
-
-\lstset{
-  language=sql,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
-
 \begin{lstlisting}[title={setup-postgres-model.sql},captionpos=t]
-
-
 create table product (
     id  integer not null primary key,
     name varchar(50) not null,
@@ -855,17 +843,6 @@ create table order_item(
 
 \end{lstlisting}
 
-
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
-
 \begin{lstlisting}[title={hbase-setup-model},captionpos=t]
 
 create product, 'data';
@@ -877,19 +854,8 @@ create orderitem, 'data';
 
 \end{lstlisting}
 
-\subsection{Implementacija testa}
+OLAP test će obuhvatiti upunjavanje tabela iz csv fajlova (\textit{bulk load}), kao i iz izvršavanja upita koji će klijenti paralelno izvršavati više puta. Upit će biti parametrizovan i uzimaće dva parametra. Prvi parametar je dan narudžbine, a drugi je njen status. Na osnovu tih parametara dohvataju se agregirane vrednosti kolona iz tabele \textit{orderitem}, grupisane po statusu. 
 
-Test će se sastojati iz dve faze. Bulk upunjavanje tabela na osnovu csv fajlova, kao i izvršavanje složenog OLAP upita. 
-
-\lstset{
-  language=sql,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
 \begin{lstlisting}[title={bulkLoad},captionpos=t]
 copy product from "./product.csv";
 copy supplier from "./supplier.csv";
@@ -898,39 +864,6 @@ copy customer from "./customer.csv";
 copy order from "./order.csv";
 copy order_item from "./order_item.csv";
 \end{lstlisting}
-
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
-
-\begin{lstlisting}[title={BenchmarkExecutor.java},captionpos=t]
-
-    void bulkLoad(BenchmarkUtility util,BenchmarkOLAPUtility oUtil) {
-        long start = System.currentTimeMillis();
-        olapUtility.bulkLoad(benchmarkUtility.connect());
-        long end = System.currentTimeMillis();
-        System.out.println("Bulk load duration: "+(end-start));
-    }
-\end{lstlisting}
-
-
-OLAP upit sadrži informacije o agregiranim vrednostima kolona za određene vrednosti kolona. Upit će se izvršavati nad orderitem tabelom, a kao parametre uzimaće status i datum slanja stavke narudžbine.
-
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
 
 \begin{lstlisting}[title={executeOLAPQuery},captionpos=t]
 
@@ -947,83 +880,71 @@ select
 from
          postgresdb.order_item oi
 where
-        	oi.ship_date = to_date(?,'dd.mm.yyyy') and
+        oi.ship_date = to_date(?,'dd.mm.yyyy') and
          oi.status = ?
-
+group by oi.status;
 \end{lstlisting}
 
-Parametri eksperimenta će biti broj iteracija izvršavanja OLAP upita kao i broj klijenata koji će paralelno izvršavati svoj deo posla u vidu određenog broja izvršavanja OLAP upita.
 
+Parametri testa su \textbf{broj klijenata} (\textit{numOfClients}) koji će paralelno izvršavati olap upit i \textbf{ukupan broj izvršavanja upita} (\textit{totalIterations}). Oba parametra postavljaju se prilikom pokretanja testa, kroz standardni ulaz. Politika dodeljivanja broja izvršavanja upita svakom od klijenata ista je kao i dodeljivanja broja poslovnih transakcija klijentima, kod testiranja OLTP okruženja.
 
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
+\begin{lstlisting}[title={Implementacija politike podele posla klijentima},captionpos=t]
+List<Integer> iterClientList = new ArrayList<>();
+int itersToAssign = totalIterations;
+int itersPerClient = itersToAssign / numOfClients;
+
+for(int i = 0; i<numOfClients;i++){	
+   iterClientList.add(itersPerClient);
+   itersToAssign-=itersPerClient;
 }
+if (itersToAssign > 0) {
+   int itersForLast = iterClientList.get(numOfClients - 1);
+   iterClientList.set(numOfClients - 1, itersForLast + itersToAssign);
+}
+
+assert numOfClients==iterClientList.size();
+Thread[] threads = new Thread[numOfClients];
+for(int i = 0;i<numOfClients;i++){
+   threads[i] = new Thread(
+      new BenchmarkSingleClientExecutor(
+         i*iterClientList.get(i),iterClientList.get(i)
+         )
+      );
+ }
+\end{lstlisting}
+
+Svaki klijent nakon što mu je dodeljen broj iteracija, kreće da izvršava upit onoliko puta koliko mu je iteracija dodeljeno. Svako izvršavanje OLAP upita ima iste parametre.
+
 
 \begin{lstlisting}[title={BenchmarkSingleClientExecutor.java},captionpos=t]
+public class BenchmarkSingleClientExecutor implements Runnable {
 
-public class BenchmarkSingleClientExecutor implements Runnable{
+private final CountDownLatch endSignal;
+private final BenchmarkOLAPUtility olapUtil;
+private final int numOfIters;
+private final int startFrom;
 
-    private final CountDownLatch endSignal;
-    private final BenchmarkOLAPUtility olapUtil;
-    private final int numOfT;
-    private final int start;
+private final Object connection;
+@Override
+public void run() {
 
-    private final Object connection;
-
-    @Override
-    public void run() {
-        try {
-            for (int i = this.start; i < this.start+this.numOfT; i++) {
-                olapUtil.executeOLAPQuery(connection);
-            }
-            endSignal.countDown();
-        } catch (Throwable e) {
-            throw new IllegalStateException(e);
-        }
+  try {
+    for (int i = this.start; i < this.start + this.numOfIters; i++) {
+       olapUtil.executeOLAPQuery(connection);
+     }
+     endSignal.countDown();
+    } catch (Throwable e) {
+      throw new IllegalStateException(e);
     }
+  }
 }
-
 \end{lstlisting}
 
-\subsection{Priprema okruženja}
-
-Priprema okruženja je većinom identična kao priprema okruženja za OLTP slučaj upotrebe. Dodatan korak jedino je kreiranje csv fajlova sa podacima koji treba da budu bulk učitani u odgovarajuće tabele Postgres-a i HBase-a.
-\pagebreak
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
+Priprema okruženja za testiranje podrazumeva generisanje csv fajlova koji kasnije treba da budu učitani u tabele koristeći podršku za \textit{bulk load}, zatim kompilaciju java testova, pokretanje docker kontejnera i prebacivanje kompiliranih testova kao i izgenerisanih csv fajlova na odgovarajuće kontejnere. Dodatan korak za HBase jeste da se na HBase kontejneru kreira struktura baze podataka. Skripta u nastavku sadrži sve neophodne komande za pokretanje okruženja.
 
 \begin{lstlisting}[title={prepareEnv.sh},captionpos=t]
 #!/bin/bash
 echo 'PREPARING ENVIRONMENT...';
-rm -f ./olap_benchmark_postgres.jar
-rm -f ./olap_benchmark_hbase.jar
-rm -f ./productHB.csv;
-rm -f ./supplierHB.csv;
-rm -f ./productsupplierHB.csv;
-rm -f ./customerHB.csv;
-rm -f ./orderHB.csv;
-rm -f ./orderitemHB.csv;
-rm -f ./productPG.csv;
-rm -f ./supplierPG.csv;
-rm -f ./productsupplierPG.csv;
-rm -f ./customerPG.csv;
-rm -f ./orderPG.csv;
-rm -f ./orderitemPG.csv;
-
-
 echo 'PREPARING HBASE BENCHMARK JARS...';
 export JAVA_HOME="$JAVA_8";
 mvn -f olap_benchmark_hbase clean compile assembly:single;
@@ -1044,23 +965,8 @@ java -jar postgres_bulk_load_setup.jar;
 
 docker-compose -f docker-compose.yml up --build -d;
 winpty docker exec -it hbase sh -c "java -jar setup_olap_model.jar";
-
 \end{lstlisting}
 
-
-\pagebreak
-
- Za pokretanje docker kontejnera korišćen je docker-compose sa sledećim sadržajem:
-
-\lstset{
-  language=java,
-  basicstyle=\footnotesize,
-  keywordstyle=\color{black},
-  backgroundcolor = \color{LemonChiffon1},
-  numbers=left,
-  showstringspaces=false,
-  frame=single
-}
 
 \begin{lstlisting}[title={docker-compose.yml},captionpos=t]
 
@@ -1110,39 +1016,80 @@ volumes:
 \end{lstlisting}
 
 
-\subsection{Analiza rezultata}
 
-Rezultati merenja u OLAP okruženju ,kada se koriste ravnopravni modeli pokazuju jasnu prednost Postgres-a u odnosu na HBase. Sa druge strane, ovakav pristup gde se čitaju svi redovi filtrirani po statusu i datumu, pa se nad vrednostima izvršavaju odgovarajuće aritmetičke operacije, može se nazvati \textit{"naivnim"} u slučaju HBase-a. 
+Rezultati merenja prikazani u nastavku nastali kao rezultat pokretanja testova sa \numprint{100}, \numprint{1000}, \numprint{10000}, \numprint{50000}, \numprint{100000} iteracija izvršavanja OLAP upita i pet klijenata koji te upite paralelno izvršavaju. Na slici se može primetiti da u legendi uz HBase stoji reč naivni (\textit{naive}). To se odnosi na model koji se koristi, vše reči o razlogu zašto se ovako napravljen model za HBase u ovom okruženju može smatrati naivnim, biće u sledećem poglavlju.
 
-Jednostavna denormalizacija modela, slika 3.4 može doneti dramatična poboljšanja u performansama HBase-a čak i u odnosu na Postgres.
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{bulk-load-vizualization.png}
+  \caption{Bulk load podataka}
+  \label{fig:grafikon}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{olap-vizualization2.png}
+  \caption{OLAP}
+  \label{fig:grafikon}
+\end{figure}
+
+
+
+\chapter{Analiza rezultata}
+
+Analiza rezultata obuhvata interpretaciju rezultata koji su dobijeni merenjima performansi, kao i navođenje eventualnih unapređenja i primedbi koje treba imati u vidu kada se radi sa datim tehnologijama.
+
+\section{Analiza rezultata kod testiranja u OLTP okruženju}
+
+Rezultati merenja ukazuju da kako raste broj poslovnih transakcija koje treba obraditi u testu, inicijalna prednost PostgreSQL-a u odnosu na HBase opada. Konkretno po fazama poslovne transakcije, izdvaja se createFXTransaction transakcija baze podataka, kod koje na postavljenih 50000 i 100000  poslovnih transakcija, HBase ima prednost. Tendencija rezultata ukazuje da bi sa porastom broja poslovnih transakcija (na milion ili deset miliona) PostgreSQL imao veća usporenja, relativno u odnosu na HBase, međutim za testiranje takvog okruženja neophodno je koristiti računar koji je sposoban da sprovede tako zahtevan test.
+
+Važno je naglasiti da HBase ne garantuje konzistentost nad svim podacima kakvu nudi PostgreSQL. HBase nudi jedan vid konzistenosti, i to konzistetnost u radu sa jednom redom tabele (više o tome u 2.2). To dovodi do zaključka da ukoliko je neophodno implementirati transakciju koja uključuje rad sa podacima više tabela ili više redova jedne tabele, ukoliko koristimo HBase, moramo na aplikativnom sloju voditi računa o očuvanju  eventualne konzistetnosti. PostgreSQL sa druge strane kao ACID baza podataka, sama garantuje konzistentost, te ne zahteva dodatan napor kao u slučaju HBase-a. 
+
+\section{Analiza rezultata kod testiranja u OLAP okruženju}
+
+Rezultati merenja u okviru OLAP rezultata jasno ističu prednost PostgreSQL-a u performansama. Prednost HBase-a u odnosu na PostgreSQL jeste fleksiblnost sheme koja u ovakvom slučaju može doći do izražaja. Vid jednostavne denormalizacije koja se u slučaju HBase-a može primeniti može doneti dramatična poboljšanja u performansama čitanja HBase-a čak i u odnosu na Postgres. 
+
+Kreiranje tabele (u ovom slučaju orderitemstats) koja za vrednost ključa ima status, a za kolone ima vrednosti svake potrebne agregirane funkcije po danima, uticalo bi na to da se čitanje izveštaja svodi na čitanje po ključu sa izdvajanjem potrebnih koloni\footnote{ Razlog zašto se ovakva modifikacija ne može primeniti u slučaju PostgreSQL-a jeste ograničen broj kolona, kao i to što skup kolona mora biti unapred definisan pri kreiranju modela. Kod HBase-a takvi limiti ne postoje.}.
+Primer dodate tabele može se videti na slici 5.1 ,a uticaj na performanse na slici 5.2.
 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{denormalized-model.png}
-  \caption{Denormalizacija na primeru tabele orderitem}
+  \caption{Tabela orderitemstats}
   \label{fig:grafikon}
 \end{figure}
 
-Izdvajanje tabele \textbf{orderitemstats}, koja će za ključ imati status stavke, a kao kolone imati rezultate već ranije izračunatih agregatnih vrednosti nad kolonama za odgovarajuče dane, dovodi do toga da čitanje izveštaja sada predstavlja jednostavno čitanje reda po ključu i skupa odgovarajućih kolona koje su nam potrebne za izveštaj.
-
-Uticaj denormalizacije modela na performanse mogu se videti na slici 3.5.
-
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=1\textwidth]{olap-vizualization.png}
+  \includegraphics[width=0.65\textwidth]{olap-vizualization.png}
   \caption{Uporedna analiza performansi postgresa i hbase-a}
   \label{fig:grafikon}
 \end{figure}
 
-Ovakav pristup prilikom kreiranja modela, omogućila nam je fleksibilnost strukture koju HBase nudi, kao i nepostojanje limita broja kolona. 
-
-\pagebreak
 
 
-\section{Primena u distribuiranom okruženju}
 
 
-Distribuirano okruženje odlikuje 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \chapter{Zaključak}
 
