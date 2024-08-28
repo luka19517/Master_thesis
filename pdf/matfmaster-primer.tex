@@ -74,13 +74,21 @@
 % Ime i afilijacija četvrtog člana komisije (opciono)
 % \komisijaD{}
 % Datum odbrane (obrisati ili iskomentarisati narednu liniju ako datum odbrane nije poznat)
-\datumodbrane{15. јануар 2016.}
+\datumodbrane{}
 
 % Apstrakt na srpskom jeziku (u odabranom pismu)
-\apstr{}
+\apstr{
+Специфични циљ рада је анализа и упоређивање случајева употребе релационих и
+колонски оријентисаних нерелационих база података. Рад се састојi из теоријског
+описа наведених технологија, као и описа конкретних представника база података који ће
+бити коришћени.
+У раду su на основу теоријских и практичних извора и истраживања,  анализирани различити случајеви употребе. Примери случајева употребе праћени su
+експериментима који се састојe од извршавања различитих врста поступака. Razmatrani primeri slučajeva upotrebe su:
+primena u transakcionom procesiranju, primena u analitičkom procesiranju kao i primena u distribuiranom okruženju.
+}
 
 % Ključne reči na srpskom jeziku (u odabranom pismu)
-\kljucnereci{анализа, геометрија, алгебра, логика, рачунарство, астрономија}
+\kljucnereci{podaci, SQL, NoSQL, BigData, relacioni, kolonski-orijentisani}
 
 \begin{document}
 % ==============================================================================
@@ -113,9 +121,9 @@ Kada je reč o istoriji sistema za upravljanje podacima, mogu se izdvojiti tri f
 
 Do nastanka relacionih sistema za upravljanje podacima, rukovanje podacima izvodilo se kroz pisanje i čitanje iz datoteka operativnog sistema. Rukovanje većim količinama podataka nije bilo standardizovano ni na koji način, već su se konvencije uvodile na nivou organizacija. Apolo sletanje na Mesec realizovano je koristeći ovakav vid rada sa podacima, što ovaj poduhvat čini utoliko neverovatnim \cite{ColumnarOriented}. 
 
-S obzirom da je ovaj vid rada sa podacima imao mnogobrojne mane, među kojima je jedna od glavnih bila komplikovan pristup podacima, javile su se potrebe za unapređenjem. Najuspešniji je bio Edgar F. Codd \footnote{Edgar Frank "Ted" Codd (19 Avugst 1923 – 18 April 2003) Američki računarski naučnik }  koji je 1970. godine objavio rad pod imenom "\textit{A Relational Model of Data for Large Shared Data Banks}" kao rezultat sopstvenih istraživanja i teorija o organizaciji podataka.  Kao dokaz da je njegov model moguće implementirati pokrenut je System R \footnote{System R - sistem za rad sa podacima napravljen kao deo istraživačkog projekta IBM-a}, čiji je rezultat bio i pojava SQL-a (\textit{Structured Query Language}) kao standardizovanog jezika za rad sa podacima. Nakon toga pojavili su se Oracle i IBM sa svojim komercijalnim proizvodima za upravljanje relacionih baza podataka. Naredni period obeležio je rad sa podacima koristeći relacioni model.  
+S obzirom da je ovaj vid rada sa podacima imao mnogobrojne mane, među kojima je jedna od glavnih bila komplikovan pristup podacima, javile su se potrebe za unapređenjem. Najuspešniji je bio Edgar F. Codd\footnote{Edgar Frank "Ted" Codd (19 Avugst 1923 – 18 April 2003) Američki računarski naučnik }  koji je 1970. godine objavio rad pod imenom "\textit{A Relational Model of Data for Large Shared Data Banks}" kao rezultat sopstvenih istraživanja i teorija o organizaciji podataka.  Kao dokaz da je njegov model moguće implementirati pokrenut je System R\footnote{System R - sistem za rad sa podacima napravljen kao deo istraživačkog projekta IBM-a}, čiji je rezultat bio i pojava SQL-a (\textit{Structured Query Language}) kao standardizovanog jezika za rad sa podacima. Nakon toga pojavili su se Oracle i IBM sa svojim komercijalnim proizvodima za upravljanje relacionih baza podataka. Naredni period obeležio je rad sa podacima koristeći relacioni model.  
 
-Ubrzana digitalizacija, povećana dostupnost interneta, donela je sa sobom potrebu za obradom veće količine podataka. Sve ovo je pokazalo pojedine slabosti dosadašnjih sistema zasnovanih na relacionim modelima, koji nisu mogli u svim segmentima da odgovore na zahteve modernog doba. Ovi problemi poznati pod imenom: problemi velikih podataka (engl \textit{BigData problems}), doveli su do pojave niza novih modela i principa za čuvanje podataka, kojima je dodeljen  grupni naziv: nerelacione baze podataka (engl. \textit{NoSQL}).
+Ubrzana digitalizacija, povećana dostupnost interneta, donela je sa sobom potrebu za obradom veće količine podataka. Sve ovo je pokazalo pojedine slabosti dosadašnjih sistema zasnovanih na relacionim modelima, koji nisu mogli u svim segmentima da odgovore na zahteve modernog doba. Ovi problemi, poznati pod imenom: problemi velikih podataka (engl \textit{BigData problems}), doveli su do pojave niza novih modela i principa za čuvanje podataka, kojima je dodeljen  grupni naziv: nerelacione baze podataka (engl. \textit{NoSQL}).
 Sistematizovanje ogromne količine fizičkog prostora na disku na kojem se podaci mogu čuvati i kasnije koristiti, kao i fleksibilnost strukture podataka sa kojima se radi, glavni su problemi tog vremena na koje su se fokusirale tehnologije nastale u \textit{NoSQL} pokretu.
 Decenije vladavine  relacionih sistema za čuvanje podataka ostavile su dubok trag u praksama rada sa podacima, i sa razlogom predstavljaju standard i dan danas, te je eventualno usvajanje tehnologija nastalih u ovoj fazi i dalje  česta dilema mnogih stručnjaka. 
 
@@ -131,7 +139,7 @@ Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolon
 \label{chp:razrada}
 \section{Relacioni model}
 \subsection{Opšte karakteristike}
-Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i veze između njih predstavlja kroz skup relacija koje predstaljaju skupove torki. Da bi jedan skup torki ili vrsta bila validna relacija u relacionom modelu, on mora ispunjavati sledeće uslove \cite{ColumnarOriented}:
+Relacioni model je najpopularniji model za rad sa podacima. On podatke kao i veze između njih predstavlja kroz skup relacija koje predstaljaju skupove torki. Da bi jedan skup torki ili vrsta bio validna relacija u relacionom modelu, on mora ispunjavati sledeće uslove \cite{ColumnarOriented}:
 
 \begin{enumerate}
 \item[\textbullet] Presek kolone i vrste jedinstveno određuje vrednosnu ćeliju.
@@ -167,7 +175,7 @@ Integritet relacionog modela predstavlja uslove koje podaci treba da zadovolje k
 \subsection{PostgreSQL}
 
 
-PostgreSQL je objektno-relacioni sistem za upravljanje bazama podataka koji je nastao, a kasnije i bio razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih \cite{PostgresHistory}. Postgres nudi širok spektar proširenja od strane korisnika poput dodavanja novih tipova podataka, funkcija, operatora, agregatnih funkcija itd. 
+PostgreSQL je objektno-relacioni sistem za upravljanje bazama podataka koji je nastao, a kasnije i bio razvijan na Berkliju, Univerzitet Kalifornija. PostgreSQL je otvorenog koda sa velikom SQL podrškom kao i modernim funkcionalnostima poput: okidača, izmenjivih pogleda, transakcionog integriteta i mnogih drugih \cite{PostgresHistory}. PostgreSQL nudi širok spektar proširenja, poput dodavanja novih tipova podataka, funkcija, operatora, agregatnih funkcija itd. 
 
 Kao takav, PostgreSQL je pogodan sistem za čuvanje najkompleksnijih podataka i veza između njih. Mogućnost kreiranja procedura na samoj bazi u integrisanoj SQL sintaksi, daje široke mogućnosti optimizacije aplikacija. 
 
@@ -196,7 +204,7 @@ Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleks
 
 \subsection{Popularni algoritmi kompresije kolonski orijentisanog modela}
 
-Neke od najpoznatijih algoritama kompresije koje kolonski orijentisan model koristi i koji će biti opisani u nastavku jesu: enkodiranje zasnovano na rečniku, enkodiranje po broju ponavljanja i delta enkoding. \footnote{Važno je napomenuti da relacioni modeli imaju svoje mehanizme kompresije podataka koji u ovom radu nisu analizirani.}
+Neke od najpoznatijih algoritama kompresije koje kolonski orijentisan model koristi i koji će biti opisani u nastavku jesu: enkodiranje zasnovano na rečniku, enkodiranje po broju ponavljanja i delta enkoding \cite{ColumnarOptimizations}\footnote{Važno je napomenuti da relacioni modeli imaju svoje mehanizme kompresije podataka koji u ovom radu nisu analizirani.}.
 
 Enkodiranje zasnovano na rečniku (engl. \textit{Dictionary based encoding}), slika 2.2., funkcioniše tako što se napravi mapa vrednosti koja sadrži svaku vrednost kolone koja je prisutna među podacima. Kao vrednost kolone tada se ne upisuje konkretna vrednost, već ključ iz rečnika koji je mapiran na tu vrednost. Veličina ključa je srazmerna veličini mape, te je ovaj vid kompresije najpogodniji za kolone koje imaju mali broj vrednosti koje se ponavljaju.
 
@@ -253,13 +261,13 @@ HBase nije ACID baza podataka, ali nudi sledeće garancije \cite{hbaseACID}:
   \label{fig:grafikon}
 \end{figure}
 
-HBase podatke može čuvati na lokalnom fajl sistemu ili na \textit{Hadoop} distruiranom fajl sistemu(HDFS). HDFS je distribuiran fajl sistem koji ima visok prag tolerancije na greške (\textit{fault tolerance}). HDFS klaster sastoji se iz master čvorova (\textit{Namenode}) i čvorova sa podacima (\textit{DataNode}). Master čvor radi sa metainformacijama samog fajl sistema, kao što su izmena direktorijuma, brisanje direktorijuma i sl. Fajlovi na HDFS su interno podeljeni na blokove, gde se svaki od blokova može replikovati i skladištiti na bilo kom od čvorova sa podacima. O mapiranju blokova fajlova na čvorove sa podacima brine master čvor. Čvorovi sa podacima odgovorni su za izvršavanje operacija čitanja i pisanja fajlova na zahtev klijenata. Pored toga čvorovi sa podacima mogu kreirati, brisati blokove a i replikovati ih, u skladu sa instrukcijama master čvora \cite{hdfs}.
+HBase podatke može čuvati na lokalnom fajl sistemu ili na \textit{Hadoop} distruiranom fajl sistemu(HDFS). HDFS je distribuiran fajl sistem koji ima visok prag tolerancije na greške (\textit{fault tolerance}). HDFS klaster sastoji se iz HDFS master čvorova (\textit{Namenode}) i HDFS čvorova sa podacima (\textit{DataNode}). HDFS master čvor radi sa metainformacijama samog fajl sistema, kao što su izmena direktorijuma, brisanje direktorijuma i sl. Fajlovi na HDFS su interno podeljeni na blokove, gde se svaki od blokova može replikovati i skladištiti na bilo kom od HDFS čvorova sa podacima. O mapiranju blokova fajlova na HDFS čvorove sa podacima brine HDFS master čvor. HDFS čvorovi sa podacima odgovorni su za izvršavanje operacija čitanja i pisanja fajlova na zahtev klijenata. Pored toga HDFS čvorovi sa podacima mogu kreirati, brisati blokove a i replikovati ih, u skladu sa instrukcijama HDFS master čvora \cite{hdfs}.
 
 Arhitektura HBase klastera sastoji se iz tri glavne komponente: master server, region server i \textit{zookeeper}.
 
-Master server  je komponenta HBase klastera koja se bavi metainformacijama tabela HBase-a. On region serverima dodeljuje regione. Pored toga, master server bavi se i balansiranjem opterećenja klastera (\textit{load balancing}).
+Master server  je komponenta HBase klastera koja se bavi metainformacijama tabela HBase-a. Pored toga, on region serverima dodeljuje regione i bavi se balansiranjem opterećenja klastera (\textit{load balancing}).
 
-Region server zadužen je za rad sa dodeljenim regionima od strane master servera. Region je skup redova HBase-a u nekom rasponu ključeva. Kako bi region server mogao da piše i čita podatke regiona, on održava WAL (engl \textit{Write Ahead Log}) fajl, MemStore fajl kao i HFile fajlove. Svaka izmena, pre nego što je sačuvana na disku, upisuje se u vidu loga (\textit{commit log}) u WAL, tako da u slučaju pada sistema pre nego što su se izmene sačuvale, logovi koji se nalaze WAL fajlu mogu rekonstruisati stanje pre pada sistema \cite{wal}. MemStore je fajl u koji se upisuju podaci pre nego što se sačuvaju na disku. Predstavlja vid bafera koji kada se popuni reflektuje podatke na disk, odnosno na HFile. HFile fajl sadrži konkretne podatke u predviđenom formatu. Oni se mogu skladištiti na lokalnom fajl sistemu ili na HDFS, u zavisnosti od konfiguracije.
+Region server zadužen je za rad sa dodeljenim regionima od strane master servera. Region je skup redova HBase-a u nekom rasponu ključeva. Kako bi region server mogao da piše i čita podatke regiona, on održava WAL (engl \textit{Write Ahead Log}) fajl, MemStore fajl kao i HFile fajlove. Svaka izmena, pre nego što je sačuvana na disku, upisuje se u vidu loga (\textit{commit log}) u WAL, tako da u slučaju pada sistema pre nego što su se izmene sačuvale, logovi koji se nalaze u WAL fajlu mogu rekonstruisati stanje pre pada sistema \cite{wal}. MemStore je fajl u koji se upisuju podaci pre nego što se sačuvaju na disku. Predstavlja vid bafera koji kada se popuni reflektuje podatke na disk, odnosno na HFile. HFile fajl sadrži konkretne podatke u predviđenom formatu. Oni se mogu skladištiti na lokalnom fajl sistemu ili na HDFS, u zavisnosti od konfiguracije.
 
 Zookeper predstavlja most u komunkaciji komponenti HBase klastera \cite{zookeeper}. Zookeeper servis  sinronizuje sve master i region servere, ima evidenciju o tome koji je master server aktivan a koji pasivan, koji region serveri više nije dostupni itd.
 
@@ -295,8 +303,8 @@ U relacionim modelima često se radi na izbegavanju \textit{redudantnosti} u pod
 
 Normalizovani modeli obično raspolažu velikim brojem stranih ključeva što dovodi do povećanja broja tabela kojima se pristupa u upitima, a time i povećanja broja operacija čitanja sa diska, što može uticati na performanse.
 
-Denormalizacija je strategija koja se koristi kod modela kod kojih je neophodno ubrzati operacije čitanja podataka, odnosno umanjiti broj tabela kojima je neophodno pristupiti kako bi se neki skup podataka pročitao iz baze podataka.  
-
+Denormalizacija je strategija koja se koristi kod modela kod kojih je neophodno ubrzati operacije čitanja podataka, odnosno umanjiti broj tabela kojima je neophodno pristupiti kako bi se neki skup podataka pročitao iz baze podataka, po cenu uvećanja memorijskog zauzeća. Kako kolonski orijentisane baze podataka često rade na infrastrukturama koje su horizontalno skalabilne, uvećanje memorijskog zauzeća, kako bi se ubrzao pristup podacima, jeste cena koju su spremni da plate.
+ 
 Neke od tehnika denormalizacije su:  spajanje kolone, horizontalna podela tabele, vertikalna podela tabele i uvođenje izvedene kolone. 
 
 Spajanje kolone, slika 2.8. je dodavanje kolone kojoj bi se često pristupalo preko stranog ključa.
@@ -359,7 +367,7 @@ Konvergentna konzistentnost obezbeđuje da će baza podataka u slučaju da nema 
 
 \subsubsection{CAP teorema}
 
-Kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnos sistema u slučaju nepredviđenih okolnosti, podaci često bivaju distribuirani na više povezanih jedinica. Takve baze podataka nazivamo distribuiranim. 
+Kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnost sistema u slučaju nepredviđenih okolnosti, podaci često bivaju distribuirani na više povezanih jedinica. Takve baze podataka nazivamo distribuiranim. 
 Kvalitet distribuiranih baza podataka ogleda se kroz tri svojstva: konzistentost, raspoloživost i tolerancija razdvojenosti.
 
 Konzistenost u ovom kontekstu razlikuje se od konzistentosti transakcije. U kontekstu distribuiranih sistema, konzistetnost je svojstvo baze podataka, koje garantuje da će odgovor koji se šalje sa bilo kog čvora klastera (ukoliko odgovora ima) biti ažuran.
@@ -390,7 +398,7 @@ Kako bi se postigao dovoljan dokaz koncepta (engl. \textit{proof of concept}) kr
 
 
 \section{Onlajn transakciono procesiranje (OLTP)}
-Onlajn transakciono procesiranje predstavlja procesiranje podataka koje se sastoji iz velikog broja transakcija.  Svaka pojedinačna transakcija obično deluje na manjem skupu podataka i obično uključuje njihovu izmenu, a kada se radi čitanje podataka, ono je obično po ključu \cite{oltp}. Kod ovakvog vida procesiranja, gde su izmene podataka česte, čuvanje integriteta podataka prilikom tih upisa je prioritet, pa je OLTPs često sastavni deo finanskijskih sistema, sistema za rezervacije i sl.
+Onlajn transakciono procesiranje predstavlja procesiranje podataka koje se sastoji iz velikog broja transakcija.  Svaka pojedinačna transakcija obično deluje na manjem skupu podataka i obično uključuje njihovu izmenu, a kada se radi čitanje podataka, ono je obično po ključu \cite{oltp}. Kod ovakvog vida procesiranja, gde su izmene podataka česte, čuvanje integriteta podataka prilikom tih upisa je prioritet, pa je OLTP često sastavni deo finanskijskih sistema, sistema za rezervacije i sl.
 Konkretan scenario koji će u radu simulirati OLTP okruženje je prebacivanje sredstava sa jednog računa na drugi. Svako prebacivanje novca predstavljaće jednu poslovnu transakciju koja se sastoji iz više transakcija baze podataka. Definicija poslovne transakcije koja se koristi za testiranje delom je preuzeta iz TPC-C specifikacije \cite{tpcc}. 
 
 Jedna poslovna transakcija sastoji se iz tri transakcije baze podataka: kreiranje transfera sredstava (\textit{createFXTransaction}), izvršavanje uplate (\textit{executePayment}) i provera statusa transfera (\textit{checkTransactionStatus}).
@@ -408,17 +416,14 @@ Onlajn analitičko procesiranje sačinjeno je od velikog broja čitanja podataka
 
 \section{Distribuirano okruženje}
 
-Distribuirani sistemi su sistemi kod kojih se podaci nalaze na više povezanih jedinica, odnosno čvorova kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnost sistema u slučaju problema.  Dva načina distribuiranja podataka su: \textbf{replikacija} i \textbf{particionisanje}. 
+Distribuirani sistemi su sistemi kod kojih se podaci nalaze na više povezanih jedinica, odnosno čvorova, kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnost sistema u slučaju problema.  Dva načina distribuiranja podataka su: \textbf{replikacija} i \textbf{particionisanje}. 
 
 
 Particionisanje distribuira podatke tako što se veliki skupovi podataka podele na manje celine i čuvaju na različitim čvorovima. 
 
-Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave}, slika 3.1. (postoje i alternative: \textit{multi-master} model i \textit{masterless} model, ali usled njihove složenosti oni se koriste samo u nekim specifičnim slučajevima). Po tom modelu jedna od replika izabrana je da bude master replika, i svaka izmena podataka mora ići kroz nju, a onda ona izmenu propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može raditi sa bilo kog čvora. 
+Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave}, slika 3.1. (postoje i alternative: \textit{multi-master} model i \textit{masterless} model, ali usled njihove složenosti oni se koriste samo u nekim specifičnim slučajevima). Po tom modelu jedna od replika izabrana je da bude master replika, i svaka izmena podataka mora ići kroz nju, a onda ona izmenu propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može raditi sa bilo kog čvora. 
 
 Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmena dođe do master čvora, on pre nego što klijentu vrati odgovor da je izmena uspešno sačuvana, sačeka da mu svaki zavisni čvor potvrdi da je izmena uspešno upisana kod njega. Sinhrona replikacija je karakteristična za sisteme koji garantuju da će klijent pri čitanju podatka sa bilo koje replike imati ažurno stanje, međutim, cena toga je umanjena dostupnost, s obzirom da ukoliko neki od zavisnih čvorova postane nedostupan, on ne može master čvoru potvrditi da je izmena upisana na njega, pa samim tim ni master ne može klijentu potvrditi da je izmena uspešno upisana. Kod asinhrone replikacije, kada izmena podataka dođe do mastera, i on tu izmenu propagira ka ostalim zavisnim čvorovima, master ne čeka nikakav odgovor od zavisnih čvorova, već ukoliko je izmena uspešno upisana na njega on klijentu vraća potvrdu o sačuvanoj izmeni. Asinhrona replikacija obično nudi bolje performanse i veću dostupnost servisa, po cenu toga da čitanje sa neke od replika može vraćati zastarele podatke.
-
-Kako relacione baze podataka daju prioritet konzistentosti (CP iz CAP teoreme) najčešće se kod njih koristi sinhrona replikacija, dok je kod modela kojima je dostupnost (AP iz CAP teoreme) prioritet, asinhrona replikacija model po kojem se podaci distribuiraju.
-
 
 
 \begin{figure}[!ht]
@@ -429,7 +434,7 @@ Kako relacione baze podataka daju prioritet konzistentosti (CP iz CAP teoreme) n
 \end{figure}
 
 \pagebreak
-Replikacija i particionisanje obično idu zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 3.1. 
+Replikacija i particionisanje obično idu zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 3.2. 
 
 \begin{figure}[!ht]
   \centering
@@ -438,14 +443,14 @@ Replikacija i particionisanje obično idu zajedno, tako što se podaci prvo pode
   \label{fig:grafikon}
 \end{figure}
 
-U svrhu demonstracije i merenja performansi HBase-a u distribuiranom okruženju , biće koršćeni testovi iz testiranje OLTP i OLAP scenarija{Usled složenosti implementacije distribuiranog relacionog sistema, za distribuirano okruženje primer je dat samo za HBase, a upoređivanje je dato na osnovu teorijskih istraživanja}. 
+U svrhu demonstracije i merenja performansi HBase-a u distribuiranom okruženju , biće koršćeni testovi iz testiranja OLTP i OLAP  scenarija\footnote{Usled složenosti implementacije distribuiranog relacionog sistema, za distribuirano okruženje primer je dat samo za HBase, a upoređivanje je dato na osnovu teorijskih istraživanja.}.
 
 
 \chapter{Merenje performansi po modelima}
 
 \section{Opis platforme za testiranje}
 
-Za predstavnike baza podataka izabrani su HBase (kao predstavnik kolonski orijentisane nerelacione baze podataka) i PostgreSQL (kao predstavnik relacione baze podataka) \footnote{Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase, rezultati dobijeni u nastavku su rezultati poređenja konkretnih predstavnika, i nisu opšti za sve relacione i kolonski orijenisane nerelacione baze podataka.}.  Kao okruženje za izvršavanje testova  korišćen je \textit{docker}. Serveri oba predstavnika biće pokrenuti kao nezavisni kontejneri. 
+Za predstavnike baza podataka izabrani su HBase (kao predstavnik kolonski orijentisane nerelacione baze podataka) i PostgreSQL (kao predstavnik relacione baze podataka)\footnote{Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase, rezultati dobijeni u nastavku su rezultati poređenja konkretnih predstavnika, i nisu opšti za sve relacione i kolonski orijenisane nerelacione baze podataka.}.  Kao okruženje za izvršavanje testova  korišćen je \textit{docker}. Serveri oba predstavnika biće pokrenuti kao nezavisni kontejneri, slika 4.1. 
 
 \begin{figure}[!ht]
   \centering
@@ -559,7 +564,7 @@ where fr.currency_to = ? and fr.currency_from = ?;
 
 insert into fxtransaction
 (id,fxaccount_from, fxaccount_to, amount, status, entry_date)
-values(?,?,?,?,?,?)
+values(?,?,?,?,?,?);
 \end{lstlisting}
 
 ExecutePayment prvo pročita stanja sa naloga koji učestvuju u transferu, menja im balans i nakon toga transferu menja status.
@@ -568,33 +573,33 @@ ExecutePayment prvo pročita stanja sa naloga koji učestvuju u transferu, menja
 
 select balance
 from fxaccount
-where id = ?
+where id = ?;
 
 update fxaccount
 set balance = ?
-where id = ?
+where id = ?;
 
 select balance
 from fxaccount
-where id = ?
+where id = ?;
 
 update fxaccount
-set balance = ?
-where id = ?
+set balance = ?;
+where id = ?;
 
 update fxtransaction
 set status = ?
-where id = ?
+where id = ?;
 
 \end{lstlisting}
-
+\pagebreak
 CheckTransactionStatus za odgovarajuću transakciju čita status po primarnom ključu.
 
 
 \begin{lstlisting}[title={CheckTransactionStatus},captionpos=t]
 select status
 from fxtransaction
-where id = ?
+where id = ?;
 \end{lstlisting}
 
 
@@ -647,7 +652,7 @@ try {
      FXTransaction fxTransaction = DataGenerator.seedTransacton(i);
      ExecutePaymentInfo executePaymentInfo = 
          oltpUtil.createFXTransaction(connection);
-     oltpUtil.executePayment(,executePaymentInfo);
+     oltpUtil.executePayment(executePaymentInfo);
      oltpUtil.checkTransactionStatus(fxT);
     }
     endSignal.countDown();
@@ -1024,7 +1029,7 @@ volumes:
 
 \pagebreak
 
-Rezultati merenja prikazani u nastavku nastali kao rezultat pokretanja testova sa \numprint{10}, \numprint{20}, \numprint{50}, \numprint{100} iteracija izvršavanja OLAP upita i pet klijenata koji te upite paralelno izvršavaju. Na slici se može primetiti da u legendi uz HBase stoji reč naivni (\textit{naive}). To se odnosi na model koji se koristi, vše reči o razlogu zašto se ovako napravljen model za HBase u ovom okruženju može smatrati naivnim, biće u sledećem poglavlju.
+Rezultati merenja prikazani u nastavku nastali kao rezultat pokretanja testova sa \numprint{10}, \numprint{20}, \numprint{50}, \numprint{100} iteracija izvršavanja OLAP upita i pet klijenata koji te upite paralelno izvršavaju.
 
 \begin{figure}[!ht]
   \centering
@@ -1132,7 +1137,7 @@ Važno je naglasiti da HBase ne garantuje konzistentost nad svim podacima kakvu 
 
 \section{Analiza rezultata kod testiranja u OLAP okruženju}
 
-Rezultati merenja u okviru OLAP rezultata jasno ističu prednost PostgreSQL-a u performansama. Prednost HBase-a u odnosu na PostgreSQL jeste fleksiblnost sheme koja u ovakvom slučaju može doći do izražaja. Vid jednostavne denormalizacije koja se u slučaju HBase-a može primeniti može doneti dramatična poboljšanja u performansama čitanja HBase-a čak i u odnosu na Postgres. 
+Rezultati merenja u okviru OLAP rezultata ističu prednost PostgreSQL-a u performansama. Prednost HBase-a u odnosu na PostgreSQL jeste fleksiblnost sheme koja u ovakvom slučaju može doći do izražaja. Dorada modela koja se u slučaju HBase-a može primeniti može doneti dramatična poboljšanja u performansama čitanja HBase-a čak i u odnosu na PostgreSQL. 
 
 Kreiranje tabele (u ovom slučaju orderitemstats) koja za vrednost ključa ima status, a za kolone ima vrednosti svake potrebne agregirane funkcije po danima, uticalo bi na to da se čitanje izveštaja svodi na čitanje po ključu sa izdvajanjem potrebnih koloni\footnote{ Razlog zašto se ovakva modifikacija ne može primeniti u slučaju PostgreSQL-a jeste ograničen broj kolona, kao i to što skup kolona mora biti unapred definisan pri kreiranju modela. Kod HBase-a takvi limiti ne postoje.}.
 Primer dodate tabele može se videti na slici 5.1 ,a uticaj na performanse na slici 5.2.
@@ -1190,7 +1195,9 @@ select *
 
 \section{Analiza rezultata kod testiranja u distribuiranom okruženju}
 
-Pokrenuti HBase klaster sa jednim HDFS čvorom podataka pokazuje nešto bolje rezultate nego samostalni HBase koji podatke skladišti na lokalnom fajl sistemu. Svakako, različito okruženje u kojem su testovi pokrenuti može uticati na rezultate, pa ih treba uzeti sa rezervom.  O okviru analize veća pažnja biće posvećena načinu na koji su organizovane komponente u okviru  distribuiranog HBase klastera. Na slici 5.4. prikazana je organizacija tabela po regionima u okviru klastera. Broj regiona srazmeran je broju redova (a ne količini podataka) koje tabela sadrži. 
+Pokrenuti HBase klaster sa jednim HDFS čvorom podataka pokazuje nešto bolje rezultate nego samostalni HBase koji podatke skladišti na lokalnom fajl sistemu. Svakako, različito okruženje u kojem su testovi pokrenuti može uticati na rezultate, pa ih treba uzeti sa rezervom.  Analiza rezultata testiranja u distribuiranom okruženju obuhvatiće opis organizacije podataka HBase-a na HDFS čvoru podataka kao i uporednu analizu na osnovu tipa distribuiranosti. 
+
+Na slici 5.4. prikazana je organizacija tabela po regionima (particijama) u okviru klastera. Broj regiona srazmeran je broju redova, odnosno količini podataka koje tabela sadrži. 
 
 \begin{figure}[!ht]
   \centering
@@ -1209,7 +1216,7 @@ Listu i opis regiona možemo videti na primeru regiona tabele \textit{orderitem}
   \label{fig:grafikon}
 \end{figure}
 
-Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum.U okviru direktorijuma tabele nalaze se njeni regioni. Svaki od tih regiona podeljen je na blokove fiksne veličine koji bivaju replikovani unutar klastera.
+Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum. U okviru direktorijuma tabele nalaze se njeni regioni, slika 5.6. Svaki od tih regiona podeljen je na blokove fiksne veličine koji bivaju replikovani unutar klastera, slika 5.7.
 
 \begin{figure}[!ht]
   \centering
@@ -1225,9 +1232,10 @@ Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum
   \label{fig:grafikon}
 \end{figure}
 
+\pagebreak
 
-
-
+HBase i PostgreSQL koriste različite tipove replikacije u distribuiranom režimu. HBase koristi asinhronu \textit{master-slave} replikaciju, a PostgreSQL koristi sinhronu replikaciju \footnote{PostgreSQL ima mogućnost rekonfiguracije klastera tako da koristi druge vidove replikacije, ali oni se ne analiziraju u ovom radu, s obzirom da bi se time izgubilo na opštosti svojstava koje relacioni modeli imaju.}. Kao što je opisano u 3.3. to za posledicu ima da PostgreSQL ima slabiju dostupnost u odnosu na HBase ali sa druge strane garantuje konzistentost (C iz CAP teoreme).
+Sa druge strane HBase sa asinhronom replikacijom po cenu konzistentosti, klijentima nudi stalnu dostupnost, čak i ako neki od region servera postane nedostupan. 
 
 
 
@@ -1249,6 +1257,24 @@ Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum
 
 \chapter{Zaključak}
 
+U ovom radu su opisani relacioni i kolonski orijentisani modeli baza podataka kao i glavne razlike između njih. U svrhu testiranja izabrana su i opisana dva predstavnika odgovarajućih modela: PostgreSQL kao predstavnik relacionih baza podataka i HBase kao predstavnik kolonski orijentisanih baza podataka.
+
+Kako bi se postigao dovoljan dokaz koncepta, simulirana su različita okruženja sa posebnim modelima i namenama i to: OLTP okruženje, OLAP okruženje i distribuirano okruženje.
+
+Analiza rezultata merenja u OLTP okruženju pokazala je da u performansama nad ograničenim brojem podataka nema velike razlike između HBase-a i PostgreSQL-a, uz prepoznavanje tendencije da sa porastom broja podataka HBase ima manja usporenja nego PostgreSQL. Sa druge strane PostgreSQL nudi ACID garancije kakve kod HBase-a nemamo, i ukoliko ih želimo, moramo ih obezbediti na aplikativnom sloju.
+
+Analiza rezultata merenja u OLAP okruženju, pokazala nam je da PostgreSQL ima prednost pri izvršavanju složenih upita koji pored prostog čitanja podataka sadrže i operacije nad podacima (npr. računanje sume, proseka itd). Fleksibilnost strukture kod HBase-a daje nam prostor da performanse unapredimo, kreirajući tabelu koja sadrži ranije izračunate agregirane vrednosti. Međutim još bolji efekat se može postići kod PostgreSQL-a kreiranjem materijalizovanog pogleda, što je u radu i prikazano.
+
+Analiza distribuiranog okruženja obuhvatila je opis organizacije podataka na HBase klasteru kao i upoređivanje tipova distribuiranosti PostgreSQL-a i HBase-a, na osnovu teorijskih izvora. Usled složenosti imlementacije, nedostaje implementacija testa koji radi sa distirbuiranim PostgreSQL klasterom tako da je ovaj segment rada ograničen na implementaciju samo HBase klastera. Data je analiza tipova replikacija koje koriste HBase i PostgreSQL  u distribuiranom okruženju i istaknute su prednosti i mane svakog od njih.
+
+% S obzirom da HBase za distribuiranje koristi replikaciju bez master servera koju je (koju je nasledio od HDFS-a) nudi visok nivo otpornosti na greške kao i dostupnosti klastera. Sa druge strane PostgreSQL (a i ostale relacione baze podatka) koriste master-slave replikaciju, i to najčešće %njen sinhroni oblik, on nudi visok nivo 
+
+Teorijska analiza i analiza merenja rezultata pokazala je primere primene HBase-a i PostgreSQL-a. Ukoliko radimo sa \textbf{velikom} količinom \textbf{slabo struktuiranih} podataka koji rade na \textbf{nepouzdanim} serverima, gde ima velike količine \textbf{pisanja} podataka, a operacije čitanja su pretežno \textbf{po ključu} ili \textbf{njegovom prefiksu} \footnote{U 5.2. prikazan je imamo primer kako uvođenje tabele u modelu može dovesti do svođenja složenih upita na čitanje po ključu}, nameće se HBase kao bolji izbor tehnologije koja će upravljati podacima. Ukoliko radimo sa \textbf{ograničenom} količinom \textbf{struktuiranih} podataka, koji će se obrađivati na \textbf{pouzdanim} serverima, PostgreSQL je bolje rešenje.
+
+Možemo zaključiti da nijedna od tehnologija ne predstavlja univerzalno rešenje, i da svaka od njih ima svoje mesto za primenu, kao i da je za odabir pogodnog sistema za upravljanje podacima neophdono postojanje testova koji pokrivaju što veći skup slučajeva upotrebe. Ovaj rad predstavlja bazu platforme za testiranje slučajeva upotrebe, tako da se skup slučajeva upotrebe može proširivati i na taj način obogatiti.
+
+
+
 %U radu je dat opis relacionog kao i kolonski orijentisanog nerelacionog modela, uz to i opis PostgreSQL-a i HBase-a kao njihovih predstavnika. Centralni deo rada predstavlja analiiza slučajeva upotrebe, što kroz implementirane testove, što kroz 
 % ------------------------------------------------------------------------------
 % Literatura
@@ -1261,23 +1287,6 @@ Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum
 % ==============================================================================
 
 % ------------------------------------------------------------------------------
-% Biografija kandidata
-\begin{biografija}
-\textbf{Вук Стефановић Караџић} (\emph{Тршић, 26. октобар/6. новембар
-  1787. — Беч, 7. фебруар 1864.}) био је српски филолог, реформатор
-српског језика, сакупљач народних умотворина и писац првог речника
-српског језика.  Вук је најзначајнија личност српске књижевности прве
-половине XIX века. Стекао је и неколико почасних доктората.
-Учествовао је у Првом српском устанку као писар и чиновник у
-Неготинској крајини, а након слома устанка преселио се у Беч,
-1813. године. Ту је упознао Јернеја Копитара, цензора словенских
-књига, на чији је подстицај кренуо у прикупљање српских народних
-песама, реформу ћирилице и борбу за увођење народног језика у српску
-књижевност. Вуковим реформама у српски језик је уведен фонетски
-правопис, а српски језик је потиснуо славеносрпски језик који је у то
-време био језик образованих људи. Тако се као најважније године Вукове
-реформе истичу 1818., 1836., 1839., 1847. и 1852.
-\end{biografija}
 % ------------------------------------------------------------------------------
 
 \end{document} 
