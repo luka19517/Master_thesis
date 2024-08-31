@@ -131,7 +131,7 @@ Kao važna grupa nerelacionih baza podataka izdvajaju se kolonski-orijentisane b
 
 Nijedan od navedenih koncepata nije univerzalno rešenje, zato je bitno postojanje sadržaja koji se bave analizom slučajeva upotrebe tih tehnologija. Pored teorijske analize, koja se može pronaći u relevantnim javnim dokumentacijama, korisno je imati i konkretne implementacije testova čiji se rezultati mogu iskoristiti kako bi se povukle paralele u skladu sa potrebama realnih  sistema. 
 
-Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolonski orijentisanih baza podataka. Rad se sastoji iz teorijskog opisa navedenih tehnologija, kao i opisa konkretnih predstavnika baza podataka kojesu korišćeni. Na osnovu teorijskih izvora i istraživanja analizirani su  različiti slučajevi upotrebe. 
+Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolonski orijentisanih baza podataka. Rad se sastoji iz teorijskog opisa navedenih tehnologija, kao i opisa konkretnih predstavnika baza podataka koji su korišćeni. Na osnovu teorijskih izvora i istraživanja analizirani su  različiti slučajevi upotrebe. 
 
 
 % ------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ Iako ovakva formalizacija relacije jeste intuitivna (usled istorijskog uticaja k
 
 \subsection{Koncept ključa relacionog modela}
 
-Skup kolona relacije za koji važi da dva reda te relacije nemaju identične vrednosti za svaku kolonu iz tog skupa naziva  se \textit{natključ} relacije. Svaki minimalan natključ je \textit{ključ kandidat}. Svaka relacija može imati više ključeva kandidata, a jedan on njih se bira za  \textit{primarni ključ} koji mora imati definisanu vrednost za svaku njegovu kolonu.
+Skup kolona relacije za koji važi da dva reda te relacije nemaju identične vrednosti za svaku kolonu iz tog skupa naziva  se \textit{natključ} relacije. Svaki minimalan natključ je \textit{ključ kandidat}. Svaka relacija može imati više ključeva kandidata, a jedan od njih se bira za  \textit{primarni ključ} koji mora imati definisanu vrednost za svaku njegovu kolonu.
 \textit{Strani ključ} je kolona ili skup kolona čije vrednosti predstavljaju referencu na određeni red neke druge relacije. On uzima vrednost primarnog ključa torke na koju pokazuje. 
 
 Primarni i strani ključ igraju veliku ulogu u očuvanju integriteta baze podataka o čemu će biti reči u nastavku.
@@ -187,7 +187,7 @@ PostgreSQL iza sebe ima razvijenu društvenu zajednicu, pa samim tim ima dosta i
 % ------------------------------------------------------------------------------
 \subsection{Opšte karakteristike}
 
-Susret sa problemom \textit{Big Data} doveo je do potrebe za tabelama koje imaju ogroman broj kolona, i ogroman broj redova u okviru tih tabela. Novonastali zahtevi ukazali su na problem kod postojećih  relacionih modela. Svaki upit nad tabelom podrazumevao je dohvatanje svih kolona jednog reda, gde bi se filtriranje nepotrebnih kolona izvršavalo nakon što su se sve kolone učitale u memoriju. Ovo je bila samo jedna od motivacija za implemetanciju sistema zasnovanih na kolonski orijentisanom modelu koji je dizajniran tako da ovakav problem izbegne i uz to donese i druga poboljšanja o kojima će biti reči u nastavku.
+Susret sa problemom \textit{Big Data} doveo je do potrebe za tabelama koje imaju ogroman broj kolona i ogroman broj redova u okviru tih tabela. Novonastali zahtevi ukazali su na problem kod postojećih  relacionih modela. Svaki upit nad tabelom podrazumevao je dohvatanje svih kolona jednog reda, gde bi se filtriranje nepotrebnih kolona izvršavalo nakon što su se sve kolone učitale u memoriju. Ovo je bila samo jedna od motivacija za implemetanciju sistema zasnovanih na kolonski orijentisanom modelu koji je dizajniran tako da ovakav problem izbegne i uz to donese i druga poboljšanja o kojima će biti reči u nastavku.
 
 Kolonski orijentisan model, podatke na disku skladišti po kolonama, a ne po redovima kao što je to slučaj kod relacionh modela, Slika 2.1. Sve vrednosti kolone svih redova skladište se jedna do druge, a na konkretnu vrednosnu ćeliju referiše se pomoću ključa konkretnog reda kao i kolone čiju vrednost želimo da pročitamo. Ovakav dizajn doveo je do toga da za dohvatanje određenog skupa kolona nema potrebe da čitamo sve vrednosti tog reda, već je dovoljno da znamo konkretan ključ tog reda kao i imena kolona čije vrednosti želimo da pročitamo i tako izbegnemo višak operacija čitanja sa diska.
 
@@ -259,15 +259,15 @@ HBase nije ACID baza podataka, ali nudi sledeće garancije \cite{hbaseACID}:
   \label{fig:grafikon}
 \end{figure}
 
-HBase podatke može čuvati na lokalnom fajl sistemu ili na \textit{Hadoop} distruiranom fajl sistemu(HDFS). HDFS je distribuiran fajl sistem koji ima visok prag tolerancije na greške (\textit{fault tolerance}). HDFS klaster sastoji se iz HDFS master čvorova (\textit{Namenode}) i HDFS čvorova sa podacima (\textit{DataNode}). HDFS master čvor radi sa metainformacijama samog fajl sistema, kao što su izmena direktorijuma, brisanje direktorijuma i sl. Fajlovi na HDFS su interno podeljeni na blokove, gde se svaki od blokova može replikovati i skladištiti na bilo kom od HDFS čvorova sa podacima. O mapiranju blokova fajlova na HDFS čvorove sa podacima brine HDFS master čvor. HDFS čvorovi sa podacima odgovorni su za izvršavanje operacija čitanja i pisanja fajlova na zahtev klijenata. Pored toga HDFS čvorovi sa podacima mogu kreirati, brisati blokove a i replikovati ih, u skladu sa instrukcijama HDFS master čvora \cite{hdfs}.
+HBase podatke može čuvati na lokalnom fajl sistemu ili na \textit{Hadoop} distruiranom fajl sistemu(HDFS). HDFS je distribuiran fajl sistem koji ima visok prag tolerancije na greške (\textit{fault tolerance}). HDFS klaster sastoji se iz HDFS master čvorova (\textit{Namenode}) i HDFS čvorova sa podacima (\textit{DataNode}). HDFS master čvor radi sa metainformacijama samog fajl sistema, kao što su izmena direktorijuma, brisanje direktorijuma i sl. Fajlovi na HDFS su interno podeljeni na blokove, gde se svaki od blokova može replikovati i skladištiti na bilo kom od HDFS čvorova sa podacima. O mapiranju blokova fajlova na HDFS čvorove sa podacima brine HDFS master čvor. HDFS čvorovi sa podacima odgovorni su za izvršavanje operacija čitanja i pisanja fajlova na zahtev klijenata. Pored toga, HDFS čvorovi sa podacima mogu kreirati, brisati blokove a i replikovati ih, u skladu sa instrukcijama HDFS master čvora \cite{hdfs}.
 
-Arhitektura HBase klastera sastoji se iz tri glavne komponente: master server, region server i \textit{zookeeper}.
+Arhitektura HBase klastera sastoji se iz tri glavne komponente: master server, region server i zookeeper.
 
 Master server  je komponenta HBase klastera koja se bavi metainformacijama tabela HBase-a. Pored toga, on region serverima dodeljuje regione i bavi se balansiranjem opterećenja klastera (\textit{load balancing}).
 
 Region server zadužen je za rad sa dodeljenim regionima od strane master servera. Region je skup redova HBase-a u nekom rasponu ključeva. Kako bi region server mogao da piše i čita podatke regiona, on održava WAL (engl \textit{Write Ahead Log}) fajl, MemStore fajl kao i HFile fajlove. Svaka izmena, pre nego što je sačuvana na disku, upisuje se u vidu loga (\textit{commit log}) u WAL, tako da u slučaju pada sistema pre nego što su se izmene sačuvale, logovi koji se nalaze u WAL fajlu mogu rekonstruisati stanje pre pada sistema \cite{wal}. MemStore je fajl u koji se upisuju podaci pre nego što se sačuvaju na disku. On predstavlja vid bafera koji kada se popuni, reflektuje podatke na disk, odnosno na HFile. HFile fajl sadrži konkretne podatke u predviđenom formatu. Oni se mogu skladištiti na lokalnom fajl sistemu ili na HDFS, u zavisnosti od konfiguracije.
 
-Zookeeper predstavlja most u komunkaciji komponenti HBase klastera \cite{zookeeper}. Zookeeper servis  sinronizuje sve master i region servere, ima evidenciju o tome koji je master server aktivan a koji pasivan, koji region serveri više nije dostupni itd.
+Zookeeper predstavlja most u komunkaciji komponenti HBase klastera \cite{zookeeper}. Zookeeper servis  sinronizuje sve master i region servere, ima evidenciju o tome koji je master server aktivan a koji pasivan, koji region serveri više nisu dostupni itd.
 
 HBase dozvoljava dva režima: samostalan i distribuirani režim.
 
@@ -368,9 +368,9 @@ Konvergentna konzistentnost obezbeđuje da će baza podataka u slučaju da nema 
 Kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnost sistema u slučaju nepredviđenih okolnosti, podaci često bivaju distribuirani na više međusobno povezanih jedinica. Takve baze podataka nazivamo distribuiranim.
 Dva načina distribuiranja podataka su: fragmentacija i replikacija \cite{URBP}. 
 
-Fragmentacija distribuira podatke tako što se veliki skupovi podataka podele na fragmente i čuvaju na različitim čvorovima. Fragmentacija može biti horizontalna, vertikalna ili mešovita. Horizontalna fragmentacija (particionisanje) predstavlja podelu skupa redova tabele na podskupove po određenom kriterujmu. Vertikalna fragmentacija predstavlja podelu skupa kolona na podskupove po određenom kriterijumu.  Mešovita fragmentacija predstavlja kombinaciju horizontalne i vertikalne fragmentacije.
+Fragmentacija distribuira podatke tako što se veliki skupovi podataka podele na fragmente i čuvaju na različitim čvorovima. Fragmentacija može biti horizontalna, vertikalna ili mešovita. Horizontalna fragmentacija (particionisanje) predstavlja podelu skupa redova tabele na podskupove ili particije po određenom kriterijumu. Vertikalna fragmentacija predstavlja podelu skupa kolona na podskupove po određenom kriterijumu.  Mešovita fragmentacija predstavlja kombinaciju horizontalne i vertikalne fragmentacije.
 
-Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog od podataka predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. To sisteme koji koriste replikaciju čini pouzdanijim. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave} (\textit{ROWA - Read one write all}). Postoje i alternative: kao što su \textit{multimaster}, konsenzus kvoruma itd. U \textit{master-slave} modelu jedna od replika izabrana je da bude master replika i svaka izmena podataka mora ići kroz nju. Dalje, ona izmene propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može 
+Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog od podataka predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. To sisteme koji koriste replikaciju čini pouzdanijim. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave} (\textit{ROWA - Read one write all}\cite{rowa}). Postoje i alternative: kao što su \textit{multimaster}, konsenzus kvoruma itd. U \textit{master-slave} modelu jedna od replika izabrana je da bude master replika i svaka izmena podataka mora ići kroz nju. Dalje, ona izmene propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može 
 raditi sa bilo kog čvora što omogućava brži pristup podacima, Slika 2.12.
 
 \begin{figure}[!ht]
@@ -431,7 +431,7 @@ Jedna poslovna transakcija sastoji se iz tri transakcije baze podataka: kreiranj
 
 CreateFXTransaction sastoji se iz provere sredstava na računu korisnika i unosa novog transfera u tabelu.
 
-ExecutePayment radi ažuriranje računa korisnika i menja status transfera
+ExecutePayment radi ažuriranje računa korisnika i menja status transfera.
 
 CheckTransaction dohvata status transfera.
 
@@ -720,7 +720,7 @@ volumes:
   hbase_zookeeper_data:
 \end{lstlisting}
 
-Rezultati merenja prikazani u nastavku nastali kao rezultat pokretanja testova sa \numprint{100}, \numprint{1000}, \numprint{10000}, \numprint{50000}, \numprint{100000} poslovnih transakcija i pet klijenata koji te poslovne transakcije paralelno obrađuju.
+Rezultati merenja prikazani u nastavku nastali su kao rezultat pokretanja testova sa \numprint{100}, \numprint{1000}, \numprint{10000}, \numprint{50000}, \numprint{100000} poslovnih transakcija i pet klijenata koji te poslovne transakcije paralelno obrađuju.
 
 \begin{figure}[!ht]
   \centering
@@ -1025,7 +1025,7 @@ volumes:
   hbase_zookeeper_data:
 \end{lstlisting}
 
-Rezultati merenja prikazani u nastavku nastali kao rezultat pokretanja testova sa \numprint{10}, \numprint{20}, \numprint{50}, \numprint{100} iteracija izvršavanja OLAP upita i pet klijenata koji te upite paralelno izvršavaju.
+Rezultati merenja prikazani u nastavku nastali su kao rezultat pokretanja testova sa \numprint{10}, \numprint{20}, \numprint{50}, \numprint{100} iteracija izvršavanja OLAP upita i pet klijenata koji te upite paralelno izvršavaju.
 
 \begin{figure}[!ht]
   \centering
@@ -1139,13 +1139,13 @@ Analiza rezultata obuhvata interpretaciju rezultata koji su dobijeni merenjima p
 
 \section{Analiza rezultata kod testiranja u OLTP okruženju}
 
-Rezultati merenja ukazuju da kako raste broj poslovnih transakcija koje treba obraditi u testu, inicijalna prednost PostgreSQL-a u odnosu na HBase opada. Konkretno po fazama poslovne transakcije, izdvaja se createFXTransaction transakcija baze podataka, kod koje na postavljenih 50000 i 100000  poslovnih transakcija, HBase ima prednost. Sa druge strane, na primeru \textit{checkTransactionStatus}-a vidi se da pretraga po primarnom ključu kod PostgreSQL-a radi brže nego što je to slučaj kod HBase-a.  I pored toga ukupni rezultati ukazuju na tendenciju da bi sa porastom broja poslovnih transakcija (na milion ili deset miliona) PostgreSQL imao veća usporenja, relativno u odnosu na HBase, međutim za testiranje takvog okruženja neophodno je koristiti računar koji je sposoban da sprovede tako zahtevan test.
+Rezultati merenja ukazuju da kako raste broj poslovnih transakcija koje treba obraditi u testu, inicijalna prednost PostgreSQL-a u odnosu na HBase opada. Konkretno po fazama poslovne transakcije, izdvaja se createFXTransaction transakcija baze podataka, kod koje na postavljenih 50000 i 100000  poslovnih transakcija, HBase ima prednost. Sa druge strane, na primeru checkTransactionStatus-a vidi se da pretraga po primarnom ključu kod PostgreSQL-a radi brže nego što je to slučaj kod HBase-a.  I pored toga, ukupni rezultati ukazuju na tendenciju da bi sa porastom broja poslovnih transakcija (na milion ili deset miliona) PostgreSQL imao veća usporenja, relativno u odnosu na HBase, međutim za testiranje takvog okruženja neophodno je koristiti računar koji je sposoban da sprovede tako zahtevan test.
 
 Važno je naglasiti da HBase ne garantuje konzistentost nad svim podacima kakvu nudi PostgreSQL. HBase nudi jedan vid konzistenosti, i to konzistetnost u radu sa jednom redom tabele (više o tome u 2.2). To dovodi do zaključka da ukoliko je neophodno implementirati transakciju koja uključuje rad sa podacima više tabela ili više redova jedne tabele, ukoliko koristimo HBase, moramo na aplikativnom sloju voditi računa o očuvanju  eventualne konzistetnosti. PostgreSQL sa druge strane kao ACID baza podataka, sama garantuje konzistentost, te ne zahteva dodatan napor kao u slučaju HBase-a. 
 
 \section{Analiza rezultata kod testiranja u OLAP okruženju}
 
-Rezultati merenja u okviru OLAP rezultata ističu prednost PostgreSQL-a u performansama. Prednost HBase-a u odnosu na PostgreSQL jeste fleksiblnost sheme koja u ovakvom slučaju može doći do izražaja. Dorada modela koja se u slučaju HBase-a može primeniti može doneti dramatična poboljšanja u performansama čitanja HBase-a čak i u odnosu na PostgreSQL. 
+Rezultati u okviru merenja OLAP okruženja ističu prednost PostgreSQL-a u performansama. Prednost HBase-a u odnosu na PostgreSQL jeste fleksiblnost sheme koja u ovakvom slučaju može doći do izražaja. Dorada modela koja se u slučaju HBase-a može primeniti može doneti dramatična poboljšanja u performansama čitanja HBase-a čak i u odnosu na PostgreSQL. 
 
 Kreiranje tabele (u ovom slučaju orderitemstats) koja za vrednost ključa ima status, a za kolone ima vrednosti svake potrebne agregirane funkcije po danima, uticalo bi na to da se čitanje izveštaja svodi na čitanje po ključu sa izdvajanjem potrebnih koloni\footnote{ Razlog zašto se ovakva modifikacija ne može primeniti u slučaju PostgreSQL-a jeste ograničen broj kolona, kao i to što skup kolona mora biti unapred definisan pri kreiranju modela. Kod HBase-a takvi limiti ne postoje.}.
 Primer dodate tabele može se videti na Slici 5.1, a uticaj na performanse na Slici 5.2.
@@ -1209,7 +1209,7 @@ Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedis
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=1\textwidth]{nedistribuiro-cpu.png}
+  \includegraphics[width=0.8\textwidth]{nedistribuiro-cpu.png}
   \caption{Iskorišćenost procesora u nedistribuiranom okruženju}
   \label{fig:grafikon}
 \end{figure}
@@ -1217,7 +1217,7 @@ Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedis
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=1\textwidth]{distribuirano-cpu.png}
+  \includegraphics[width=0.8\textwidth]{distribuirano-cpu.png}
   \caption{Iskorišćenost procesora u distribuiranom okruženju}
   \label{fig:grafikon}
 \end{figure}
@@ -1275,9 +1275,9 @@ Kako bi se postigao dovoljan dokaz koncepta, simulirana su različita okruženja
 
 Analiza rezultata merenja u OLTP okruženju pokazala je da u performansama nad ograničenim brojem podataka nema velike razlike između HBase-a i PostgreSQL-a, uz prepoznavanje tendencije da sa porastom broja podataka HBase ima manja usporenja nego PostgreSQL. Sa druge strane PostgreSQL nudi ACID garancije kakve kod HBase-a nemamo, i ukoliko ih želimo, moramo ih obezbediti na aplikativnom sloju.
 
-Analiza rezultata merenja u OLAP okruženju, pokazala nam je da PostgreSQL ima prednost pri izvršavanju složenih upita koji pored prostog čitanja podataka sadrže i operacije nad podacima (npr. računanje sume, proseka itd). Fleksibilnost strukture kod HBase-a daje nam prostor da performanse unapredimo, kreirajući tabelu koja sadrži ranije izračunate agregirane vrednosti. Međutim još bolji efekat se može postići kod PostgreSQL-a kreiranjem materijalizovanog pogleda, što je u radu i prikazano.
+Analiza rezultata merenja u OLAP okruženju, pokazala nam je da PostgreSQL ima prednost pri izvršavanju složenih upita koji pored prostog čitanja podataka sadrže i operacije nad podacima (npr. računanje sume, proseka itd). Fleksibilnost strukture kod HBase-a daje nam prostor da performanse unapredimo, kreirajući tabelu koja sadrži ranije izračunate agregirane vrednosti. Međutim, još bolji efekat se može postići kod PostgreSQL-a kreiranjem materijalizovanog pogleda, što je u radu i prikazano.
 
-Analiza distribuiranog okruženja obuhvatila je opis organizacije podataka na HBase klasteru kao i upoređivanje tipova distribuiranosti PostgreSQL-a i HBase-a, na osnovu teorijskih izvora. Usled složenosti imlementacije, nedostaje implementacija testa koji radi sa distirbuiranim PostgreSQL klasterom tako da je ovaj segment rada ograničen na implementaciju samo HBase klastera. Data je analiza tipova replikacija koje koriste HBase i PostgreSQL  u distribuiranom okruženju i istaknute su prednosti i mane svakog od njih.
+Analiza distribuiranog okruženja obuhvatila je  upoređivanje performansi HBase-a u distribuiranom i nedistribuiranom režimu kao i opis organizacije podataka na HBase klasteru. Usled složenosti imlementacije, nedostaje implementacija testa koji radi sa distribuiranim PostgreSQL klasterom tako da je ovaj segment rada ograničen na implementaciju samo HBase klastera.
 
 % S obzirom da HBase za distribuiranje koristi replikaciju bez master servera koju je (koju je nasledio od HDFS-a) nudi visok nivo otpornosti na greške kao i dostupnosti klastera. Sa druge strane PostgreSQL (a i ostale relacione baze podatka) koriste master-slave replikaciju, i to najčešće %njen sinhroni oblik, on nudi visok nivo 
 
