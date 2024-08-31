@@ -371,7 +371,7 @@ Dva načina distribuiranja podataka su: fragmentacija i replikacija \cite{URBP}.
 Fragmentacija distribuira podatke tako što se veliki skupovi podataka podele na fragmente i čuvaju na različitim čvorovima. Fragmentacija može biti horizontalna, vertikalna ili mešovita. Horizontalna fragmentacija (particionisanje) predstavlja podelu skupa redova tabele na podskupove po određenom kriterujmu. Vertikalna fragmentacija predstavlja podelu skupa kolona na podskupove po određenom kriterijumu.  Mešovita fragmentacija predstavlja kombinaciju horizontalne i vertikalne fragmentacije.
 
 Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog od podataka predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. To sisteme koji koriste replikaciju čini pouzdanijim. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave} (\textit{ROWA - Read one write all}). Postoje i alternative: kao što su \textit{multimaster}, konsenzus kvoruma itd. U \textit{master-slave} modelu jedna od replika izabrana je da bude master replika i svaka izmena podataka mora ići kroz nju. Dalje, ona izmene propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može 
-raditi sa bilo kog čvora što omogućava brži pristup podacima, Slika 3.1.
+raditi sa bilo kog čvora što omogućava brži pristup podacima, Slika 2.12.
 
 \begin{figure}[!ht]
   \centering
@@ -385,7 +385,7 @@ Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmen
 
 
 \pagebreak
-Replikacija i fragmentacija se obično primenjuju zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 3.2. 
+Replikacija i fragmentacija se obično primenjuju zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 2.13. 
 
 \begin{figure}[!ht]
   \centering
