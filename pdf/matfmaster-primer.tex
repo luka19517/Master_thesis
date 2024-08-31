@@ -189,7 +189,7 @@ PostgreSQL iza sebe ima razvijenu društvenu zajednicu, pa samim tim ima dosta i
 
 Susret sa problemom \textit{Big Data} doveo je do potrebe za tabelama koje imaju ogroman broj kolona, i ogroman broj redova u okviru tih tabela. Novonastali zahtevi ukazali su na problem kod postojećih  relacionih modela. Svaki upit nad tabelom podrazumevao je dohvatanje svih kolona jednog reda, gde bi se filtriranje nepotrebnih kolona izvršavalo nakon što su se sve kolone učitale u memoriju. Ovo je bila samo jedna od motivacija za implemetanciju sistema zasnovanih na kolonski orijentisanom modelu koji je dizajniran tako da ovakav problem izbegne i uz to donese i druga poboljšanja o kojima će biti reči u nastavku.
 
-Kolonski orijentisan model, podatke na disku skladišti po kolonama, a ne po redovima kao što je to slučaj kod relacionh modela, slika 2.1. Sve vrednosti kolone svih redova skladište se jedna do druge, a na konkretnu vrednosnu ćeliju referiše se pomoću ključa konkretnog reda kao i kolone čiju vrednost želimo da pročitamo. Ovakav dizajn doveo je do toga da za dohvatanje određenog skupa kolona nema potrebe da čitamo sve vrednosti tog reda, već je dovoljno da znamo konkretan ključ tog reda kao i imena kolona čije vrednosti želimo da pročitamo i tako izbegnemo višak operacija čitanja sa diska.
+Kolonski orijentisan model, podatke na disku skladišti po kolonama, a ne po redovima kao što je to slučaj kod relacionh modela, Slika 2.1. Sve vrednosti kolone svih redova skladište se jedna do druge, a na konkretnu vrednosnu ćeliju referiše se pomoću ključa konkretnog reda kao i kolone čiju vrednost želimo da pročitamo. Ovakav dizajn doveo je do toga da za dohvatanje određenog skupa kolona nema potrebe da čitamo sve vrednosti tog reda, već je dovoljno da znamo konkretan ključ tog reda kao i imena kolona čije vrednosti želimo da pročitamo i tako izbegnemo višak operacija čitanja sa diska.
 
 Ovakav vid skladištenja podataka sa sobom nosi veliki potencijal za primenu raznih algoritama za kompresiju podataka.  Kompresija nad sličnim podacima koji se nalaze na uzastopnim adresama u memoriji, omogućava izbegavanje čuvanja složenih meta informacija u okviru struktura koje se koriste za tu kompresiju, što ovaj model čini posebno pogodnim za njihovu primenu.
 
@@ -206,7 +206,7 @@ Kolonski orijentisan model kao i većina ostalih nerelacionih modela, nudi fleks
 
 Neke od najpoznatijih algoritama kompresije koje kolonski orijentisan model koristi i koji će biti opisani u nastavku jesu: enkodiranje zasnovano na rečniku, enkodiranje po broju ponavljanja i delta enkoding \cite{ColumnarOptimizations}\footnote{Važno je napomenuti da relacioni modeli imaju svoje mehanizme kompresije podataka koji u ovom radu nisu analizirani.}.
 
-Enkodiranje zasnovano na rečniku (engl. \textit{Dictionary based encoding}), slika 2.2., funkcioniše tako što se napravi mapa vrednosti koja sadrži svaku vrednost kolone koja je prisutna među podacima. Kao vrednost kolone tada se ne upisuje konkretna vrednost, već ključ iz rečnika koji je mapiran na tu vrednost. Veličina ključa je srazmerna veličini mape, te je ovaj vid kompresije najpogodniji za kolone koje imaju mali broj vrednosti koje se ponavljaju.
+Enkodiranje zasnovano na rečniku (engl. \textit{Dictionary based encoding}), Slika 2.2., funkcioniše tako što se napravi mapa vrednosti koja sadrži svaku vrednost kolone koja je prisutna među podacima. Kao vrednost kolone tada se ne upisuje konkretna vrednost, već ključ iz rečnika koji je mapiran na tu vrednost. Veličina ključa je srazmerna veličini mape, te je ovaj vid kompresije najpogodniji za kolone koje imaju mali broj vrednosti koje se ponavljaju.
 
 \begin{figure}[!ht]
   \centering
@@ -216,7 +216,7 @@ Enkodiranje zasnovano na rečniku (engl. \textit{Dictionary based encoding}), sl
 \end{figure}
 
 
-Enkodiranje po broju ponavljanja  (engl. \textit{Run Length Encoding}) , slika 2.3., funkcioniše tako što se uz svaku vrednost koja se ponavlja čuva i broj ponavljanja te vrednosti. Na taj način se izbegava pojava duplikata na uzastopnim adresama u memoriji. Ovaj vid kompresije najpogodniji je za kolone koje su sortirane i imaju ponavljajuće vrednosti.
+Enkodiranje po broju ponavljanja  (engl. \textit{Run Length Encoding}), Slika 2.3., funkcioniše tako što se uz svaku vrednost koja se ponavlja čuva i broj ponavljanja te vrednosti. Na taj način se izbegava pojava duplikata na uzastopnim adresama u memoriji. Ovaj vid kompresije najpogodniji je za kolone koje su sortirane i imaju ponavljajuće vrednosti.
 
 \begin{figure}[!ht]
   \centering
@@ -226,7 +226,7 @@ Enkodiranje po broju ponavljanja  (engl. \textit{Run Length Encoding}) , slika 2
 \end{figure}
 
 
-Delta enkodiranje algoritam kompresije, slika 2.4. funkcioniše tako što se u kolonama ne čuvaju same vrednosti već razlike između uzastopnih vrednosti. Očigledan primer primene ove kompresije je datumska kolona. U tom slučaju  je dovoljno da izaberemo neki referentni datum i da za ostale vrednosti čuvamo razliku u odnosu na njega.
+Delta enkodiranje algoritam kompresije, Slika 2.4. funkcioniše tako što se u kolonama ne čuvaju same vrednosti već razlike između uzastopnih vrednosti. Očigledan primer primene ove kompresije je datumska kolona. U tom slučaju  je dovoljno da izaberemo neki referentni datum i da za ostale vrednosti čuvamo razliku u odnosu na njega.
 
 \begin{figure}[!ht]
   \centering
@@ -243,7 +243,7 @@ Model podataka koji HBase koristi podrazumeva da se svaka tabela sastoji iz fami
 
 Redovi u HBase-u, odnosno njihovi ključevi sortirani su rastuće, tako da se za pretragu po ključu koristi binarna pretraga. Ovo svojstvo daje na važnosti dizajniranju ključa jer je poželjno da svako čitanje podataka ide po ključu ili njegovom prefiksu \cite{hbaseSchema}. 
 
-Vrednosnu ćeliju u HBase tabeli određuje ključ reda, ime kolone te vrednosne ćelije, kao i familija kojoj kolona pripada, slika 2.5.
+Vrednosnu ćeliju u HBase tabeli određuje ključ reda, ime kolone te vrednosne ćelije, kao i familija kojoj kolona pripada, Slika 2.5.
 
 HBase nije ACID baza podataka, ali nudi sledeće garancije \cite{hbaseACID}: 
 
@@ -271,9 +271,9 @@ Zookeeper predstavlja most u komunkaciji komponenti HBase klastera \cite{zookeep
 
 HBase dozvoljava dva režima: samostalan i distribuirani režim.
 
-U samostalnom režimu HFile fajlovi se mogu čuvati na lokalnom fajl sistemu i korišćenje HDFS-a je opciono, slika 2.6  \footnote{Izvor: https://devstacks.wordpress.com/2017/07/19/apache-hbase-architecture-and-overview}.
+U samostalnom režimu HFile fajlovi se mogu čuvati na lokalnom fajl sistemu i korišćenje HDFS-a je opciono, Slika 2.6  \footnote{Izvor: https://devstacks.wordpress.com/2017/07/19/apache-hbase-architecture-and-overview}.
 
-Sa druge strane u distribuiranom režimu neophodno je korišćenje HDFS-a za skladištenje, slika 2.7 \footnote{Izvor: https://devstacks.wordpress.com/2017/07/19/apache-hbase-architecture-and-overview}. 
+Sa druge strane u distribuiranom režimu neophodno je korišćenje HDFS-a za skladištenje, Slika 2.7 \footnote{Izvor: https://devstacks.wordpress.com/2017/07/19/apache-hbase-architecture-and-overview}. 
 
 \begin{figure}[!ht]
   \centering
@@ -305,7 +305,7 @@ Denormalizacija je strategija koja se koristi kod modela kod kojih je neophodno 
  
 Neke od tehnika denormalizacije su:  spajanje kolone, horizontalna podela tabele, vertikalna podela tabele i uvođenje izvedene kolone. 
 
-Spajanje kolone, slika 2.8. je dodavanje kolone kojoj bi se često pristupalo preko stranog ključa.
+Spajanje kolone, Slika 2.8. je dodavanje kolone kojoj bi se često pristupalo preko stranog ključa.
 
 \begin{figure}[!ht]
   \centering
@@ -314,7 +314,7 @@ Spajanje kolone, slika 2.8. je dodavanje kolone kojoj bi se često pristupalo pr
   \label{fig:grafikon}
 \end{figure}
 
-Horizontalno deljenje tabele, slika 2.9. podrazumeva da se na osnovu prirode podataka jedna tabela podeli na više tabela tako da se čitanje svede samo na čitanje grupe redova. 
+Horizontalno deljenje tabele, Slika 2.9. podrazumeva da se na osnovu prirode podataka jedna tabela podeli na više tabela tako da se čitanje svede samo na čitanje grupe redova. 
 
 \begin{figure}[!ht]
   \centering
@@ -323,7 +323,7 @@ Horizontalno deljenje tabele, slika 2.9. podrazumeva da se na osnovu prirode pod
   \label{fig:grafikon}
 \end{figure}
 
-Vertikalno deljenje tabele, slika 2.10. podrazumeva da se tabela podeli grupisanjem kolona koje se često čitaju zajedno. 
+Vertikalno deljenje tabele, Slika 2.10. podrazumeva da se tabela podeli grupisanjem kolona koje se često čitaju zajedno. 
 
 \begin{figure}[!ht]
   \centering
@@ -332,7 +332,7 @@ Vertikalno deljenje tabele, slika 2.10. podrazumeva da se tabela podeli grupisan
   \label{fig:grafikon}
 \end{figure}
 
-Uvođenje izvedene kolone, slika 2.11. predstavlja dodavanje kolone koja čuva rezultat neke agregatne funkcije. Time se izbegava da se pri svakom čitanju ta agregatna funkcija izvršava, već se pri ažuriranju stanja ta vrednost ažurira, da bi se rezultat kasnije mogao samo pročitati.
+Uvođenje izvedene kolone, Slika 2.11. predstavlja dodavanje kolone koja čuva rezultat neke agregatne funkcije. Time se izbegava da se pri svakom čitanju ta agregatna funkcija izvršava, već se pri ažuriranju stanja ta vrednost ažurira, da bi se rezultat kasnije mogao samo pročitati.
 
 
 \begin{figure}[!ht]
@@ -385,7 +385,7 @@ Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmen
 
 
 \pagebreak
-Replikacija i fragmentacija se obično primenjuju zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 2.13. 
+Replikacija i fragmentacija se obično primenjuju zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, Slika 2.13. 
 
 \begin{figure}[!ht]
   \centering
@@ -402,7 +402,7 @@ Raspoloživost je svojstvo koje obezbeđuje da će baza uvek vratiti nekakav odg
 
 Tolerancija razdvojenosti znači da će u slučaju delimičniih otkaza unutar klastera, sistem i dalje funkcionisati.
 
-CAP teorema koju je formulisao Eric Brewer \footnote{Eric Allen Brewer profesor računarskih nauka na Univerzitetu Kalifornija, Berkli}, navodi da distribuirana baza podatka ne može istovremeno ispunjavati sva tri svojstva, slika 2.12.
+CAP teorema koju je formulisao Eric Brewer \footnote{Eric Allen Brewer profesor računarskih nauka na Univerzitetu Kalifornija, Berkli}, navodi da distribuirana baza podatka ne može istovremeno ispunjavati sva tri svojstva, Slika 2.14.
 
 Obzirom da je konzistentost i dostupnost u praksi skoro nemoguće dostići, distribuirane baze podataka organizuju se u skladu sa tim da li se veći prioritet daje dostupnosti ili stalnoj konzistentosti. Priroda baza podataka koji koriste relacioni model obično je takva da daju prioritet konzistetnosti, pa se od njih očekuje da u distribuiranom okruženju osim konzistetnosti nude i toleranciju razdvojenosti, za razliku od kolonski orijentisane nerelacione baze koja konzistetnost ne garantuje (garantuje konvergentnu konzistenciju), ali uz toleranciju razdvojenosti nudi stalnu dostupnost.
 
@@ -449,7 +449,7 @@ U svrhu demonstracije i merenja performansi HBase-a u distribuiranom okruženju 
 
 \section{Opis platforme za testiranje}
 
-Za predstavnike baza podataka izabrani su HBase (kao predstavnik kolonski orijentisane nerelacione baze podataka) i PostgreSQL (kao predstavnik relacione baze podataka)\footnote{Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase, rezultati dobijeni u nastavku su rezultati poređenja konkretnih predstavnika, i nisu opšti za sve relacione i kolonski orijenisane nerelacione baze podataka.}.  Kao okruženje za izvršavanje testova  korišćen je \textit{docker}. Serveri oba predstavnika biće pokrenuti kao nezavisni kontejneri, slika 4.1. 
+Za predstavnike baza podataka izabrani su HBase (kao predstavnik kolonski orijentisane nerelacione baze podataka) i PostgreSQL (kao predstavnik relacione baze podataka)\footnote{Napomena: Kako su za predstavnike izabrani PostgresSQL i HBase, rezultati dobijeni u nastavku su rezultati poređenja konkretnih predstavnika, i nisu opšti za sve relacione i kolonski orijenisane nerelacione baze podataka.}.  Kao okruženje za izvršavanje testova  korišćen je \textit{docker}. Serveri oba predstavnika biće pokrenuti kao nezavisni kontejneri, Slika 4.1. 
 
 \begin{figure}[!ht]
   \centering
@@ -1076,7 +1076,6 @@ Nakon toga pokreće se HBase klaster koji se sastoji iz jednog region servera, j
 $HBASE_HOME/bin/start-hbase.sh
 \end{lstlisting}
 
-\pagebreak
 
 \begin{lstlisting}[title={hbase-site.xml - Konfiguracija distribuiranog HBase-a},captionpos=b]
  <property>
@@ -1149,7 +1148,7 @@ Važno je naglasiti da HBase ne garantuje konzistentost nad svim podacima kakvu 
 Rezultati merenja u okviru OLAP rezultata ističu prednost PostgreSQL-a u performansama. Prednost HBase-a u odnosu na PostgreSQL jeste fleksiblnost sheme koja u ovakvom slučaju može doći do izražaja. Dorada modela koja se u slučaju HBase-a može primeniti može doneti dramatična poboljšanja u performansama čitanja HBase-a čak i u odnosu na PostgreSQL. 
 
 Kreiranje tabele (u ovom slučaju orderitemstats) koja za vrednost ključa ima status, a za kolone ima vrednosti svake potrebne agregirane funkcije po danima, uticalo bi na to da se čitanje izveštaja svodi na čitanje po ključu sa izdvajanjem potrebnih koloni\footnote{ Razlog zašto se ovakva modifikacija ne može primeniti u slučaju PostgreSQL-a jeste ograničen broj kolona, kao i to što skup kolona mora biti unapred definisan pri kreiranju modela. Kod HBase-a takvi limiti ne postoje.}.
-Primer dodate tabele može se videti na slici 5.1 ,a uticaj na performanse na slici 5.2.
+Primer dodate tabele može se videti na Slici 5.1, a uticaj na performanse na Slici 5.2.
 
 \begin{figure}[!ht]
   \centering
@@ -1165,7 +1164,7 @@ Primer dodate tabele može se videti na slici 5.1 ,a uticaj na performanse na sl
   \label{fig:grafikon}
 \end{figure}
 
-Sa druge strane PostgreSQL takođe podržava mehanizme koji u ovom slučaju mogu poboljšati performanse. Konkretno za ovaj test, možemo kreirati materijalizovani pogled \textit{mv\_order\_item\_bydate} sa rezultatima ranije izračunatih statističkih funkcija. Tada bi se OLAP upit iz testa pretvorio u čitanje podataka iz materijalizovanog pogleda umesto izračunavanja agregiranih funkcija. Takva optimizacija ima veliki uticaj na performanse, slika 5.3.
+Sa druge strane PostgreSQL takođe podržava mehanizme koji u ovom slučaju mogu poboljšati performanse. Konkretno za ovaj test, možemo kreirati materijalizovani pogled \textit{mv\_order\_item\_bydate} sa rezultatima ranije izračunatih statističkih funkcija. Tada bi se OLAP upit iz testa pretvorio u čitanje podataka iz materijalizovanog pogleda umesto izračunavanja agregiranih funkcija. Takva optimizacija ima veliki uticaj na performanse, Slika 5.3.
 
 \pagebreak 
 
@@ -1206,7 +1205,7 @@ select *
 
 Analiza rezultata testiranja u distribuiranom okruženju obuhvatiće uporednu analizu sa nedistribuiranim HBase-om, opis fragmentacije i replikacije podataka kao i organizacije podataka HBase-a na HDFS čvoru. 
 
-Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}.  Drugi razlog boljih performansi u odnosu na nedistribuirani HBase može biti i to što se pri nedistribuiranom izvršavanju potencijalno ne koriste sva jezgra fizičkog čvora, pa se pri distribuiranju u više procesa na istom fizičkom čvoru povećava iskorišćenost procesora. Merenje iskorićenosti procesora (\textit{CPU}\%) u nedistribuiranom i distribuiranom okruženju sa jednim region server čvorom dalo je manju prednost distribuiranom, slika 5.4 i 5.5. 
+Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}.  Drugi razlog boljih performansi u odnosu na nedistribuirani HBase može biti i to što se pri nedistribuiranom izvršavanju potencijalno ne koriste sva jezgra fizičkog čvora, pa se pri distribuiranju u više procesa na istom fizičkom čvoru povećava iskorišćenost procesora. Merenje iskorićenosti procesora (\textit{CPU}\%) u nedistribuiranom i distribuiranom okruženju sa jednim region server čvorom dalo je manju prednost distribuiranom, Slike 5.4 i 5.5. 
 
 \begin{figure}[!ht]
   \centering
@@ -1228,7 +1227,7 @@ Ograničenje ove studije je korišćenje jednog fizičkog čvora sa jednim regio
 
 Fragmentacija HBase klastera realizovana je na dva nivoa:  fragmentacija odgovornosti region servera za regione koji mogu pripadati različitim tabelama i fragmentacija podataka u okviru HDFS klastera. Sa druge strane replikacija je prisutna samo za podatke u okviru HDFS klastera, ali ne i u odgovornosti region servera, jer je za jedan region u svakom trenutku odgovoran samo jedan region server.
 
-Na slici 5.6. prikazana  je organizacija regiona (kolone \textit{Regions}) po tabelama (kolona \textit{Name}) kojima pripadaju. Broj regiona srazmeran je broju redova tabele, odnosno količini podataka koje tabela sadrži. 
+Na Slici 5.6. prikazana  je organizacija regiona (kolone \textit{Regions}) po tabelama (kolona \textit{Name}) kojima pripadaju. Broj regiona srazmeran je broju redova tabele, odnosno količini podataka koje tabela sadrži. 
 
 \begin{figure}[!ht]
   \centering
@@ -1237,7 +1236,7 @@ Na slici 5.6. prikazana  je organizacija regiona (kolone \textit{Regions}) po ta
   \label{fig:grafikon}
 \end{figure}
 
-Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele orderitem, na slici 5.7.
+Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele orderitem, na Slici 5.7.
 
 \begin{figure}[!ht]
   \centering
@@ -1247,9 +1246,9 @@ Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele
 \end{figure}
 
 
-Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum\footnote{Direktorijum ne predstavlja fizičku lokaciju na jednom HDFS čvoru, jer regioni jedne HBase tabele mogu biti čuvani na više HDFS čvorova.}, slika 5.8.
+Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum\footnote{Direktorijum ne predstavlja fizičku lokaciju na jednom HDFS čvoru, jer regioni jedne HBase tabele mogu biti čuvani na više HDFS čvorova.}, Slika 5.8.
 
-Svaki region je u okviru HDFS klastera fragmentisan na blokove, koji su replikovani u skladu sa vrednošću faktora replikacije klastera (\textit{Replication}), slika 5.9.
+Svaki region je u okviru HDFS klastera fragmentisan na blokove, koji su replikovani u skladu sa vrednošću faktora replikacije klastera (\textit{Replication}), Slika 5.9.
 
 \begin{figure}[!ht]
   \centering
