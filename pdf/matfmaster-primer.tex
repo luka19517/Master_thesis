@@ -131,7 +131,7 @@ Kao važna grupa nerelacionih baza podataka izdvajaju se kolonski-orijentisane b
 
 Nijedan od navedenih koncepata nije univerzalno rešenje, zato je bitno postojanje sadržaja koji se bave analizom slučajeva upotrebe tih tehnologija. Pored teorijske analize, koja se može pronaći u relevantnim javnim dokumentacijama, korisno je imati i konkretne implementacije testova čiji se rezultati mogu iskoristiti kako bi se povukle paralele u skladu sa potrebama realnih  sistema. 
 
-Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolonski orijentisanih baza podataka. Rad se sastoji iz teorijskog opisa navedenih tehnologija, kao i opisa konkretnih predstavnika baza podataka koji su korišćeni. Na osnovu teorijskih izvora i istraživanja analizirani su  različiti slučajevi upotrebe. 
+Cilj ovog rada je analiza i upoređivanje slučajeva upotrebe relacionih i kolonski orijentisanih baza podataka. Rad se sastoji iz teorijskog opisa navedenih tehnologija, kao i opisa konkretnih predstavnika baza podataka kojesu korišćeni. Na osnovu teorijskih izvora i istraživanja analizirani su  različiti slučajevi upotrebe. 
 
 
 % ------------------------------------------------------------------------------
@@ -366,13 +366,12 @@ Konvergentna konzistentnost obezbeđuje da će baza podataka u slučaju da nema 
 \subsubsection{Distribuiranost i CAP teorema}
 
 Kako bi se postigla skalabilnost, umanjilo kašnjenje odgovora (engl \textit{latency}) i povećala dostupnost sistema u slučaju nepredviđenih okolnosti, podaci često bivaju distribuirani na više međusobno povezanih jedinica. Takve baze podataka nazivamo distribuiranim.
-Dva načina distribuiranja podataka su: \textbf{fragmentacija} i \textbf{replikacija} \cite{URBP}. 
+Dva načina distribuiranja podataka su: fragmentacija i replikacija \cite{URBP}. 
 
-Fragmentacija ili particionisanje distribuira podatke tako što se veliki skupovi podataka podele na fragmente (particije) i čuvaju na različitim čvorovima. 
+Fragmentacija distribuira podatke tako što se veliki skupovi podataka podele na fragmente i čuvaju na različitim čvorovima. Fragmentacija može biti horizontalna, vertikalna ili mešovita. Horizontalna fragmentacija (particionisanje) predstavlja podelu skupa redova tabele na podskupove po određenom kriterujmu. Vertikalna fragmentacija predstavlja podelu skupa kolona na podskupove po određenom kriterijumu.  Mešovita fragmentacija predstavlja kombinaciju horizontalne i vertikalne fragmentacije.
 
-Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog od podataka predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave}, slika 3.1. (postoje i alternative: \textit{multi-master} model i \textit{masterless} model, ali usled njihove složenosti oni se koriste samo u nekim specifičnim slučajevima). Po tom modelu jedna od replika izabrana je da bude master replika, i svaka izmena podataka mora ići kroz nju, a onda ona izmenu propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može raditi sa bilo kog čvora. 
-
-Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmena dođe do master čvora, on pre nego što klijentu vrati odgovor da je izmena uspešno sačuvana, sačeka da mu svaki zavisni čvor potvrdi da je izmena uspešno upisana kod njega. Sinhrona replikacija je karakteristična za sisteme koji garantuju da će klijent pri čitanju podatka sa bilo koje replike imati ažurno stanje, međutim, cena toga je umanjena dostupnost, s obzirom da ukoliko neki od zavisnih čvorova postane nedostupan, on ne može master čvoru potvrditi da je izmena upisana na njega, pa samim tim ni master ne može klijentu potvrditi da je izmena uspešno upisana. Kod asinhrone replikacije, kada izmena podataka dođe do mastera, i on tu izmenu propagira ka ostalim zavisnim čvorovima, master ne čeka nikakav odgovor od zavisnih čvorova, već ukoliko je izmena uspešno upisana na njega on klijentu vraća potvrdu o sačuvanoj izmeni. Asinhrona replikacija obično nudi bolje performanse i veću dostupnost servisa, po cenu toga da čitanje sa neke od replika može vraćati zastarele podatke.
+Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog od podataka predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. To sisteme koji koriste replikaciju čini pouzdanijim. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave} (\textit{ROWA - Read one write all}). Postoje i alternative: kao što su \textit{multimaster}, konsenzus kvoruma itd. U \textit{master-slave} modelu jedna od replika izabrana je da bude master replika i svaka izmena podataka mora ići kroz nju. Dalje, ona izmene propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može 
+raditi sa bilo kog čvora što omogućava brži pristup podacima, Slika 3.1.
 
 \begin{figure}[!ht]
   \centering
@@ -380,6 +379,10 @@ Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmen
   \caption{Master-slave replikacija}
   \label{fig:grafikon}
 \end{figure}
+
+
+Replikacija može biti sinhrona i asinhrona. Kod sinhrone replikacije kada izmena dođe do master čvora, on pre nego što klijentu vrati odgovor da je izmena uspešno sačuvana, sačeka da mu svaki zavisni čvor potvrdi da je izmena uspešno upisana kod njega. Sinhrona replikacija je karakteristična za sisteme koji garantuju da će klijent pri čitanju podatka sa bilo koje replike imati ažurno stanje, međutim, cena toga je sporije ažuriranje podataka, kao i umanjena dostupnost, s obzirom da ukoliko neki od zavisnih čvorova postane nedostupan, on ne može master čvoru potvrditi da je izmena upisana na njega, pa samim tim ni master ne može klijentu potvrditi da je izmena uspešno upisana. Kod asinhrone replikacije, kada izmena podataka dođe do mastera i on tu izmenu propagira ka ostalim zavisnim čvorovima, master ne čeka odgovor od zavisnih čvorova, već ukoliko je izmena uspešno upisana na njega on klijentu vraća potvrdu o sačuvanoj izmeni. Asinhrona replikacija obično nudi bolje performanse i veću dostupnost servisa, po cenu toga da čitanje sa neke od replika može vraćati zastarele podatke.
+
 
 \pagebreak
 Replikacija i fragmentacija se obično primenjuju zajedno, tako što se podaci prvo podele na particije, a svaka particija replikuje na više čvorova \cite{ColumnarOriented}, slika 3.2. 
@@ -405,7 +408,7 @@ Obzirom da je konzistentost i dostupnost u praksi skoro nemoguće dostići, dist
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{cap.png}
+  \includegraphics[width=0.6\textwidth]{cap.png}
   \caption{CAP teorema}
   \label{fig:grafikon}
 \end{figure}
@@ -1203,11 +1206,29 @@ select *
 
 Analiza rezultata testiranja u distribuiranom okruženju obuhvatiće uporednu analizu sa nedistribuiranim HBase-om, opis fragmentacije i replikacije podataka kao i organizacije podataka HBase-a na HDFS čvoru. 
 
-Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}.  Drugi razlog boljih performansi u odnosu na nedistribuirani HBase može biti i to što se pri nedistribuiranom izvršavanju potencijalno ne koriste sva jezgra fizičkog čvora, pa se pri distribuiranju u više procesa na istom fizičkom čvoru povećava iskorišćenost procesora\footnote{U ovom radu nije merena iskorišćenost procesora pri testiranju nedistribuiranog HBase-a, ali to može biti predmet budućih testiranja.}. 
+Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}.  Drugi razlog boljih performansi u odnosu na nedistribuirani HBase može biti i to što se pri nedistribuiranom izvršavanju potencijalno ne koriste sva jezgra fizičkog čvora, pa se pri distribuiranju u više procesa na istom fizičkom čvoru povećava iskorišćenost procesora. Merenje iskorićenosti procesora (\textit{CPU}\%) u nedistribuiranom i distribuiranom okruženju sa jednim region server čvorom dalo je manju prednost distribuiranom, slika 5.4 i 5.5. 
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{nedistribuiro-cpu.png}
+  \caption{Iskorišćenost procesora u nedistribuiranom okruženju}
+  \label{fig:grafikon}
+\end{figure}
+
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{distribuirano-cpu.png}
+  \caption{Iskorišćenost procesora u distribuiranom okruženju}
+  \label{fig:grafikon}
+\end{figure}
+
+\pagebreak 
+Ograničenje ove studije je korišćenje jednog fizičkog čvora sa jednim region server čvorom. Sa povećanjem broja region servera na istom fizičkom čvoru potencijalno bi se postigla veća iskorišćenost procesora, a samim tim i bolje performanse, što može biti predmet daljih istraživanja. Povećavanjem broja fizičkih čvorova postigla bi se veća pouzdanost klastera, bolja dostupnost i brže čitanje podataka \cite{ColumnarOriented}.  
 
 Fragmentacija HBase klastera realizovana je na dva nivoa:  fragmentacija odgovornosti region servera za regione koji mogu pripadati različitim tabelama i fragmentacija podataka u okviru HDFS klastera. Sa druge strane replikacija je prisutna samo za podatke u okviru HDFS klastera, ali ne i u odgovornosti region servera, jer je za jedan region u svakom trenutku odgovoran samo jedan region server.
 
-Na slici 5.4. prikazana  je organizacija regiona (kolone \textit{Regions}) po tabelama (kolona \textit{Name}) kojima pripadaju. Broj regiona srazmeran je broju redova tabele, odnosno količini podataka koje tabela sadrži. 
+Na slici 5.6. prikazana  je organizacija regiona (kolone \textit{Regions}) po tabelama (kolona \textit{Name}) kojima pripadaju. Broj regiona srazmeran je broju redova tabele, odnosno količini podataka koje tabela sadrži. 
 
 \begin{figure}[!ht]
   \centering
@@ -1216,7 +1237,7 @@ Na slici 5.4. prikazana  je organizacija regiona (kolone \textit{Regions}) po ta
   \label{fig:grafikon}
 \end{figure}
 
-Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele orderitem, na slici 5.5.
+Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele orderitem, na slici 5.7.
 
 \begin{figure}[!ht]
   \centering
@@ -1226,9 +1247,9 @@ Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele
 \end{figure}
 
 
-Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum\footnote{Direktorijum ne predstavlja fizičku lokaciju na jednom HDFS čvoru, jer regioni jedne HBase tabele mogu biti čuvani na više HDFS čvorova.}, slika 5.6.
+Na HDFS čvoru podaci su organizovani tako da svaka tabela ima svoj direktorijum\footnote{Direktorijum ne predstavlja fizičku lokaciju na jednom HDFS čvoru, jer regioni jedne HBase tabele mogu biti čuvani na više HDFS čvorova.}, slika 5.8.
 
-Svaki region je u okviru HDFS klastera fragmentisan na blokove, koji su replikovani u skladu sa vrednošću faktora replikacije klastera (\textit{Replication}), slika 5.7.
+Svaki region je u okviru HDFS klastera fragmentisan na blokove, koji su replikovani u skladu sa vrednošću faktora replikacije klastera (\textit{Replication}), slika 5.9.
 
 \begin{figure}[!ht]
   \centering
