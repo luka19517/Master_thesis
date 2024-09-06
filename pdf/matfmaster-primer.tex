@@ -370,7 +370,7 @@ Dva načina distribuiranja podataka su: fragmentacija i replikacija \cite{URBP}.
 
 Fragmentacija distribuira podatke tako što se veliki skupovi podataka podele na fragmente i čuvaju na različitim čvorovima. Fragmentacija može biti horizontalna, vertikalna ili mešovita. Horizontalna fragmentacija (particionisanje) predstavlja podelu skupa redova tabele na podskupove ili particije po određenom kriterijumu. Vertikalna fragmentacija predstavlja podelu skupa kolona na podskupove po određenom kriterijumu.  Mešovita fragmentacija predstavlja kombinaciju horizontalne i vertikalne fragmentacije.
 
-Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog od podataka predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. To sisteme koji koriste replikaciju čini pouzdanijim. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model po kojem se to realizuje je \textit{master-slave} (\textit{ROWA - Read one write all}\cite{rowa}). Postoje i alternative: kao što su \textit{multimaster}, konsenzus kvoruma itd. U \textit{master-slave} modelu jedna od replika izabrana je da bude master replika i svaka izmena podataka mora ići kroz nju. Dalje, ona izmene propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može 
+Replikacija podrazumeva da se više kopija podataka čuva na različitim čvorovima, odnosno replikama. Broj replika svakog fragmenta koji se replikuje predstavlja faktor replikacije. Ukoliko neki od čvorova postane nedostupan, klijentski zahtevi mogu biti obrađeni na nekom od preostalih čvorova. To sisteme koji koriste replikaciju čini pouzdanijim. Kako bi svaka replika bila ažurna neophodno je da se svaka izmena podataka propagira do svakog čvora. Najpoznatiji model i najjednostavniji po kojem se to realizuje je \textit{master-slave}. Postoje i alternative: kao što su \textit{multimaster}, konsenzus kvoruma itd. U \textit{master-slave} modelu jedna od replika izabrana je da bude master replika i svaka izmena podataka mora ići kroz nju. Dalje, ona izmene propagira do ostalih zavisnih (\textit{slave}) replika. Čitanje podataka se sa druge strane, može 
 raditi sa bilo kog čvora što omogućava brži pristup podacima, Slika 2.12.
 
 \begin{figure}[!ht]
@@ -442,7 +442,7 @@ Onlajn analitičko procesiranje sačinjeno je od velikog broja čitanja podataka
 
 \section{Distribuirano okruženje}
 
-U svrhu demonstracije i merenja performansi HBase-a u distribuiranom okruženju biće iskoršćeni testovi iz testiranja OLTP i OLAP  scenarija. S obzirom na to da se testiranje izvršava na jednom računaru, koristiće se HBase klaster sa jednim region serverom, jednim master serverom, zookeeper servisom,  jednim HDFS čvorom podataka i jednim HDFS master čvorom. Svi oni će se izvršavati kao zasebni procesi. Usled složenosti implementacije distribuiranog relacionog sistema (u ovom slučaju PostgreSQL-a), za distribuirano okruženje primer je dat samo za HBase.
+U svrhu demonstracije i merenja performansi HBase-a u distribuiranom okruženju biće iskorišćeni testovi iz testiranja OLTP i OLAP  scenarija. Testiranje se izvršava na jednom fizičkom čvoru. Koristiće se HBase klaster sa  jednim master serverom, dva region servera, zookeeper servisom, jednim HDFS master čvorom i dva HDFS čvora podataka. Svi oni će se izvršavati kao zasebni procesi. Usled složenosti implementacije distribuiranog relacionog sistema (u ovom slučaju PostgreSQL-a), za distribuirano okruženje primer je dat samo za HBase.
 
 
 \chapter{Merenje performansi po modelima}
@@ -1046,34 +1046,54 @@ Rezultati merenja prikazani u nastavku nastali su kao rezultat pokretanja testov
 \section{Merenje performansi u distribuiranom okruženju}
 
 Kao što je napomenuto u 3.3 za merenje performansi koriste se OLTP i OLAP testovi iz poglavlja 3.1 i 3.2. Jedina razlika će biti priprema okruženja za testiranje. 
-U ovom slučaju testiranje se izvršava na fizičkom čvoru (računaru) sa 10 procesorskih jezgara, stepenom mulitprocesiranja 12 i ranije instaliranim HBase-om i Hadoop-om. 
+U ovom slučaju testiranje se izvršava na fizičkom čvoru (računaru) sa 10 procesorskih jezgara i ranije instaliranim HBase-om i Hadoop-om. 
 
-Priprema okruženja podrazumeva najpre pokretanje HDFS klastera, koji se sastoji iz jednog HDFS master čvora i jednog HDFS čvora podataka, sa postavljenim faktorom replikacije blokova:
+Priprema okruženja podrazumeva najpre pokretanje HDFS klastera, koji se sastoji iz master čvora i dva HDFS čvora podataka, sa postavljenim faktorom replikacije blokova:
 
 \begin{lstlisting}[title={start-hadoop.sh - Komande za pokretanje HDFS komponenti},captionpos=b]
 #!/bin/bash
+$HADOOP_HOME/bin/hdfs namenode -format
 $HADOOP_HOME/sbin/start-dfs.sh
+hdfs --config $HADOOP_HOME/etc/datanode1/ datanode  \
+    -D dfs.datanode.data.dir=/home/lukadj/datanode2 &
 $HADOOP_HOME/sbin/start-yarn.sh
 \end{lstlisting}
 
-\begin{lstlisting}[title={hdfs-site.xml - Konfiguracija HDFS-a sa faktorom replikacije 2},captionpos=b]
+\begin{lstlisting}[title={hdfs-site.xml - Konfiguracija prvog HDFS čvora sa faktorom replikacije 2},captionpos=b]
 <configuration>
       <property>
-	<name>dfs.replication</name>
-          <value>2</value>
-      </property>
-      <property>
-  	<name>dfs.datanode.data.dir</name>
-  	<value>/home/lukadj/hadoop/data2</value>
-      </property>
+         <name>dfs.replication</name>
+         <value>2</value>
+     </property>
+     <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>/home/lukadj/datanode1</value>
+    	</property>
+    <property>
 </configuration>
 \end{lstlisting}
 
-Nakon toga pokreće se HBase klaster koji se sastoji iz jednog region servera, jednog master servera i zookeeper servisa. HBase je konfigurisan tako da koristi ranije pokrenut HDFS klaster.
+\begin{lstlisting}[title={hdfs-site.xml - Konfiguracija drugog  HDFS čvora sa faktorom replikacije 2},captionpos=b]
+<configuration>
+       <property>
+         <name>dfs.replication</name>
+         <value>2</value>
+     </property>
+     <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>/home/lukadj/datanode2</value>
+     </property>   
+</configuration>
+\end{lstlisting}
+
+
+Nakon toga pokreće se HBase klaster koji se sastoji iz jednog master servera, dva region servera i zookeeper servisa. HBase je konfigurisan tako da koristi ranije pokrenut HDFS klaster.
 
 \begin{lstlisting}[title={start-hbase.sh - Komanda za pokretanje HBase-a},captionpos=b]
 #!/bin/bash
 $HBASE_HOME/bin/start-hbase.sh
+HBASE_CONF_DIR=/home/lukadj/hbase-regionserver1 \
+	$HBASE_HOME/bin/hbase-daemon.sh start regionserver
 \end{lstlisting}
 
 
@@ -1095,8 +1115,8 @@ $HBASE_HOME/bin/start-hbase.sh
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{hbase-master.png}
-  \caption{Stranica za praćenje hbase master servera}
+  \includegraphics[width=1\textwidth]{hbase-master.png}
+  \caption{Stranica za praćenje HBase master servera}
   \label{fig:grafikon}
 \end{figure}
 
@@ -1105,7 +1125,7 @@ $HBASE_HOME/bin/start-hbase.sh
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{datanode.png}
+  \includegraphics[width=1\textwidth]{datanode.png}
   \caption{Stranica za praćenje HDFS čvorova podataka}
   \label{fig:grafikon}
 \end{figure}
@@ -1203,9 +1223,10 @@ select *
 
 \section{Analiza rezultata kod testiranja u distribuiranom okruženju}
 
-Analiza rezultata testiranja u distribuiranom okruženju obuhvatiće uporednu analizu sa nedistribuiranim HBase-om, opis fragmentacije i replikacije podataka kao i organizacije podataka HBase-a na HDFS čvoru. 
+Analiza rezultata testiranja u distribuiranom okruženju obuhvatiće uporednu analizu sa nedistribuiranim HBase-om, opis fragmentacije, replikacije i organizacije podataka HBase-a na HDFS čvoru. 
 
-Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}.  Drugi razlog boljih performansi u odnosu na nedistribuirani HBase može biti i to što se pri nedistribuiranom izvršavanju potencijalno ne koriste sva jezgra fizičkog čvora, pa se pri distribuiranju u više procesa na istom fizičkom čvoru povećava iskorišćenost procesora. Merenje iskorićenosti procesora (\textit{CPU}\%) u nedistribuiranom i distribuiranom okruženju sa jednim region server čvorom dalo je manju prednost distribuiranom, Slike 5.4 i 5.5. 
+Pokrenuti distribuirani HBase klaster pokazuje bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}. Glavni razlog ipak jeste paralelizacija obrade zahteva pomoću dva region servera. S obzirom da su podaci podeljeni na regione koji su dodeljeni odgovarajućim region serverima, ukoliko više klijenata našeg testa pristupa regionima koji su smešteni u više region servera, tada se postiže veća iskorišćenost procesora.
+Merenje iskorišćenosti procesora (\textit{CPU}\%) u nedistribuiranom i distribuiranom okruženju sa dva region servera dalo je prednost distribuiranom, Slike 5.4 i 5.5. 
 
 \begin{figure}[!ht]
   \centering
@@ -1217,13 +1238,13 @@ Pokrenuti distribuirani HBase klaster pokazuje nešto bolje rezultate nego nedis
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.8\textwidth]{distribuirano-cpu.png}
+  \includegraphics[width=0.8\textwidth]{distribuirano-cpu2.png}
   \caption{Iskorišćenost procesora u distribuiranom okruženju}
   \label{fig:grafikon}
 \end{figure}
 
 \pagebreak 
-Ograničenje ove studije je korišćenje jednog fizičkog čvora sa jednim region server čvorom. Sa povećanjem broja region servera na istom fizičkom čvoru potencijalno bi se postigla veća iskorišćenost procesora, a samim tim i bolje performanse, što može biti predmet daljih istraživanja. Povećavanjem broja fizičkih čvorova postigla bi se veća pouzdanost klastera, bolja dostupnost i brže čitanje podataka \cite{ColumnarOriented}.  
+Ograničenje ove studije je korišćenje jednog fizičkog čvora. Sa povećanjem broja  fizičkih čvorova potencijalno bi se postigla veća iskorišćenost odvojenih procesora, a samim tim i bolje performanse, što može biti predmet daljih istraživanja. Osim toga, povećavanjem broja fizičkih čvorova postigla bi se veća pouzdanost klastera, bolja dostupnost i brže čitanje podataka \cite{ColumnarOriented}.  
 
 Fragmentacija HBase klastera realizovana je na dva nivoa:  fragmentacija odgovornosti region servera za regione koji mogu pripadati različitim tabelama i fragmentacija podataka u okviru HDFS klastera. Sa druge strane replikacija je prisutna samo za podatke u okviru HDFS klastera, ali ne i u odgovornosti region servera, jer je za jedan region u svakom trenutku odgovoran samo jedan region server.
 
@@ -1236,7 +1257,7 @@ Na Slici 5.6. prikazana  je organizacija regiona (kolone \textit{Regions}) po ta
   \label{fig:grafikon}
 \end{figure}
 
-Lista regiona, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele orderitem, na Slici 5.7.
+Lista regiona, region serveri kojima pripadaju, njihovi opsezi, kao i veličine mogu se videti na  primeru tabele orderitem, na Slici 5.7.
 
 \begin{figure}[!ht]
   \centering
