@@ -1223,9 +1223,9 @@ select *
 
 \section{Analiza rezultata kod testiranja u distribuiranom okruženju}
 
-Analiza rezultata testiranja u distribuiranom okruženju obuhvatiće uporednu analizu sa nedistribuiranim HBase-om, opis fragmentacije, replikacije i organizacije podataka HBase-a na HDFS čvoru. 
+Analiza rezultata testiranja u distribuiranom okruženju obuhvata uporednu analizu sa nedistribuiranim HBase-om, opis fragmentacije, replikacije i organizacije podataka HBase-a na HDFS klasteru. 
 
-Pokrenuti distribuirani HBase klaster pokazuje bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom\cite{hbaseGuide}. Glavni razlog ipak jeste paralelizacija obrade zahteva pomoću dva region servera. S obzirom da su podaci podeljeni na regione koji su dodeljeni odgovarajućim region serverima, ukoliko više klijenata našeg testa pristupa regionima koji su smešteni u više region servera, tada se postiže veća iskorišćenost procesora.
+Pokrenuti distribuirani HBase klaster pokazuje bolje rezultate nego nedistribuirani HBase koji podatke skladišti na lokalnom fajl sistemu. Jedan od razloga za to je integracija HBase baze podataka sa HDFS ekosistemom \cite{hbaseGuide}. Glavni razlog ipak jeste paralelizacija obrade zahteva pomoću dva region servera. S obzirom da su podaci podeljeni na regione koji su dodeljeni odgovarajućim region serverima, ukoliko više klijenata našeg testa pristupa regionima koji su smešteni u više region servera, tada se postiže veća iskorišćenost procesora.
 Merenje iskorišćenosti procesora (\textit{CPU}\%) u nedistribuiranom i distribuiranom okruženju sa dva region servera dalo je prednost distribuiranom, Slike 5.4 i 5.5. 
 
 \begin{figure}[!ht]
